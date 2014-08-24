@@ -21,10 +21,10 @@ def lpf(sig, sample_rate, f_cut, mask_len=2 ** 6):
     mask = sp.signal.firwin(mask_len, cutoff=f_cut, nyq=0.5 * sample_rate)
     return np.convolve(sig, mask, mode='same')
     
-def mixer_lpf(sig, sample_rate, f_min, f_max):
+def mixer_lpf(sig, sample_rate, f_min, f_max, mask_len=2 ** 6):
     assert f_max > f_min
     df = f_max - f_min
-    return lpf(mixer(sig, sample_rate, f_min), sample_rate, f_cut=df)
+    return lpf(mixer(sig, sample_rate, f_min), sample_rate, f_cut=df, mask_len=mask_len)
     
 def pm_demodulation(sig, sample_rate):
     """ baed on hilbert """
