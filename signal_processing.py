@@ -17,16 +17,8 @@ def mixer(sig, sample_rate, f_shift):
     return mixer_sig * sig
 
     
-def lpf(sig, sample_rate, f_cut):
-    filter_fines = 5 # number of lobes of the sinc to take
-    sample_step = 1.0 / sample_rate
-    t_0 = 0.5 * 1.0 / f_cut
-    max_sample_index  = np.ceil(filter_fines * t_0 / sample_step)
-    print "max_sample_index:", max_sample_index
-    mask_indexes = np.arange(- max_sample_index, max_sample_index)
-    mask = np.sinc(sample_step * mask_indexes / t_0)
-    #mask_sig = np.zeros_like(sig)
-    #mask_sig[]
+def lpf(sig, sample_rate, f_cut, mask_len=2 ** 6):
+    mask = sp.signal.firwin(mask_len, cutoff=f_cut, nyq=0.5 * sample_rate)
     return np.convolve(sig, mask, mode='same')
     
 def mixer_lpf(sig, sample_rate, f_min, f_max):
@@ -62,7 +54,7 @@ def test_pm_and_fm_demodulation():
     
 
 #%%
-if IS_DEBUG:
+def test_mixer_lpf():
     plt.close("all")
     
     sample_rate = 1 #Hz
@@ -77,7 +69,7 @@ if IS_DEBUG:
     filterred = lpf(mixed, sample_rate, freq)
     
     freqs = np.fft.fftfreq(N, 1.0 / sample_rate)
-    #%%
+    
     plt.figure()
     plt.xlabel("time")
     plt.plot(time, sine, label="sine")
