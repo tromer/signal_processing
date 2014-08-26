@@ -25,6 +25,18 @@ def test_smaller_power_of_2():
     assert np.allclose(smaller_power_of_2(inputs), expeced_outputs)
     assert smaller_power_of_2(30) == 16
     
- #%%
+#%%
+def normalize(vec, ord=None, axis=None):
+   return 1.0 * vec / np.linalg.norm(vec, ord, axis)
+    
+def test_normalize():
+    vec = np.array([1, 1])
+    vec_n_1 = vec / 2.0
+    assert np.allclose(normalize(vec, ord=1), vec_n_1)
+    vec_n_2 = vec / np.sqrt(2)
+    assert np.allclose(normalize(vec), vec_n_2)
+    
+    
     
 test_smaller_power_of_2()
+test_normalize()
