@@ -83,3 +83,36 @@ def test_mixer_lpf():
     plt.plot(freqs, np.abs(np.fft.fft(mixed, N)), label="mixed")
     plt.plot(freqs, np.abs(np.fft.fft(filterred)), label="filterred")
     plt.legend(loc="best")
+
+#%%
+def fast_convolve(sig, mask, mode):
+    """ type of input determine convolution algorithm """
+    if case_regular:
+        return np.convolve(sig, mask, mode)
+    elif case_fft:
+        return sp.signal.fftconvolve(sig, mask, mode)
+        
+#%%
+def threshold_crosses(sig, threshold):
+    """
+    returns the location in indexes of crossing up, crossing down
+    """
+    above = sig > threshold
+    # the beginning and end count as non pulse
+    crossings = np.bitwise_xor(np.concatenate([above, [False,]]), np.concatenate([[False], above]))
+    crossings_indexes = np.where(crossings)[0]
+    crossings_up = crossings_indexes[::2]
+    crossings_down = crossings_indexes[1::2]
+    return crossings_up, crossings_down
+#%%
+def test_threshold_crosses():
+    sig = np.array([3, 3, 3, 0, 0, 0, 3, 3, 0])
+    threshold = 2
+    crossings_up_expected = np.array([0, 6])
+    crossings_down_expected = np.array([3, 8])
+    crossings_up, crossings_down = threshold_crosses(sig, threshold)
+    assert np.allclose(crossings_up, crossings_up_expected)
+    assert np.allclose(crossings_down, crossings_down_expected)
+
+test_threshold_crosses()
+    
