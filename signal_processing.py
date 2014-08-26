@@ -137,4 +137,20 @@ def test_adjoin_close_pulses():
     assert np.allclose(adjoined_ends, adjoined_ends_expected)
     
 test_adjoin_close_pulses()
+#%%
+def filter_short_pulses(starts, ends, min_duration):
+    durations = ends - starts
+    long_enough_mask = durations > min_duration
+    return starts[long_enough_mask], ends[long_enough_mask]
+#%%    
+def test_filter_short_pulses():
+    starts = np.array([0, 2, 4, 10])
+    ends = np.array([1, 3, 5, 10.5])
+    min_duration = 0.75
+    long_starts_expected = np.array([0, 2, 4])
+    long_ends_expected = np.array([1, 3, 5])
+    long_starts, long_ends = filter_short_pulses(starts, ends, min_duration)
+    assert np.allclose(long_starts, long_starts_expected)
+    assert np.allclose(long_ends, long_ends_expected)
     
+test_filter_short_pulses()
