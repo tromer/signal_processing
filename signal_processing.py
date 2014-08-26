@@ -93,13 +93,15 @@ def fast_convolve(sig, mask, mode):
         return sp.signal.fftconvolve(sig, mask, mode)
         
 #%%
-def threshold_crosses(sig, threshold):
+def threshold_crosses(sig, threshold, is_above=True):
     """
     returns the location in indexes of crossing up, crossing down
     """
     above = sig > threshold
+    if not is_above:
+        above = np.logical_not(above)
     # the beginning and end count as non pulse
-    crossings = np.bitwise_xor(np.concatenate([above, [False,]]), np.concatenate([[False], above]))
+    crossings = np.logical_xor(np.concatenate([above, [False,]]), np.concatenate([[False], above]))
     crossings_indexes = np.where(crossings)[0]
     crossings_up = crossings_indexes[::2]
     crossings_down = crossings_indexes[1::2]
@@ -115,4 +117,24 @@ def test_threshold_crosses():
     assert np.allclose(crossings_down, crossings_down_expected)
 
 test_threshold_crosses()
+
+#%%
+def adjoin_close_pulses(starts, ends, max_distance):
+    end_to_start_gaps = starts[1:]  - ends[:-1]
+    gaps_justify_separate_pulses = end_to_start_gaps > max_distance
+    true_starts_mask = np.concatenate([[True,], gaps_justify_separate_pulses])
+    true_ends_mask = np.concatenate([gaps_justify_separate_pulses, [True,]])
+    return starts[true_starts_mask], ends[true_ends_mask]
+#%%
+def test_adjoin_close_pulses():
+    starts = np.array([0, 2, 4, 10])
+    ends = np.array([1, 3, 5, 11])
+    max_distance = 2
+    adjoined_starts_expected = np.array([0, 10])
+    adjoined_ends_expected = np.array([5, 11])
+    adjoined_starts, adjoined_ends = adjoin_close_pulses(starts, ends, max_distance)
+    assert np.allclose(adjoined_starts, adjoined_starts_expected)
+    assert np.allclose(adjoined_ends, adjoined_ends_expected)
+    
+test_adjoin_close_pulses()
     
