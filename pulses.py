@@ -71,12 +71,11 @@ test_pulses()
 
 
 #%%
-def adjoin_close_pulses(starts, ends, max_distance):
-    end_to_start_gaps = starts[1:]  - ends[:-1]
-    gaps_justify_separate_pulses = end_to_start_gaps > max_distance
-    true_starts_mask = np.concatenate([[True,], gaps_justify_separate_pulses])
-    true_ends_mask = np.concatenate([gaps_justify_separate_pulses, [True,]])
-    return starts[true_starts_mask], ends[true_ends_mask]
+def adjoin_close_pulses(pulses, max_distance):
+    is_each_gap_big_enough = pulses.end_to_start > max_distance
+    is_each_real_start = np.concatenate([[True,], is_each_gap_big_enough])
+    is_each_real_end = np.concatenate([is_each_gap_big_enough, [True,]])
+    return Pulses(pulses.starts[is_each_real_start], pulses.ends[is_each_real_end])
     
     """
     another approach is: raw_signal -> threshold -> convolve with mask=np.ones(n, dtype=bool)
@@ -86,9 +85,9 @@ def adjoin_close_pulses(starts, ends, max_distance):
 def test_adjoin_close_pulses():
     starts = np.array([0, 2, 4, 10])
     ends = np.array([1, 3, 5, 11])
+    pulses = Pulses(starts, ends)
     max_distance = 2
-    adjoined_starts_expected = np.array([0, 10])
-    adjoined_ends_expected = np.array([5, 11])
+    adjoined_pulses_expected = Pulses(np.array([0, 10]), np.array([5, 11]))
     adjoined_starts, adjoined_ends = adjoin_close_pulses(starts, ends, max_distance)
     assert np.allclose(adjoined_starts, adjoined_starts_expected)
     assert np.allclose(adjoined_ends, adjoined_ends_expected)
