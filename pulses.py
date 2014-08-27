@@ -41,6 +41,11 @@ class Pulses:
         
     def __getitem__(self, key):
         return Pulses(self.starts[key], self.ends[key])
+        
+    def close(self, other, rtol=1e-05, atol=1e-08):
+        if len(self) != len(other):
+            return False
+        return np.allclose(self.starts, other.starts, rtol, atol) and np.allclose(self.ends, other.ends, rtol, atol)
 #%%
 def test_pulses():
     starts = np.array([0, 2, 4, 10])
@@ -60,5 +65,6 @@ def test_pulses():
     assert np.allclose(end_to_start, p.end_to_start)
     assert np.allclose(starts[is_each_in], p[is_each_in].starts)
     assert np.allclose(starts[s], p[s].starts)
+    assert p.close(p)
 #%%
 test_pulses()
