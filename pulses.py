@@ -43,6 +43,7 @@ class Pulses:
         return Pulses(self.starts[key], self.ends[key])
         
     def close(self, other, rtol=1e-05, atol=1e-08):
+        # maybe should be names is_close ?
         if len(self) != len(other):
             return False
         return np.allclose(self.starts, other.starts, rtol, atol) and np.allclose(self.ends, other.ends, rtol, atol)
@@ -88,26 +89,25 @@ def test_adjoin_close_pulses():
     pulses = Pulses(starts, ends)
     max_distance = 2
     adjoined_pulses_expected = Pulses(np.array([0, 10]), np.array([5, 11]))
-    adjoined_starts, adjoined_ends = adjoin_close_pulses(starts, ends, max_distance)
-    assert np.allclose(adjoined_starts, adjoined_starts_expected)
-    assert np.allclose(adjoined_ends, adjoined_ends_expected)
+    adjoined_pulses = adjoin_close_pulses(pulses, max_distance)
+    assert adjoined_pulses.close(adjoined_pulses_expected)
+    
     
 test_adjoin_close_pulses()
 #%%
-def filter_short_pulses(starts, ends, min_duration):
-    durations = ends - starts
-    long_enough_mask = durations > min_duration
-    return starts[long_enough_mask], ends[long_enough_mask]
+def filter_short_pulses(pulses, min_duration):
+    is_each_long_enough = pulses.durations > min_duration
+    return pulses[is_each_long_enough]
 #%%    
 def test_filter_short_pulses():
     starts = np.array([0, 2, 4, 10])
     ends = np.array([1, 3, 5, 10.5])
+    pulses = Pulses(starts, ends)
     min_duration = 0.75
-    long_starts_expected = np.array([0, 2, 4])
-    long_ends_expected = np.array([1, 3, 5])
-    long_starts, long_ends = filter_short_pulses(starts, ends, min_duration)
-    assert np.allclose(long_starts, long_starts_expected)
-    assert np.allclose(long_ends, long_ends_expected)
+    only_long_pulses_expected = Pulses(np.array([0, 2, 4]), np.array([1, 3, 5]))
+    only_long_pulses = filter_short_pulses(pulses, min_duration)
+    assert only_long_pulses.close(only_long_pulses_expected)
+    
     
 test_filter_short_pulses()
 #%%
