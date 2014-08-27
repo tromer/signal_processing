@@ -162,26 +162,15 @@ def test_filter_short_pulses():
     
 test_filter_short_pulses()
 #%%
-def switch_pulses_and_gaps(starts, ends, absolute_start=None, absolute_end=None, epsilon=None):
-    if not absolute_start:
-        # this trick is used to enable concatanation with pint
-        absolute_start = np.ones(1) * starts[0]
-    if not absolute_end:
-        absolute_end = np.ones(1) * ends[-1]
-    
-    starts_gaps = np.concatenate([absolute_start, ends])
-    ends_gaps = np.concatenate([starts, absolute_end])
-    if epsilon:
-        starts_gaps, ends_gaps = filter_short_pulses(starts_gaps, ends_gaps, min_duration=epsilon)
-    return starts_gaps, ends_gaps
-    
-    
+def switch_pulses_and_gaps(starts, ends, absolute_start=None, absolute_end=None):
     starts_gaps = ends[:-1]
     ends_gaps = starts[1:]
     if absolute_start:
         starts_gaps = np.concatenate([np.ones(1) * absolute_start, starts_gaps])
     if absolute_end:
-        ends_gaps = np.concatenate([np.ones(1) * absolute_start, starts_gaps])
+        ends_gaps = np.concatenate([ends_gaps, np.ones(1) * absolute_end])
+    
+    return starts_gaps, ends_gaps
 #%%
 def test_switch_pulses_and_gaps():
     starts = np.array([0, 2, 4, 10])
