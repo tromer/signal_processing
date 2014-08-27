@@ -93,7 +93,7 @@ def fast_convolve(sig, mask, mode):
         return sp.signal.fftconvolve(sig, mask, mode)
         
 #%%
-def threshold_crosses(sig, threshold, is_above=True):
+def threshold_crosses(sig, sample_rate, threshold, is_above=True):
     """
     returns the location in indexes of crossing up, crossing down
     """
@@ -103,16 +103,18 @@ def threshold_crosses(sig, threshold, is_above=True):
     # the beginning and end count as non pulse
     crossings = np.logical_xor(np.concatenate([above, [False,]]), np.concatenate([[False], above]))
     crossings_indexes = np.where(crossings)[0]
-    crossings_up = crossings_indexes[::2]
-    crossings_down = crossings_indexes[1::2]
+    crossings_times = 1.0 * crossings_indexes / sample_rate
+    crossings_up = crossings_times[::2]
+    crossings_down = crossings_times[1::2]
     return crossings_up, crossings_down
 #%%
 def test_threshold_crosses():
     sig = np.array([3, 3, 3, 0, 0, 0, 3, 3, 0])
+    sample_rate = 1.0
     threshold = 2
     crossings_up_expected = np.array([0, 6])
     crossings_down_expected = np.array([3, 8])
-    crossings_up, crossings_down = threshold_crosses(sig, threshold)
+    crossings_up, crossings_down = threshold_crosses(sig, sample_rate, threshold)
     assert np.allclose(crossings_up, crossings_up_expected)
     assert np.allclose(crossings_down, crossings_down_expected)
 
