@@ -111,15 +111,16 @@ def test_filter_short_pulses():
     
 test_filter_short_pulses()
 #%%
-def switch_pulses_and_gaps(starts, ends, absolute_start=None, absolute_end=None):
-    starts_gaps = ends[:-1]
-    ends_gaps = starts[1:]
+def switch_pulses_and_gaps(pulses, absolute_start=None, absolute_end=None):
+    # maybe absolute start and end should be taken from the pulses object?
+    starts_gaps = pulses.ends[:-1]
+    ends_gaps = pulses.starts[1:]
     if absolute_start:
         starts_gaps = np.concatenate([np.ones(1) * absolute_start, starts_gaps])
     if absolute_end:
         ends_gaps = np.concatenate([ends_gaps, np.ones(1) * absolute_end])
     
-    return starts_gaps, ends_gaps
+    return pulses(starts_gaps, ends_gaps)
 #%%
 def test_switch_pulses_and_gaps():
     starts = np.array([0, 2, 4, 10])
