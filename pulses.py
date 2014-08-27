@@ -42,7 +42,7 @@ class Pulses:
     def __getitem__(self, key):
         return Pulses(self.starts[key], self.ends[key])
         
-    def close(self, other, rtol=1e-05, atol=1e-08):
+    def is_close(self, other, rtol=1e-05, atol=1e-08):
         # maybe should be names is_close ?
         if len(self) != len(other):
             return False
@@ -66,7 +66,7 @@ def test_pulses():
     assert np.allclose(end_to_start, p.end_to_start)
     assert np.allclose(starts[is_each_in], p[is_each_in].starts)
     assert np.allclose(starts[s], p[s].starts)
-    assert p.close(p)
+    assert p.is_close(p)
 #%%
 test_pulses()
 
@@ -90,7 +90,7 @@ def test_adjoin_close_pulses():
     max_distance = 2
     adjoined_pulses_expected = Pulses(np.array([0, 10]), np.array([5, 11]))
     adjoined_pulses = adjoin_close_pulses(pulses, max_distance)
-    assert adjoined_pulses.close(adjoined_pulses_expected)
+    assert adjoined_pulses.is_close(adjoined_pulses_expected)
     
     
 test_adjoin_close_pulses()
@@ -106,7 +106,7 @@ def test_filter_short_pulses():
     min_duration = 0.75
     only_long_pulses_expected = Pulses(np.array([0, 2, 4]), np.array([1, 3, 5]))
     only_long_pulses = filter_short_pulses(pulses, min_duration)
-    assert only_long_pulses.close(only_long_pulses_expected)
+    assert only_long_pulses.is_close(only_long_pulses_expected)
     
     
 test_filter_short_pulses()
@@ -120,16 +120,16 @@ def switch_pulses_and_gaps(pulses, absolute_start=None, absolute_end=None):
     if absolute_end:
         ends_gaps = np.concatenate([ends_gaps, np.ones(1) * absolute_end])
     
-    return pulses(starts_gaps, ends_gaps)
+    return Pulses(starts_gaps, ends_gaps)
 #%%
 def test_switch_pulses_and_gaps():
     starts = np.array([0, 2, 4, 10])
     ends = np.array([1, 3, 5, 10.5])
-    expected_starts_gaps = np.array([1, 3, 5])
-    expected_ends_gaps = np.array([2, 4, 10])
-    starts_gaps, ends_gaps = switch_pulses_and_gaps(starts, ends)
-    assert np.allclose(starts_gaps, expected_starts_gaps)
-    assert np.allclose(ends_gaps, expected_ends_gaps)
+    pulses = Pulses(starts, ends)
+    expected_gaps = Pulses(np.array([1, 3, 5]), np.array([2, 4, 10]))
+    gaps = switch_pulses_and_gaps(pulses)
+    assert gaps.is_close(expected_gaps)
+    
 
 test_switch_pulses_and_gaps()
     
