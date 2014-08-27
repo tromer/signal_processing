@@ -33,14 +33,17 @@ def firwin_pint(numtaps, cutoff, width, window, pass_zero, scale, nyq):
 #%%
     
 def histogram(a, bins=10, range_=None, weights=None, density=None):
-    base_units = get_units(a)
-    a = a.magnitude
-    if not type(bins) == int:
-        bins = bins.to(base_units)
-        bins = bins.magnitude
-    if range_:
-        range_ = range_.to(base_units)
-        range_ = range_.magnitude
-   
-    hist, edges = np.histogram(a, bins, range_, weights, density)
-    return hist, edges * base_units
+    if not type(a) == pint.unit.Quantity:
+        return np.histogram(a, bins, range_, weights, density)
+    else:
+        base_units = get_units(a)
+        a = a.magnitude
+        if not type(bins) == int:
+            bins = bins.to(base_units)
+            bins = bins.magnitude
+        if range_:
+            range_ = range_.to(base_units)
+            range_ = range_.magnitude
+       
+        hist, edges = np.histogram(a, bins, range_, weights, density)
+        return hist, edges * base_units
