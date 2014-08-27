@@ -125,6 +125,11 @@ def adjoin_close_pulses(starts, ends, max_distance):
     true_starts_mask = np.concatenate([[True,], gaps_justify_separate_pulses])
     true_ends_mask = np.concatenate([gaps_justify_separate_pulses, [True,]])
     return starts[true_starts_mask], ends[true_ends_mask]
+    
+    """
+    another approach is: raw_signal -> threshold -> convolve with mask=np.ones(n, dtype=bool)
+    then xoring with a shift to find ends and starts, then trim the edges
+    """
 #%%
 def test_adjoin_close_pulses():
     starts = np.array([0, 2, 4, 10])
@@ -154,3 +159,25 @@ def test_filter_short_pulses():
     assert np.allclose(long_ends, long_ends_expected)
     
 test_filter_short_pulses()
+#%%
+def switch_pulses_and_gaps(starts, ends, absolute_start=None, absolute_end=None, epsilon=10 ** (-6)):
+    if not absolute_start:
+        absolute_start = starts[0]
+    if not absolute_end:
+        absolute_end = ends[-1]
+    
+    starts_gaps = np.concatenate([[absolute_start,], ends])
+    ends_gaps = np.concatenate([starts, [absolute_end,]])
+    return filter_short_pulses(starts_gaps, ends_gaps, min_duration=epsilon)
+#%%
+def test_switch_pulses_and_gaps():
+    starts = np.array([0, 2, 4, 10])
+    ends = np.array([1, 3, 5, 10.5])
+    expected_starts_gaps = np.array([1, 3, 5])
+    expected_ends_gaps = np.array([2, 4, 10])
+    starts_gaps, ends_gaps = switch_pulses_and_gaps(starts, ends)
+    assert np.allclose(starts_gaps, expected_starts_gaps)
+    assert np.allclose(ends_gaps, expected_ends_gaps)
+
+test_switch_pulses_and_gaps()
+    
