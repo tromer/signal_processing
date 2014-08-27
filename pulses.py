@@ -68,3 +68,68 @@ def test_pulses():
     assert p.close(p)
 #%%
 test_pulses()
+
+
+#%%
+def adjoin_close_pulses(starts, ends, max_distance):
+    end_to_start_gaps = starts[1:]  - ends[:-1]
+    gaps_justify_separate_pulses = end_to_start_gaps > max_distance
+    true_starts_mask = np.concatenate([[True,], gaps_justify_separate_pulses])
+    true_ends_mask = np.concatenate([gaps_justify_separate_pulses, [True,]])
+    return starts[true_starts_mask], ends[true_ends_mask]
+    
+    """
+    another approach is: raw_signal -> threshold -> convolve with mask=np.ones(n, dtype=bool)
+    then xoring with a shift to find ends and starts, then trim the edges
+    """
+#%%
+def test_adjoin_close_pulses():
+    starts = np.array([0, 2, 4, 10])
+    ends = np.array([1, 3, 5, 11])
+    max_distance = 2
+    adjoined_starts_expected = np.array([0, 10])
+    adjoined_ends_expected = np.array([5, 11])
+    adjoined_starts, adjoined_ends = adjoin_close_pulses(starts, ends, max_distance)
+    assert np.allclose(adjoined_starts, adjoined_starts_expected)
+    assert np.allclose(adjoined_ends, adjoined_ends_expected)
+    
+test_adjoin_close_pulses()
+#%%
+def filter_short_pulses(starts, ends, min_duration):
+    durations = ends - starts
+    long_enough_mask = durations > min_duration
+    return starts[long_enough_mask], ends[long_enough_mask]
+#%%    
+def test_filter_short_pulses():
+    starts = np.array([0, 2, 4, 10])
+    ends = np.array([1, 3, 5, 10.5])
+    min_duration = 0.75
+    long_starts_expected = np.array([0, 2, 4])
+    long_ends_expected = np.array([1, 3, 5])
+    long_starts, long_ends = filter_short_pulses(starts, ends, min_duration)
+    assert np.allclose(long_starts, long_starts_expected)
+    assert np.allclose(long_ends, long_ends_expected)
+    
+test_filter_short_pulses()
+#%%
+def switch_pulses_and_gaps(starts, ends, absolute_start=None, absolute_end=None):
+    starts_gaps = ends[:-1]
+    ends_gaps = starts[1:]
+    if absolute_start:
+        starts_gaps = np.concatenate([np.ones(1) * absolute_start, starts_gaps])
+    if absolute_end:
+        ends_gaps = np.concatenate([ends_gaps, np.ones(1) * absolute_end])
+    
+    return starts_gaps, ends_gaps
+#%%
+def test_switch_pulses_and_gaps():
+    starts = np.array([0, 2, 4, 10])
+    ends = np.array([1, 3, 5, 10.5])
+    expected_starts_gaps = np.array([1, 3, 5])
+    expected_ends_gaps = np.array([2, 4, 10])
+    starts_gaps, ends_gaps = switch_pulses_and_gaps(starts, ends)
+    assert np.allclose(starts_gaps, expected_starts_gaps)
+    assert np.allclose(ends_gaps, expected_ends_gaps)
+
+test_switch_pulses_and_gaps()
+    
