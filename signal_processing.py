@@ -12,6 +12,9 @@ import matplotlib.pyplot as plt
 
 from pulses import Pulses
 
+import pint_extension
+#from . import ureg, Q_
+
 IS_DEBUG = False
 #%%
 def mixer(sig, sample_rate, f_shift):
@@ -124,3 +127,8 @@ def test_threshold_crosses():
 test_threshold_crosses()
 
 #%%
+def cluster1d(vec, resolution, threshold):
+    bins_num = np.ceil(1.0 * vec.ptp() / resolution)
+    hist, edges = pint_extension.histogram(vec, bins_num, density=True)
+    clusters = threshold_crosses(vec, 1, threshold)
+    return clusters

@@ -8,8 +8,8 @@ Created on Wed Aug 27 17:25:50 2014
 import numpy as np
 import scipy as sp
 from scipy import signal
-import pint
-uerg = pint.UnitRegistry()
+
+#from . import ureg, Q_
 
 def get_units(x):
     if type(x.magnitude) == np.ndarray:
