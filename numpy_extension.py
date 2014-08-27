@@ -40,3 +40,8 @@ def test_normalize():
     
 test_smaller_power_of_2()
 test_normalize()
+
+#%%
+def running_max(vec, m):
+    """ to implement in C """
+    return
