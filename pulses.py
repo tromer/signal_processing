@@ -7,7 +7,8 @@ Created on Wed Aug 27 19:14:13 2014
 
 import numpy as np
 #%%
-class Pulses:
+class Pulses(object):
+    # should ingerit from object?
     def __init__(self, starts, ends):
         # or np.recarray, or pandas.DataFrame
         self._starts = starts
@@ -34,6 +35,10 @@ class Pulses:
     @property
     def start_to_start(self):
         return np.diff(self.starts)
+        
+    @property
+    def end_to_end(self):
+        raise NotImplementedError
         
     @property
     def end_to_start(self):
