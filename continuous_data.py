@@ -6,10 +6,16 @@ Created on Sat Aug 30 01:29:39 2014
 """
 
 import numpy as np
+import matplotlib.pyplot as plt
 from Range import Range
 import pint_extension
 from pint import UnitRegistry
 uerg = UnitRegistry()
+
+#%%
+import warnings
+#%%
+ARBITRARY_UNITS_STR = "[AU]"
 #%%
 
 class ContinuousData(object):
@@ -48,6 +54,7 @@ class ContinuousData(object):
     
     """
     def __init__(self, values, domain_samples):
+        assert len(values) == len(domain_samples)
         self._domain_samples = domain_samples
         self._values = values
         
@@ -99,18 +106,34 @@ def test_ContinuousData():
 test_ContinuousData()
 #%%
     
-    
-  
-
+def plot_quick(contin, fmt="-"):
+    warnings.warn("plot_quick is not tested")
+    #TODO: test this function!
+    # creat the figure here
+    fig = plt.figure()
+    x = contin.domain_samples
+    y = contin.values
+    line = plt.plot(x, y, fmt)
+    plt.xlabel(ARBITRARY_UNITS_STR) 
+    plt.ylabel(ARBITRARY_UNITS_STR)
+    if type(x) == uerg.Quantity:
+        if not x.unitless:
+            plt.xlabel(str(x.dimensionality) + " [" + str(x.units) + "]")
+            
+    if type(y) == uerg.Quantity:
+        if not y.unitless:
+            plt.ylabel(str(y.dimensionality) + " [" + str(y.units) + "]")
+            
+    return fig, line 
+#%%
 
 def plot(contin):
     # should be more  inputs
     # maybe optional parameter of on which figure / axes to plot
-    assert contin type?
+    # assert contin type?
     raise NotImplementedError
         # return fig, axes??
-def plot_quick(contin):
-    # creat the figure here
+
     
 class ContinuousDataEven(ContinuousData):
     """
@@ -119,9 +142,13 @@ class ContinuousDataEven(ContinuousData):
     """
     def __init__(self, values, sample_step, first_sample=0):
         # would there be a problem because of interface issues?
-        self._sample_step = sample_step
-        self._first_sample = first_sample
         self._values = values
+        self._sample_step = sample_step
+        if not first_sample:
+            self._first_sample = 0 * sample_step
+        else:
+            self._first_sample = first_sample
+        
         
     @property
     def sample_step(self):
@@ -129,7 +156,7 @@ class ContinuousDataEven(ContinuousData):
         
     @property
     def sample_rate(self):
-        return 1.0 / sample_step
+        return 1.0 / self.sample_step
     
     @property
     def first_sample(self):
@@ -137,29 +164,56 @@ class ContinuousDataEven(ContinuousData):
         
     @property
     def domain_samples(self):
-        return np.arange(len(self.values)) * self.sample_step + first_sample
+        #print "******"
+        #print self.values
+        return np.arange(len(self.values)) * self.sample_step + self.first_sample
         
     def __getitem__(self, domain_range):
-        bottom_index = np.ceil(domain_range.start / self.sample_step)
+        bottom_index = np.ceil(1.0 * domain_range.start / self.sample_step)
         top_index = np.floor(domain_range.end / self.sample_step)
-        return ContinuousDataEven(self.sample_step, self.values[bottom_index:top_index])
-        
-    def FFT(self, ?):
-        raise NotImplementedError
-        spectrum = 
-        freq_step = 
-        return ContinuousDataEven(freq_step, spectrum)
+        return ContinuousDataEven(self.values[bottom_index:top_index + 1], self.sample_step, first_sample=bottom_index * self.sample_step)
 
+def test_ContinuousDataEven():
+    values = np.arange(10) * uerg.amp
+    sample_step = 1.0 * uerg.sec
+    sig = ContinuousDataEven(values, sample_step)
+    assert pint_extension.allclose(sig.sample_step, sample_step)
+    assert pint_extension.allclose(sig.sample_rate, 1.0 / sample_step)
+    assert pint_extension.allclose(sig.values, values)
+    assert pint_extension.allclose(sig.domain_samples, np.arange(10) * sample_step)
+    assert sig.is_close(ContinuousData(values, np.arange(10) * sample_step))
+    assert pint_extension.allclose(sig.first_sample, 0 * sample_step)
+    
+    # testing a __getitem__ (slicing) is mostly copied from the tester of ContinuousData
+    t_range = Range(np.array([2.5, 6.5]) * uerg.sec)
+    expected_slice = np.arange(3,7)
+    expected_sig_middle = ContinuousDataEven(values[expected_slice], sample_step, expected_slice[0] * sample_step)
+    sig_middle = sig[t_range]
+    assert sig_middle.is_close(expected_sig_middle)
+    
+test_ContinuousDataEven()
+#%%
+def fft(self, n=None):
+    raise NotImplementedError
+    spectrum = np.fft.fft(self.values.magnitude, n)
+    freq_step = 1.0 * self.sample_rate / n
+    return ContinuousDataEven(freq_step, spectrum)
+    
+def test_fft():
+    raise()
+    
+test_fft()
+"""
 def freq_filter(contin, freq_ranges, ?, ?, ?):
     raise NotImplementedError
     
-    """   
+     
     @uerg.wraps(None, (None, uerg.Hz, uerg.Hz, None, None, None, uerg.Hz))    
     def firwin_pint(numtaps, cutoff, width, window, pass_zero, scale, nyq):
         return sp.signal.firwin(numtaps, cutoff, width, window, pass_zero, scale, nyq)
-    """
+"""
 
 def read_wav(filename, domain_unit=uerg.sec, value_unit=uerg.volt, expected_sample_rate=None, sample_rate_tolerance=None):
     raise NotImplementedError
-    return signal
+    #return signal
     
