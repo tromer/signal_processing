@@ -33,6 +33,9 @@ class Range(object):
     def __contains__(self, x):
         return np.logical_and(x > self.start, x < self.end)
         
+    def is_each_in(self, x):
+        return self.__contains__(x)
+        
         
 def test_Range():
     range_1 = Range(np.array([3, 5]) * uerg.meter)
@@ -42,5 +45,7 @@ def test_Range():
     #assert allclose(len(range_1) , 2 * uerg.meter)
     assert 4 * uerg.meter in range_1
     assert not 2 * uerg.meter in range_1
+    assert np.allclose(np.array([True, True]), range_1.is_each_in(np.array([4, 4]) * uerg.meter))
+    
     
 test_Range()
