@@ -6,7 +6,11 @@ Created on Sat Aug 30 01:29:39 2014
 """
 
 import numpy as np
+from Range import Range
 import pint_extension
+from pint import UnitRegistry
+uerg = UnitRegistry()
+#%%
 
 class ContinuousData(object):
     """
@@ -19,7 +23,8 @@ class ContinuousData(object):
     2. a spatial measurement: height as a function of place, some material density as a function of place.
     similar examples: stress as a function of place.
     3. a distribution: the number of occurances in a population, as a function of age / height / amplitude
-    4. even a spectrum of a signal - the magnitude as a function of frequency.
+    4. a kinematic property of a system: position / velocity / acceleration / angle as a function of time.
+    5. even a spectrum of a signal - the magnitude as a function of frequency.
     
     basic assumptions:
     1. the acctual data in the real world can be really continuous.
@@ -42,7 +47,7 @@ class ContinuousData(object):
     the correct thing to do is to wrap the numpy or scipy operation.
     
     """
-    def __init__(self, domain_samples, values):
+    def __init__(self, values, domain_samples):
         self._domain_samples = domain_samples
         self._values = values
         
@@ -54,24 +59,47 @@ class ContinuousData(object):
     def values(self):
         return self._values
         
-    def __len__(self):
-        return self.domain_samples.ptp()
-        
-    def __getitem__(self, domain_range):
-        is_each_in_range = self.domain_samples in domain_range
-        return ContinuousData(self.domain_range[is_each_in_range], self.values[is_each_in_range])
-        
-    def is_close(self, other, domain_rtol=None, domain_atol=None, values_rtol=None, values_atol=None):
+    def is_close(self, other, domain_rtol=1e-5, domain_atol=None, values_rtol=1e-5, values_atol=None):
         return pint_extension.allclose(self.domain_samples, other.domain_samples, domain_rtol, domain_atol) \
         and pint_extension.allclose(self.values, other.values, values_rtol, values_atol)
+
+    """    
+    def __len__(self):
+        raise NotImplementedError
+        return self.domain_samples.ptp()
+    """
+    
+    def __getitem__(self, domain_range):
+        is_each_in_range = domain_range.is_each_in(self.domain_samples)
+        return ContinuousData(self.values[is_each_in_range], self.domain_samples[is_each_in_range])
         
-        
-        
+    
     def DFT(self):
         raise NotImplementedError
         # maybe there is an issue regarding using DFT or IDTF, depending the domain
         # maybe it should be an extra param. seying which one to use
 
+def test_ContinuousData():
+    t = np.arange(10) * uerg.sec
+    vals = np.arange(10) * uerg.volt
+    sig = ContinuousData(vals, t)
+    assert pint_extension.allclose(sig.domain_samples, t)
+    assert pint_extension.allclose(sig.values, vals)
+    
+    assert sig.is_close(sig)
+    assert not sig.is_close(ContinuousData(vals, t + 1 * uerg.sec))
+    assert not sig.is_close(ContinuousData(vals + 1 * uerg.volt, t))
+
+    t_range = Range(np.array([2.5, 6.5]) * uerg.sec)
+    expected_slice = np.arange(3,7)
+    expected_sig_middle = ContinuousData(vals[expected_slice], t[expected_slice])
+    sig_middle = sig[t_range]
+    assert sig_middle.is_close(expected_sig_middle)
+    
+test_ContinuousData()
+#%%
+    
+    
   
 
 
@@ -121,11 +149,7 @@ class ContinuousDataEven(ContinuousData):
         spectrum = 
         freq_step = 
         return ContinuousDataEven(freq_step, spectrum)
-        
-def read_wav(filename, domain_unit=uerg.sec, value_unit=uerg.volt, expected_sample_rate=None, sample_rate_tolerance=None):
-    raise NotImplementedError
-    return signal
-    
+
 def freq_filter(contin, freq_ranges, ?, ?, ?):
     raise NotImplementedError
     
@@ -134,3 +158,8 @@ def freq_filter(contin, freq_ranges, ?, ?, ?):
     def firwin_pint(numtaps, cutoff, width, window, pass_zero, scale, nyq):
         return sp.signal.firwin(numtaps, cutoff, width, window, pass_zero, scale, nyq)
     """
+
+def read_wav(filename, domain_unit=uerg.sec, value_unit=uerg.volt, expected_sample_rate=None, sample_rate_tolerance=None):
+    raise NotImplementedError
+    return signal
+    
