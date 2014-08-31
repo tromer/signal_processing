@@ -17,6 +17,7 @@ from pint import UnitRegistry
 uerg = UnitRegistry()
 
 from Range import Range
+import numpy_extension
 import pint_extension
 
 
@@ -214,10 +215,16 @@ def test_ContinuousDataEven():
     
 test_ContinuousDataEven()
 #%%
-def fft(contin, n=None):
+def fft(contin, n=None, mode='fast'):
     # shoult insert a way to enforce "fast", poer of 2 stuff
+    n_sig = len(contin.values)
+    modes_dict = {'trim': 'smaller', 'zero-pad' : 'bigger', 'fast' : 'closer'}
     if not n:
-        n = len(contin.values)
+        if mode == 'accurate':
+            n = n_sig
+        else:
+            n = numpy_extension.close_power_of_2(n_sig, modes_dict[mode])
+            
     freq_step = 1.0 * contin.sample_rate / n
     first_freq = - 0.5 * contin.sample_rate
     
@@ -234,6 +241,16 @@ def test_fft():
     spec = fft(sig)
     
     assert spec.is_close(expected_spec)
+    
+    #mostly a copy of the other test
+    sig = ContinuousDataEven(np.arange(31) * uerg.amp, 1.0 * uerg.sec)
+    expected_freqs_fast = np.fft.fftshift(np.fft.fftfreq(32)) / uerg.sec
+    expected_freqs_vals_fast = np.fft.fftshift(np.fft.fft(np.arange(31), 32)) * uerg.amp * uerg.sec
+    expected_spec_fast = ContinuousData(expected_freqs_vals_fast, expected_freqs_fast)
+    spec_fast = fft(sig, mode='fast')
+    
+    assert spec_fast.is_close(expected_spec_fast)
+    
     
 test_fft()
 #%%
