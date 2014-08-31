@@ -60,8 +60,7 @@ def test_get_units():
     
 test_get_units()
 #%%
-
-    
+   
 def histogram(a, bins=10, range_=None, weights=None, density=None):
     """
     histogram for vectors with quantities.
@@ -98,13 +97,10 @@ def test_histogram():
 test_histogram()
 
 #%%
-"""    
-    def freq_filter(contin, freq_ranges, ?, ?, ?):
-    raise NotImplementedError
-    
-   
-    @uerg.wraps(None, (None, uerg.Hz, uerg.Hz, None, None, None, uerg.Hz))    
-    def firwin_pint(numtaps, cutoff, width, window, pass_zero, scale, nyq):
-        return sp.signal.firwin(numtaps, cutoff, width, window, pass_zero, scale, nyq)
-        
+
+
+"""
+TODO: making pint work well with matplotlib
+Herlpers: matplotlib.units?
+http://matplotlib.org/examples/units/basic_units.html
 """
