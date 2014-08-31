@@ -220,9 +220,7 @@ def fft(contin, n=None):
     
 def test_fft():
     sig = ContinuousDataEven(np.arange(32) * uerg.amp, 1.0 * uerg.sec)
-    expected_freqs = np.fft.fftshift(np.fft.fftfreq(3values = np.arange(10) * uerg.amp
-    sample_step = 1.0 * uerg.sec
-    sig = ContinuousDataEven(values, sample_step)2)) / uerg.sec
+    expected_freqs = np.fft.fftshift(np.fft.fftfreq(32)) / uerg.sec
     expected_freqs_vals = np.fft.fftshift(np.fft.fft(np.arange(32))) * uerg.amp * uerg.sec
     expected_spec = ContinuousData(expected_freqs_vals, expected_freqs)
     spec = fft(sig)
