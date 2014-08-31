@@ -72,7 +72,10 @@ class ContinuousData(object):
         return pint_extension.allclose(self.domain_samples, other.domain_samples, domain_rtol, domain_atol) \
         and pint_extension.allclose(self.values, other.values, values_rtol, values_atol)
 
-    """    
+    """
+    # maybe len should really return the number of sample points
+    # I am not shure whether the number of sample points should be a part of the interface/
+    # but in many implementations of functions I need it, so use len(contin.values)
     def __len__(self):
         raise NotImplementedError
         return self.domain_samples.ptp()
@@ -217,7 +220,9 @@ def fft(contin, n=None):
     
 def test_fft():
     sig = ContinuousDataEven(np.arange(32) * uerg.amp, 1.0 * uerg.sec)
-    expected_freqs = np.fft.fftshift(np.fft.fftfreq(32)) / uerg.sec
+    expected_freqs = np.fft.fftshift(np.fft.fftfreq(3values = np.arange(10) * uerg.amp
+    sample_step = 1.0 * uerg.sec
+    sig = ContinuousDataEven(values, sample_step)2)) / uerg.sec
     expected_freqs_vals = np.fft.fftshift(np.fft.fft(np.arange(32))) * uerg.amp * uerg.sec
     expected_spec = ContinuousData(expected_freqs_vals, expected_freqs)
     spec = fft(sig)
@@ -229,12 +234,33 @@ test_fft()
 def diff(contin, n=1):
     """
     a wrap around numpy.diff
+    returns a signal of same length
     """
     if type(contin) != ContinuousDataEven:
         raise NotImplementedError
     
-    new_vals = np.diff(contin.values.magnitude, n) * \
-    pint_extension.get_units(contin.values) * contin.sample_rate ** n
+    new_vals = np.empty(len(contin.values))
+    if n != 1:
+        raise NotImplementedError
+    elif n == 1:
+        new_vals[:-1] = np.diff(contin.values.magnitude, 1)
+        new_vals[-1] = new_vals[-2]
+        new_vals = new_vals * pint_extension.get_units(contin.values) * contin.sample_rate ** n
+        
+    return ContinuousDataEven(new_vals, contin.sample_step, contin.first_sample)
+    
+def test_diff():
+    #copied from other test
+    values = np.arange(10) * uerg.amp
+    sample_step = 1.0 * uerg.sec
+    sig = ContinuousDataEven(values, sample_step)
+    expected_diffs = np.ones(10) * uerg.amp / uerg.sec
+    expected_sig_diff = ContinuousDataEven(expected_diffs, sample_step)
+    sig_diff = diff(sig)
+    assert sig_diff.is_close(expected_sig_diff)
+    
+test_diff()
+#%%
     
 """
 def freq_filter(contin, freq_ranges, ?, ?, ?):
