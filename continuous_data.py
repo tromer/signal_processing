@@ -76,6 +76,10 @@ class ContinuousData(object):
     def values(self):
         return self._values
         
+    @property
+    def n_samples(self):
+        return len(self.values)
+        
     def is_close(self, other, domain_rtol=1e-5, domain_atol=None, values_rtol=1e-5, values_atol=None):
         return pint_extension.allclose(self.domain_samples, other.domain_samples, domain_rtol, domain_atol) \
         and pint_extension.allclose(self.values, other.values, values_rtol, values_atol)
@@ -112,6 +116,7 @@ def test_ContinuousData():
     sig = ContinuousData(vals, t)
     assert pint_extension.allclose(sig.domain_samples, t)
     assert pint_extension.allclose(sig.values, vals)
+    assert sig.n_samples == 10
     
     assert sig.is_close(sig)
     assert not sig.is_close(ContinuousData(vals, t + 1 * uerg.sec))
