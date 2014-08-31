@@ -5,16 +5,22 @@ Created on Sat Aug 30 01:29:39 2014
 @author: noam
 """
 
+import warnings
+#%%
 import numpy as np
+import scipy as sp
+from scipy.io import wavfile
 import matplotlib.pyplot as plt
-from Range import Range
-import pint_extension
+
 from pint import UnitRegistry
 uerg = UnitRegistry()
 
+from Range import Range
+import pint_extension
+
+
 #%%
-import warnings
-#%%
+
 ARBITRARY_UNITS_STR = "[AU]"
 #%%
 
@@ -208,6 +214,7 @@ def test_ContinuousDataEven():
 test_ContinuousDataEven()
 #%%
 def fft(contin, n=None):
+    # shoult insert a way to enforce "fast", poer of 2 stuff
     if not n:
         n = len(contin.values)
     freq_step = 1.0 * contin.sample_rate / n
@@ -270,7 +277,20 @@ def freq_filter(contin, freq_ranges, ?, ?, ?):
         return sp.signal.firwin(numtaps, cutoff, width, window, pass_zero, scale, nyq)
 """
 
-def read_wav(filename, domain_unit=uerg.sec, value_unit=uerg.volt, expected_sample_rate=None, sample_rate_tolerance=None):
-    raise NotImplementedError
-    #return signal
+def read_wav(filename, domain_unit=uerg.sec, first_sample=0, value_unit=uerg.milliamp, expected_sample_rate_and_tolerance=None):
+    sample_rate, raw_sig = sp.io.wavfile.read(filename)
+    sample_rate = 1.0 * sample_rate / domain_unit
+    raw_sig = raw_sig * value_unit
+    if expected_sample_rate_and_tolerance != None:
+        # shold raise a meaningful excepion.
+        assert np.abs(sample_rate - expected_sample_rate_and_tolerance[0] < expected_sample_rate_and_tolerance[1])
     
+    sig = ContinuousDataEven(raw_sig, 1.0 / sample_rate, first_sample)
+    return sig
+    #return signal
+   
+def test_read_wav():
+    
+#%%
+    
+
