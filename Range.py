@@ -26,6 +26,10 @@ class Range(object):
         return self._edges[1]
         
     @property
+    def edges(self):
+        return self._edges
+        
+    @property
     def width(self):
         raise NotImplementedError
         return self.end - self.start
@@ -47,6 +51,7 @@ def test_Range():
     range_1 = Range(np.array([3, 5]) * uerg.meter)
     assert allclose(range_1.start, 3 * uerg.meter)
     assert allclose(range_1.end, 5 * uerg.meter)
+    assert allclose(range_1.edges, np.array([3,5]) * uerg.meter)
     #print len(range_1)
     #assert allclose(len(range_1) , 2 * uerg.meter)
     assert 4 * uerg.meter in range_1
