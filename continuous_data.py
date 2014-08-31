@@ -32,6 +32,8 @@ class ContinuousData(object):
     4. a kinematic property of a system: position / velocity / acceleration / angle as a function of time.
     5. even a spectrum of a signal - the magnitude as a function of frequency.
     
+    There are some differences beween these kinds of data. Maybe some of them would be implemented as a subclass
+    
     basic assumptions:
     1. the acctual data in the real world can be really continuous.
     here we of course use sample points. every sample point has exectly one corresponding value.
@@ -85,6 +87,7 @@ class ContinuousData(object):
         raise NotImplementedError
         # maybe there is an issue regarding using DFT or IDTF, depending the domain
         # maybe it should be an extra param. seying which one to use
+        # maybe should be an external function, not a method
 
 def test_ContinuousData():
     t = np.arange(10) * uerg.sec
@@ -201,21 +204,25 @@ def test_ContinuousDataEven():
     
 test_ContinuousDataEven()
 #%%
-def fft(self, n=None):
+def fft(contin, n=None):
     if not n:
-        n = len(self.values)
-    freq_step = 1.0 * self.sample_rate / n
-    first_freq = - 0.5 * self.sample_rate
+        n = len(contin.values)
+    freq_step = 1.0 * contin.sample_rate / n
+    first_freq = - 0.5 * contin.sample_rate
     
-    spectrum = np.fft.fftshift(np.fft.fft(self.values.magnitude, n))
-    spectrum = spectrum * pint_extension.get_units(self.values) * self.sample_step
+    spectrum = np.fft.fftshift(np.fft.fft(contin.values.magnitude, n))
+    spectrum = spectrum * pint_extension.get_units(contin.values) * contin.sample_step
     
     return ContinuousDataEven(spectrum, freq_step, first_freq)
     
 def test_fft():
     sig = ContinuousDataEven(np.arange(32) * uerg.amp, 1.0 * uerg.sec)
-    expected_
+    expected_freqs = np.fft.fftshift(np.fft.fftfreq(32)) / uerg.sec
+    expected_freqs_vals = np.fft.fftshift(np.fft.fft(np.arange(32))) * uerg.amp * uerg.sec
+    expected_spec = ContinuousData(expected_freqs_vals, expected_freqs)
     spec = fft(sig)
+    
+    assert spec.is_close(expected_spec)
     
 test_fft()
 #%%
