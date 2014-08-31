@@ -411,7 +411,14 @@ test_read_wav()
     
 #%%
 def pm_demodulation(sig, mode='fast'):
-    """ based on hilbert transform """
+    """ based on hilbert transform.
+    the pm demodulation at the edges is not accurate.
+    TODO: map how much of the edges is a problem
+    TODO: maybe it should return only the time without the edges.
+    TODO: how to improve the pm demodulation at the edges?    
+    """
+    if len(sig.values) < 2 ** 10:
+        warnings.warn("this pm-modulation technique doesn't work well on short signals, the mistakes on the edges are big")
     fft_len = determine_fft_len(len(sig.values), mode)
     analytic_sig_values = sp.signal.hilbert(sig.values.magnitude, fft_len)
     phase_wrapped = np.angle(analytic_sig_values)
@@ -419,14 +426,33 @@ def pm_demodulation(sig, mode='fast'):
     return ContinuousDataEven(phase, sig.sample_step, sig.first_sample)
     
 def test_pm_demodulation():
+    check_range = Range(np.array([2, 30]) * uerg.ksec)
+    sample_step = 1.0 * uerg.sec
+    time = np.arange(2 ** 15) * sample_step
+    freq = 0.15 * uerg.Hz
+    phase = 2 * np.pi * freq * time
+    sine = ContinuousDataEven(np.sin(phase) * uerg.mamp, sample_step)
+    expected_phase_sig = ContinuousDataEven(phase, sample_step)
+    phase_sig = pm_demodulation(sine)
+    assert phase_sig[check_range].is_close(expected_phase_sig[check_range], values_rtol=0.01)
     
-test_pm_demodulation()
+    
+
     
 def fm_demodulation(sig, mode='fast'):
     sig_phase = pm_demodulation(sig, mode)
     angular_freq = diff(sig_phase)
     freq = angular_freq.gain(1.0 / (2 * np.pi))
     return freq
+    
+def test_fm_demodulation():
+    plt.figure()
+    plt.plot(time, pm_demo_sine)
+    plt.figure()
+    plt.plot(time[1:], fm_demodulation(sine, sample_rate))
+    
+test_pm_demodulation()
+#test_fm_demodulation()
 
     
     
