@@ -93,6 +93,12 @@ class ContinuousData(object):
         is_each_in_range = domain_range.is_each_in(self.domain_samples)
         return ContinuousData(self.values[is_each_in_range], self.domain_samples[is_each_in_range])
         
+    def gain(self, factor):
+        """
+        multiplies the values by the factor
+        """
+        raise NotImplementedError
+        
     
     def DFT(self):
         raise NotImplementedError
@@ -195,6 +201,12 @@ class ContinuousDataEven(ContinuousData):
         top_index = np.floor(domain_range.end / self.sample_step)
         return ContinuousDataEven(self.values[bottom_index:top_index + 1], self.sample_step, first_sample=bottom_index * self.sample_step)
         
+    def gain(self, factor):
+        """
+        see doc of base class
+        """
+        return ContinuousDataEven(self.values * factor, self.sample_step, self.first_sample)
+        
     def down_sample(self, down_factor):
         assert down_factor > 0
         assert int(down_factor) == down_factor
@@ -228,10 +240,19 @@ def test_down_sample():
     assert down.is_close(expected_down)
     
 
-    
+def test_gain():
+    # copied from test_ContinuousDataEven
+    values = np.arange(10) * uerg.amp
+    sample_step = 1.0 * uerg.sec
+    sig = ContinuousDataEven(values, sample_step)
+    factor = 2
+    expected_sig_gain = ContinuousDataEven(values * factor, sample_step)
+    sig_gain = sig.gain(factor)
+    assert sig_gain.is_close(expected_sig_gain)
     
 test_ContinuousDataEven()
 test_down_sample()
+test_gain()
 
 #%%
 def determine_fft_len(n_samples, mode='accurate'):
@@ -389,8 +410,23 @@ test_read_wav()
     
     
 #%%
-def pm_demodulation(contin, mode='fast'):
+def pm_demodulation(sig, mode='fast'):
     """ based on hilbert transform """
+    fft_len = determine_fft_len(len(sig.values), mode)
+    analytic_sig_values = sp.signal.hilbert(sig.values.magnitude, fft_len)
+    phase_wrapped = np.angle(analytic_sig_values)
+    phase = np.unwrap(phase_wrapped) * uerg.dimensionless
+    return ContinuousDataEven(phase, sig.sample_step, sig.first_sample)
+    
+def test_pm_demodulation():
+    
+test_pm_demodulation()
+    
+def fm_demodulation(sig, mode='fast'):
+    sig_phase = pm_demodulation(sig, mode)
+    angular_freq = diff(sig_phase)
+    freq = angular_freq.gain(1.0 / (2 * np.pi))
+    return freq
 
     
     
