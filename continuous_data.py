@@ -232,16 +232,33 @@ def test_down_sample():
     
 test_ContinuousDataEven()
 test_down_sample()
+
+#%%
+def determine_fft_len(n_samples, mode='accurate'):
+    modes_dict = {'trim': 'smaller', 'zero-pad' : 'bigger', 'fast' : 'closer'}
+    if mode == 'accurate':
+        n_fft = n_samples
+    else:
+        n_fft = numpy_extension.close_power_of_2(n_samples, modes_dict[mode])
+        
+    return n_fft
+        
+def test_determine_fft_len():
+    assert determine_fft_len(14, 'accurate') == 14
+    assert determine_fft_len(14, 'fast') == 16
+    assert determine_fft_len(7, 'trim') == 4
+    assert determine_fft_len(5, 'zero-pad') == 8
+    
+test_determine_fft_len()
+    
 #%%
 def fft(contin, n=None, mode='fast'):
     # shoult insert a way to enforce "fast", poer of 2 stuff
     n_sig = len(contin.values)
-    modes_dict = {'trim': 'smaller', 'zero-pad' : 'bigger', 'fast' : 'closer'}
+    # maybe the process deciding the fft len should be encapsulated
+    
     if not n:
-        if mode == 'accurate':
-            n = n_sig
-        else:
-            n = numpy_extension.close_power_of_2(n_sig, modes_dict[mode])
+        n = determine_fft_len(n_sig, mode)        
             
     freq_step = 1.0 * contin.sample_rate / n
     first_freq = - 0.5 * contin.sample_rate
@@ -270,7 +287,7 @@ def test_fft():
     assert spec_fast.is_close(expected_spec_fast)
     
     
-# test_fft()
+test_fft()
 #%%
 def diff(contin, n=1):
     """
@@ -337,7 +354,7 @@ def test_band_pass_filter():
     
     
     
-test_band_pass_filter()
+# test_band_pass_filter()
     
     
 #%%
@@ -372,6 +389,8 @@ test_read_wav()
     
     
 #%%
+def pm_demodulation(contin, mode='fast'):
+    """ based on hilbert transform """
 
     
     
