@@ -6,6 +6,7 @@ Created on Sat Aug 30 01:29:39 2014
 """
 
 import warnings
+import tempfile
 #%%
 import numpy as np
 import scipy as sp
@@ -290,6 +291,19 @@ def read_wav(filename, domain_unit=uerg.sec, first_sample=0, value_unit=uerg.mil
     #return signal
    
 def test_read_wav():
+    values = np.arange(10) * uerg.milliamp
+    sample_rate = 1.0 * uerg.Hz
+    sig = ContinuousDataEven(values, 1.0 / sample_rate)
+    
+    f_temp = tempfile.TemporaryFile()
+    sp.io.wavfile.write(f_temp, sample_rate.magnitude, values.magnitude)
+    sig_read = read_wav(f_temp)
+    
+    assert sig.is_close(sig_read)
+    f_temp.close()
+    
+test_read_wav()
+    
     
 #%%
     
