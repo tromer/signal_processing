@@ -435,10 +435,7 @@ def test_pm_demodulation():
     expected_phase_sig = ContinuousDataEven(phase, sample_step)
     phase_sig = pm_demodulation(sine)
     assert phase_sig[check_range].is_close(expected_phase_sig[check_range], values_rtol=0.01)
-    
-    
-
-    
+        
 def fm_demodulation(sig, mode='fast'):
     sig_phase = pm_demodulation(sig, mode)
     angular_freq = diff(sig_phase)
@@ -446,13 +443,20 @@ def fm_demodulation(sig, mode='fast'):
     return freq
     
 def test_fm_demodulation():
-    plt.figure()
-    plt.plot(time, pm_demo_sine)
-    plt.figure()
-    plt.plot(time[1:], fm_demodulation(sine, sample_rate))
+    # copied from test_pm_demodulation
+    check_range = Range(np.array([2, 30]) * uerg.ksec)
+    sample_step = 1.0 * uerg.sec
+    time = np.arange(2 ** 15) * sample_step
+    freq = 0.15 * uerg.Hz
+    phase = 2 * np.pi * freq * time
+    sine = ContinuousDataEven(np.sin(phase) * uerg.mamp, sample_step)
+    expected_freq_sig = ContinuousDataEven(np.ones(2 ** 15) * freq, sample_step)
+    freq_sig = fm_demodulation(sine)
+    assert freq_sig[check_range].is_close(expected_freq_sig[check_range], values_rtol=0.01)
+    
     
 test_pm_demodulation()
-#test_fm_demodulation()
+test_fm_demodulation()
 
     
     
