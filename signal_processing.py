@@ -121,7 +121,7 @@ def test_threshold_crosses():
     ends_expected = np.array([3, 8])
     pulses_expected = Pulses(starts_expected, ends_expected)
     pulses = threshold_crosses(sig, sample_rate, threshold)
-    assert pulses.close(pulses_expected)
+    assert pulses.is_close(pulses_expected)
     
 
 test_threshold_crosses()
