@@ -24,6 +24,12 @@ class Range(object):
     @property
     def end(self):
         return self._edges[1]
+        
+    @property
+    def width(self):
+        raise NotImplementedError
+        return self.end - self.start
+    
     """   
     def __len__(self):
     # there is some problem. it seems that len(x) and x.__len__() is not the same
