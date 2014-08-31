@@ -226,7 +226,16 @@ def test_fft():
     
 test_fft()
 #%%
-def diff()
+def diff(contin, n=1):
+    """
+    a wrap around numpy.diff
+    """
+    if type(contin) != ContinuousDataEven:
+        raise NotImplementedError
+    
+    new_vals = np.diff(contin.values.magnitude, n) * \
+    pint_extension.get_units(contin.values) * contin.sample_rate ** n
+    
 """
 def freq_filter(contin, freq_ranges, ?, ?, ?):
     raise NotImplementedError
