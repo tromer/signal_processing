@@ -6,8 +6,8 @@ Created on Sat Aug 30 02:57:11 2014
 """
 import numpy as np
 from pint_extension import allclose
-from pint import UnitRegistry
-uerg = UnitRegistry()
+from global_uerg import uerg
+
 
 class Range(object):
     """

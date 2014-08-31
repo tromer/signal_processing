@@ -13,8 +13,8 @@ import scipy as sp
 from scipy.io import wavfile
 import matplotlib.pyplot as plt
 
-from pint import UnitRegistry
-uerg = UnitRegistry()
+from global_uerg import uerg
+
 
 from Range import Range
 import numpy_extension

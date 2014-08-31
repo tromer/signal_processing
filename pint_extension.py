@@ -8,9 +8,8 @@ Created on Wed Aug 27 17:25:50 2014
 import numpy as np
 import scipy as sp
 from scipy import signal
-import pint
-from pint import UnitRegistry
-uerg = UnitRegistry()
+from global_uerg import uerg
+
 #%%
 #from . import ureg, Q_
 
