@@ -194,6 +194,12 @@ class ContinuousDataEven(ContinuousData):
         bottom_index = np.ceil(1.0 * domain_range.start / self.sample_step)
         top_index = np.floor(domain_range.end / self.sample_step)
         return ContinuousDataEven(self.values[bottom_index:top_index + 1], self.sample_step, first_sample=bottom_index * self.sample_step)
+        
+    def down_sample(self, down_factor):
+        assert down_factor > 0
+        assert int(down_factor) == down_factor
+        # maybe there should be another interface, with "new sample rate"
+        return ContinuousDataEven(self.values[::down_factor], down_factor * self.sample_step, self.first_sample)
 
 def test_ContinuousDataEven():
     values = np.arange(10) * uerg.amp
@@ -212,8 +218,20 @@ def test_ContinuousDataEven():
     expected_sig_middle = ContinuousDataEven(values[expected_slice], sample_step, expected_slice[0] * sample_step)
     sig_middle = sig[t_range]
     assert sig_middle.is_close(expected_sig_middle)
+
+def test_down_sample():
+    # copied from the test of fft
+    sig = ContinuousDataEven(np.arange(32) * uerg.amp, 1.0 * uerg.sec)
+    down_factor = 2
+    expected_down = ContinuousDataEven(np.arange(0, 32, 2) * uerg.amp, 2.0 * uerg.sec)
+    down = sig.down_sample(down_factor)
+    assert down.is_close(expected_down)
+    
+
+    
     
 test_ContinuousDataEven()
+test_down_sample()
 #%%
 def fft(contin, n=None, mode='fast'):
     # shoult insert a way to enforce "fast", poer of 2 stuff
@@ -252,7 +270,7 @@ def test_fft():
     assert spec_fast.is_close(expected_spec_fast)
     
     
-test_fft()
+# test_fft()
 #%%
 def diff(contin, n=1):
     """
@@ -354,5 +372,7 @@ test_read_wav()
     
     
 #%%
+
+    
     
 
