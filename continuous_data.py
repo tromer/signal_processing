@@ -106,14 +106,22 @@ def test_ContinuousData():
 test_ContinuousData()
 #%%
     
-def plot_quick(contin, fmt="-"):
+def plot_quick(contin, is_abs=False, fmt="-"):
+    """
+    contin is a ContinuousData object
+    is_abs - whether to plot the abs of the y values. for spectrums.
+    Maybe - there sould be an input of lambda functions. to preprocess x,y
+    """
     warnings.warn("plot_quick is not tested")
     #TODO: test this function!
     # creat the figure here
     fig = plt.figure()
     x = contin.domain_samples
     y = contin.values
-    line = plt.plot(x, y, fmt)
+    if is_abs:
+        y = np.abs(y)
+    
+    line = plt.plot(x, y, fmt)[0]
     plt.xlabel(ARBITRARY_UNITS_STR) 
     plt.ylabel(ARBITRARY_UNITS_STR)
     if type(x) == uerg.Quantity:
@@ -194,15 +202,24 @@ def test_ContinuousDataEven():
 test_ContinuousDataEven()
 #%%
 def fft(self, n=None):
-    raise NotImplementedError
-    spectrum = np.fft.fft(self.values.magnitude, n)
+    if not n:
+        n = len(self.values)
     freq_step = 1.0 * self.sample_rate / n
-    return ContinuousDataEven(freq_step, spectrum)
+    first_freq = - 0.5 * self.sample_rate
+    
+    spectrum = np.fft.fftshift(np.fft.fft(self.values.magnitude, n))
+    spectrum = spectrum * pint_extension.get_units(self.values) * self.sample_step
+    
+    return ContinuousDataEven(spectrum, freq_step, first_freq)
     
 def test_fft():
-    raise()
+    sig = ContinuousDataEven(np.arange(32) * uerg.amp, 1.0 * uerg.sec)
+    expected_
+    spec = fft(sig)
     
 test_fft()
+#%%
+def diff()
 """
 def freq_filter(contin, freq_ranges, ?, ?, ?):
     raise NotImplementedError
