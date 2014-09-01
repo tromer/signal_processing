@@ -141,7 +141,33 @@ def threshold_adjoin_filter_short_pulses(sig, threshold, max_distance, min_durat
     p = pulses.adjoin_close_pulses(p, max_distance)
     p = pulses.filter_short_pulses(p, min_duration)
     return p
+
+#%%
+def data_to_continuous_histogram(a, bins=10, range_=None, weights=None, density=None):
+    if not type(bins) == int:
+        raise NotImplementedError
+        # reurning not evenly sampled
+    else:
+        hist, edges = pint_extension.histogram(a, bins, range_, weights, density)
+        bin_size = 1.0 *(edges[-1] - edges[0]) / bins
+        first_bin = edges[0] + 0.5 * bin_size
+        hist = hist * uerg.dimensionless
+        hist_continuous = ContinuousDataEven(hist, bin_size, first_bin)
+        return hist_continuous
+        
+def test_data_to_continuous_histogram():
+    # copied from pint_extension.test_histogram
+    a = (np.arange(10) + 0.5) * uerg.meter
+    range_ = np.array([0, 10]) * uerg.meter
+    expected_hist = np.ones(10) * uerg.dimensionless
+    # expected_edges = np.arange(11) * uerg.meter
+    expected_bin_size = uerg.meter
+    expected_first_bin = 0.5 * uerg.meter
+    expected_hist_continuous = ContinuousDataEven(expected_hist, expected_bin_size, expected_first_bin)
+    hist_continuous = data_to_continuous_histogram(a, bins=10, range_=range_)
+    assert hist_continuous.is_close(expected_hist_continuous)
     
+test_data_to_continuous_histogram()
 
 #%%
 def cluster1d(vec, resolution, threshold):
