@@ -426,16 +426,44 @@ test_read_wav()
     
     
 #%%
+    
+def hilbert(sig, mode='fast'):
+    n_fft = determine_fft_len(sig.n_samples, mode)
+    analytic_sig_values = sp.signal.hilbert(sig.values.magnitude, n_fft) * pint_extension.get_units(sig.values)
+    new_sample_step = 1.0 * sig.sample_step * sig.n_samples / n_fft
+    analytic_signal = ContinuousDataEven(analytic_sig_values, new_sample_step, sig.first_sample)
+    return analytic_signal
+    
+def test_hilbert():
+    # copied from test_pm_demodulation
+    sample_step = 1.0 * uerg.sec
+    time = np.arange(2 ** 15) * sample_step
+    freq = 0.15 * uerg.Hz
+    phase = 2 * np.pi * freq * time
+    sine = ContinuousDataEven(np.sin(phase) * uerg.mamp, sample_step)
+    # that is what I would expect, but when I try to fft a sine, I get both real and imaginary values for amps of each freq. weird
+    # expected_sine_hilbert = ContinuousDataEven((-1) * 1j *np.exp(1j * phase) * uerg.mamp, sample_step)
+    expected_sine_hilbert = ContinuousDataEven(sp.signal.hilbert(np.sin(phase)) * uerg.mamp, sample_step)
+    sine_hilbert = hilbert(sine)
+    plot_quick(sine)
+    plot_quick(fft(sine), is_abs=True)
+    plot_quick(fft(sine_hilbert), is_abs=True)
+    plot_quick(fft(expected_sine_hilbert), is_abs=True)
+    assert sine_hilbert.is_close(expected_sine_hilbert)
+    
+    
 def pm_demodulation(sig, mode='fast'):
     """ based on hilbert transform.
     the pm demodulation at the edges is not accurate.
     TODO: map how much of the edges is a problem
     TODO: maybe it should return only the time without the edges.
     TODO: how to improve the pm demodulation at the edges?    
+    TODO: maybe should add a "n_fft" parameter
     """
+    if True:
+        warnings.warn("pm-demodulation is not tested well on signals that are not 2**n samples")
     if sig.n_samples < 2 ** 10:
         warnings.warn("this pm-modulation technique doesn't work well on short signals, the mistakes on the edges are big")
-        warnings.warn("pm-demodulation is not tested well on signals that are not 2**n samples")
     n_fft = determine_fft_len(sig.n_samples, mode)
     # maybe the new fft len influences the sample step???
     analytic_sig_values = sp.signal.hilbert(sig.values.magnitude, n_fft)
@@ -485,7 +513,7 @@ def test_fm_demodulation():
     freq_sig = fm_demodulation(sine)
     assert freq_sig[check_range].is_close(expected_freq_sig[check_range], values_rtol=0.01)
     
-    
+test_hilbert()    
 test_pm_demodulation()
 test_fm_demodulation()
 
