@@ -137,4 +137,8 @@ def test_switch_pulses_and_gaps():
     
 
 test_switch_pulses_and_gaps()
+
+#%%
+def plot_quick(pulses):
+    raise NotImplementedError
     
