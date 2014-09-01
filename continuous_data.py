@@ -451,9 +451,6 @@ def generate_square_freq_modulated(sample_step, n_samples, amplitude, sine_freq,
     envelope = generate_square(sample_step, n_samples, 1 * uerg.dimensionless, period, duty, square_phase_at_t_0, first_sample)
     sine = generate_sine(sample_step, n_samples, amplitude, sine_freq, sine_phase_at_0, first_sample)
     modulated = envelope * sine
-    fig, junk = plot_quick(envelope)
-    plot(sine, fig)
-    plot(modulated, fig)
     return modulated
     
 def test_generate_square_freq_modulated():
@@ -463,7 +460,9 @@ def test_generate_square_freq_modulated():
     amplitude = 1 * uerg.mamp
     period = 100 * uerg.sec
     modulated = generate_square_freq_modulated(sample_step, n_samples, amplitude, sine_freq, period)
-    plot_quick(modulated)
+    envelope = generate_square(sample_step, n_samples, 1 * uerg.dimensionless, period)
+    sine = generate_sine(sample_step, n_samples, amplitude, sine_freq)
+    assert modulated.is_close(envelope * sine)
 
     
 test_generate_sine()
