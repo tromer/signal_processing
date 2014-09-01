@@ -289,7 +289,7 @@ class ContinuousDataEven(ContinuousData):
         
     def trim_to_power_of_2(self):
         new_n = numpy_extension.close_power_of_2(self.n_samples, mode='smaller')
-        trimmed = ContinuousDataEven(self.values[:new_n], self.sample_rate, self.first_sample)
+        trimmed = ContinuousDataEven(self.values[:new_n], self.sample_step, self.first_sample)
         assert trimmed.n_samples == new_n
         return trimmed
 
