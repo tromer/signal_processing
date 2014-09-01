@@ -91,10 +91,21 @@ class ContinuousData(object):
     def last_sample(self):
         return self.domain_samples[-1]
         
+    def is_same_domain_samples(self, other):
+        raise NotImplementedError
+        
         
     def is_close(self, other, domain_rtol=1e-5, domain_atol=None, values_rtol=1e-5, values_atol=None):
+        """ TODO: use is_same_domain_samples in this func """
         return pint_extension.allclose(self.domain_samples, other.domain_samples, domain_rtol, domain_atol) \
         and pint_extension.allclose(self.values, other.values, values_rtol, values_atol)
+        
+    def is_close_l_1(self, other, param_1, param_2):
+        """
+        checks if 2 signals are close using l_1 norm
+        TODO: maybe should be a norm parameter, to decide which norm to use
+        """
+        raise NotImplementedError
 
     """
     # maybe len should really return the number of sample points
@@ -669,14 +680,13 @@ def am_demodulation_hilbert(sig, mode='fast'):
     return sig_am
     
 def test_am_demodulation_hilbert():
-    #copied from test_pm_demodulation
     check_range = Range(np.array([2, 30]) * uerg.ksec)
     sample_step = 1.0 * uerg.sec
-    time = np.arange(2 ** 15) * sample_step
+    n_samples = 2 ** 15
     freq = 0.15 * uerg.Hz
-    phase = 2 * np.pi * freq * time
-    sine = ContinuousDataEven(np.sin(phase) * uerg.mamp, sample_step)
-    expected_sine_am = ContinuousDataEven(np.ones(sine.n_samples) * uerg.mamp, sample_step)
+    amp = uerg.mamp
+    sine = generate_sine(sample_step, n_samples, amp, sine_freq=freq)
+    expected_sine_am = ContinuousDataEven(np.ones(sine.n_samples) * amp, sample_step)
     sine_am = am_demodulation_hilbert(sine)
     """
     plot_quick(sine)
@@ -684,6 +694,18 @@ def test_am_demodulation_hilbert():
     plot_quick(expected_sine_am)
     """
     assert sine_am[check_range].is_close(expected_sine_am[check_range], values_rtol=0.01)
+    
+    period = 100 * uerg.sec
+    sig = generate_square_freq_modulated(sample_step, n_samples, amp, freq, period)
+    expected_sig_am = generate_square(sample_step, n_samples, amp, period)
+    sig_am = am_demodulation_hilbert(sig)
+    fig, junk = plot_quick(sig)
+    plot(expected_sig_am, fig)
+    plot(sig_am, fig)
+    plot_quick(sig_am - expected_sig_am, fig)
+    # the big tolerance is due to gibs effect
+    assert sig_am[check_range].is_close(expected_sig_am[check_range], values_rtol=0.2, values_atol=0.2 * amp)
+    
     
 def am_demodulation_convolution(sig, t_smooth):
     n_samples_smooth = np.ceil(t_smooth * sig.sample_rate)
@@ -739,8 +761,8 @@ test_hilbert()
 test_pm_demodulation()
 test_fm_demodulation()
 test_am_demodulation_hilbert()
-test_am_demodulation_convolution()
-test_am_demodulation_filter()
+#test_am_demodulation_convolution()
+#test_am_demodulation_filter()
 
 #%%
 def resample(sig, new_sample_points):
