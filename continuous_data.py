@@ -538,6 +538,12 @@ def test_am_demodulation_hilbert():
     """
     assert sine_am[check_range].is_close(expected_sine_am[check_range], values_rtol=0.01)
     
+def am_demodulation_convolution(sig, t_smooth):
+    raise NotImplementedError
+    n_samples_smooth = np.ceil(t_smooth * sample_rate)
+    mask_am = numpy_extension.normalize(np.ones(n_samples_smooth), ord=1)
+    sig_am = np.convolve(np.abs(sig_diff), mask_am, mode="same")
+    return sig_am
     
     
 test_hilbert()    
