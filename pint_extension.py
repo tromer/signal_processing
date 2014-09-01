@@ -59,6 +59,23 @@ def test_get_units():
     
 test_get_units()
 #%%
+def units_list_to_ndarray(l):
+    assert len(l)
+    unit = get_units(l[0])
+    l_magnitude = []
+    for x in l:
+        l_magnitude.append(x.to(unit).magnitude)
+        
+    return np.array(l_magnitude) * unit
+    
+def test_units_list_to_ndarray():
+    l = [1 * uerg.meter, 2 * uerg.meter, 100 * uerg.cmeter]
+    assert allclose(units_list_to_ndarray(l), np.array([1, 2, 1]) * uerg.meter)
+    
+test_units_list_to_ndarray()
+    
+
+#%%
    
 def histogram(a, bins=10, range_=None, weights=None, density=None):
     """
