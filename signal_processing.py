@@ -5,11 +5,14 @@ Created on Thu Aug 21 18:31:11 2014
 @author: noam
 """
 
+import warnings
+
 import numpy as np
 import scipy as sp
 from scipy import  signal
 import matplotlib.pyplot as plt
 
+import pulses
 from pulses import Pulses
 import continuous_data
 from continuous_data import ContinuousDataEven
@@ -129,6 +132,16 @@ def test_threshold_crosses():
     
 
 test_threshold_crosses()
+
+#%%
+def threshold_adjoin_filter_short_pulses(sig, threshold, max_distance, min_duration):
+    warnings.warn("not tested")
+    p = threshold_crosses(sig, threshold)
+    # note that it's important to adjoin before filtering short pulses
+    p = pulses.adjoin_close_pulses(p, max_distance)
+    p = pulses.filter_short_pulses(p, min_duration)
+    return p
+    
 
 #%%
 def cluster1d(vec, resolution, threshold):
