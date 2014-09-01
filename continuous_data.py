@@ -632,4 +632,15 @@ test_pm_demodulation()
 test_fm_demodulation()
 test_am_demodulation_hilbert()
 test_am_demodulation_filter()
+
+#%%
+def resample(sig, new_sample_points):
+    """
+    create a new sig object, that represents the same signal, on different sample points.
+    algorithm: linear intrapulation
+    """
+    raise NotImplementedError
+    
+def generate_sine(sample_step, n_samples, sine_freq, initial_phase):
+    raise NotImplementedError
  
