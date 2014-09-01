@@ -46,6 +46,9 @@ class Range(object):
     def is_each_in(self, x):
         return self.__contains__(x)
         
+    def is_close(self, other, rtol=1e-5, atol=None):
+        return allclose(self.edges, other.edges, rtol, atol)
+        
         
 def test_Range():
     range_1 = Range(np.array([3, 5]) * uerg.meter)
@@ -57,6 +60,10 @@ def test_Range():
     assert 4 * uerg.meter in range_1
     assert not 2 * uerg.meter in range_1
     assert np.allclose(np.array([True, True]), range_1.is_each_in(np.array([4, 4]) * uerg.meter))
+    
+    assert range_1.is_close(range_1)
+    range_2 = Range(np.array([3, 4]) * uerg.meter)
+    assert not range_1.is_close(range_2)
     
     
 test_Range()
