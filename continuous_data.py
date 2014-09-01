@@ -158,6 +158,7 @@ def plot_quick(contin, is_abs=False, fmt="-"):
 
 def plot(contin, fig=None, is_abs=False, fmt="-"):
     # assert contin type?
+    # TODO: add support for legend
     warnings.warn("plot is not tested")
     warnings.warn("plot dosn't rescale the last signal according to axes")
     
@@ -256,7 +257,8 @@ class ContinuousDataEven(ContinuousData):
         
     def down_sample(self, down_factor):
         assert down_factor > 0
-        assert int(down_factor) == down_factor
+        if int(down_factor) != down_factor:
+            raise NotImplementedError
         # maybe there should be another interface, with "new sample rate"
         return ContinuousDataEven(self.values[::down_factor], down_factor * self.sample_step, self.first_sample)
 
@@ -632,6 +634,25 @@ def am_demodulation_convolution(sig, t_smooth):
     mask_am = numpy_extension.normalize(np.ones(n_samples_smooth), ord=1)
     values_am = np.convolve(np.abs(sig.values.magnitude), mask_am, mode="same") * pint_extension.get_units(sig.values)
     return ContinuousDataEven(values_am, sig.sample_step, sig.first_sample)
+
+def test_am_demodulation_convolution():
+    sample_step = 1 * uerg.sec
+    n_samples = 2 ** 15
+    freq_1 = 0.15 * uerg.Hz
+    freq_2 = 0.40 * uerg.Hz
+    amp = 1 * uerg.mamp
+    sine_1 = generate_sine(sample_step, n_samples, amp, freq_1)
+    sine_2 = generate_sine(sample_step, n_samples, amp, freq_2)
+    sig = sine_1 + sine_2
+    
+    #copied from test_am_demodulation_filter
+    dt = 1.0 / freq_1 * 0.25
+    am = am_demodulation_convolution(sig, dt)
+    fig, junk = plot(sig)
+    plot(sine_1, fig)
+    plot(am, fig)
+    plot_quick(sine_1 - am)
+    assert sine_1.is_close(am, domain_rtol=0.01, domain_atol=0.1 * uerg.mamp)
     
 def am_demodulation_filter(sig, dt_smooth, mask_len):
     top_freq = 1.0 / dt_smooth
@@ -662,6 +683,7 @@ test_hilbert()
 test_pm_demodulation()
 test_fm_demodulation()
 test_am_demodulation_hilbert()
+test_am_demodulation_convolution()
 test_am_demodulation_filter()
 
 #%%
