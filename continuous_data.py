@@ -422,9 +422,10 @@ def pm_demodulation(sig, mode='fast'):
     TODO: maybe it should return only the time without the edges.
     TODO: how to improve the pm demodulation at the edges?    
     """
-    if len(sig.values) < 2 ** 10:
+    if sig.n_samples < 2 ** 10:
         warnings.warn("this pm-modulation technique doesn't work well on short signals, the mistakes on the edges are big")
     fft_len = determine_fft_len(len(sig.values), mode)
+    # maybe the new fft len influences the sample step???
     analytic_sig_values = sp.signal.hilbert(sig.values.magnitude, fft_len)
     phase_wrapped = np.angle(analytic_sig_values)
     phase = np.unwrap(phase_wrapped) * uerg.dimensionless
@@ -435,6 +436,13 @@ def test_pm_demodulation():
     sample_step = 1.0 * uerg.sec
     time = np.arange(2 ** 15) * sample_step
     freq = 0.15 * uerg.Hz
+    phase = 2 * np.pi * freq * time
+    sine = ContinuousDataEven(np.sin(phase) * uerg.mamp, sample_step)
+    expected_phase_sig = ContinuousDataEven(phase, sample_step)
+    phase_sig = pm_demodulation(sine)
+    assert phase_sig[check_range].is_close(expected_phase_sig[check_range], values_rtol=0.01)
+    
+    time = np.arange(2 ** 15 - 10) * sample_step
     phase = 2 * np.pi * freq * time
     sine = ContinuousDataEven(np.sin(phase) * uerg.mamp, sample_step)
     expected_phase_sig = ContinuousDataEven(phase, sample_step)
