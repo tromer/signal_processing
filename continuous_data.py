@@ -445,10 +445,12 @@ def test_hilbert():
     # expected_sine_hilbert = ContinuousDataEven((-1) * 1j *np.exp(1j * phase) * uerg.mamp, sample_step)
     expected_sine_hilbert = ContinuousDataEven(sp.signal.hilbert(np.sin(phase)) * uerg.mamp, sample_step)
     sine_hilbert = hilbert(sine)
+    """
     plot_quick(sine)
     plot_quick(fft(sine), is_abs=True)
     plot_quick(fft(sine_hilbert), is_abs=True)
     plot_quick(fft(expected_sine_hilbert), is_abs=True)
+    """
     assert sine_hilbert.is_close(expected_sine_hilbert)
     
     
@@ -464,13 +466,10 @@ def pm_demodulation(sig, mode='fast'):
         warnings.warn("pm-demodulation is not tested well on signals that are not 2**n samples")
     if sig.n_samples < 2 ** 10:
         warnings.warn("this pm-modulation technique doesn't work well on short signals, the mistakes on the edges are big")
-    n_fft = determine_fft_len(sig.n_samples, mode)
-    # maybe the new fft len influences the sample step???
-    analytic_sig_values = sp.signal.hilbert(sig.values.magnitude, n_fft)
-    new_sample_step = sig.sample_step * sig.n_samples / n_fft
-    phase_wrapped = np.angle(analytic_sig_values)
+    analytic_sig = hilbert(sig, mode)
+    phase_wrapped = np.angle(analytic_sig.values.magnitude)
     phase = np.unwrap(phase_wrapped) * uerg.dimensionless
-    return ContinuousDataEven(phase, new_sample_step, sig.first_sample)
+    return ContinuousDataEven(phase, analytic_sig.sample_step, analytic_sig.first_sample)
     
 def test_pm_demodulation():
     check_range = Range(np.array([2, 30]) * uerg.ksec)
@@ -513,10 +512,38 @@ def test_fm_demodulation():
     freq_sig = fm_demodulation(sine)
     assert freq_sig[check_range].is_close(expected_freq_sig[check_range], values_rtol=0.01)
     
+def am_demodulation_hilbert(sig, mode='fast'):
+    #worning copied from pm_demodulation
+    if sig.n_samples < 2 ** 10:
+        warnings.warn("this pm-modulation technique doesn't work well on short signals, the mistakes on the edges are big")
+    analytic_sig = hilbert(sig, mode)
+    envelope = np.abs(analytic_sig.values.magnitude) * pint_extension.get_units(analytic_sig.values)
+    sig_am = ContinuousDataEven(envelope, analytic_sig.sample_step, analytic_sig.first_sample)
+    return sig_am
+    
+def test_am_demodulation_hilbert():
+    #copied from test_pm_demodulation
+    check_range = Range(np.array([2, 30]) * uerg.ksec)
+    sample_step = 1.0 * uerg.sec
+    time = np.arange(2 ** 15) * sample_step
+    freq = 0.15 * uerg.Hz
+    phase = 2 * np.pi * freq * time
+    sine = ContinuousDataEven(np.sin(phase) * uerg.mamp, sample_step)
+    expected_sine_am = ContinuousDataEven(np.ones(sine.n_samples) * uerg.mamp, sample_step)
+    sine_am = am_demodulation_hilbert(sine)
+    """
+    plot_quick(sine)
+    plot_quick(sine_am)
+    plot_quick(expected_sine_am)
+    """
+    assert sine_am[check_range].is_close(expected_sine_am[check_range], values_rtol=0.01)
+    
+    
+    
 test_hilbert()    
 test_pm_demodulation()
 test_fm_demodulation()
-
+test_am_demodulation_hilbert()
     
     
 
