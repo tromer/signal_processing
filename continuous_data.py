@@ -80,6 +80,15 @@ class ContinuousData(object):
     def n_samples(self):
         return len(self.values)
         
+    @property
+    def first_sample(self):
+        return self.domain_samples[0]
+    
+    @property     
+    def last_sample(self):
+        return self.domain_samples[-1]
+        
+        
     def is_close(self, other, domain_rtol=1e-5, domain_atol=None, values_rtol=1e-5, values_atol=None):
         return pint_extension.allclose(self.domain_samples, other.domain_samples, domain_rtol, domain_atol) \
         and pint_extension.allclose(self.values, other.values, values_rtol, values_atol)
@@ -117,6 +126,8 @@ def test_ContinuousData():
     assert pint_extension.allclose(sig.domain_samples, t)
     assert pint_extension.allclose(sig.values, vals)
     assert sig.n_samples == 10
+    assert sig.first_sample == 0 * uerg.sec
+    assert sig.last_sample == 9 * uerg.sec
     
     assert sig.is_close(sig)
     assert not sig.is_close(ContinuousData(vals, t + 1 * uerg.sec))
@@ -424,12 +435,14 @@ def pm_demodulation(sig, mode='fast'):
     """
     if sig.n_samples < 2 ** 10:
         warnings.warn("this pm-modulation technique doesn't work well on short signals, the mistakes on the edges are big")
-    fft_len = determine_fft_len(len(sig.values), mode)
+        warnings.warn("pm-demodulation is not tested well on signals that are not 2**n samples")
+    n_fft = determine_fft_len(sig.n_samples, mode)
     # maybe the new fft len influences the sample step???
-    analytic_sig_values = sp.signal.hilbert(sig.values.magnitude, fft_len)
+    analytic_sig_values = sp.signal.hilbert(sig.values.magnitude, n_fft)
+    new_sample_step = sig.sample_step * sig.n_samples / n_fft
     phase_wrapped = np.angle(analytic_sig_values)
     phase = np.unwrap(phase_wrapped) * uerg.dimensionless
-    return ContinuousDataEven(phase, sig.sample_step, sig.first_sample)
+    return ContinuousDataEven(phase, new_sample_step, sig.first_sample)
     
 def test_pm_demodulation():
     check_range = Range(np.array([2, 30]) * uerg.ksec)
@@ -442,12 +455,17 @@ def test_pm_demodulation():
     phase_sig = pm_demodulation(sine)
     assert phase_sig[check_range].is_close(expected_phase_sig[check_range], values_rtol=0.01)
     
-    time = np.arange(2 ** 15 - 10) * sample_step
+    time = np.arange(2 ** 15 - 100) * sample_step
     phase = 2 * np.pi * freq * time
     sine = ContinuousDataEven(np.sin(phase) * uerg.mamp, sample_step)
     expected_phase_sig = ContinuousDataEven(phase, sample_step)
     phase_sig = pm_demodulation(sine)
-    assert phase_sig[check_range].is_close(expected_phase_sig[check_range], values_rtol=0.01)
+    print phase_sig.first_sample, phase_sig.last_sample
+    print expected_phase_sig.first_sample, expected_phase_sig.last_sample
+    assert pint_extension.allclose(phase_sig.first_sample, expected_phase_sig.first_sample)
+    assert pint_extension.allclose(phase_sig.last_sample, expected_phase_sig.last_sample, atol=min(phase_sig.sample_step, expected_phase_sig.sample_step))
+    #assert pint_extension.allclose(phase_sig.sample_step, expected_phase_sig.sample_step)
+    #assert phase_sig[check_range].is_close(expected_phase_sig[check_range], values_rtol=0.01)
         
 def fm_demodulation(sig, mode='fast'):
     sig_phase = pm_demodulation(sig, mode)
