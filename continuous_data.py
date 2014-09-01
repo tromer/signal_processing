@@ -153,7 +153,19 @@ def plot_quick(contin, is_abs=False, fmt="-"):
     warnings.warn("plot_quick is not tested")
     #TODO: test this function!
     # creat the figure here
-    fig = plt.figure()
+    return plot(contin, fig=None, is_abs=is_abs, fmt=fmt)
+#%%
+
+def plot(contin, fig=None, is_abs=False, fmt="-"):
+    # assert contin type?
+    warnings.warn("plot is not tested")
+    warnings.warn("plot dosn't rescale the last signal according to axes")
+    
+    if fig == None:
+        fig = plt.figure()
+    else:
+        plt.figure(fig.number)
+    
     x = contin.domain_samples
     y = contin.values
     if is_abs:
@@ -171,16 +183,10 @@ def plot_quick(contin, is_abs=False, fmt="-"):
             plt.ylabel(str(y.dimensionality) + " [" + str(y.units) + "]")
             
     return fig, line 
-#%%
-
-def plot(contin):
-    # should be more  inputs
-    # maybe optional parameter of on which figure / axes to plot
-    # assert contin type?
-    raise NotImplementedError
+    #raise NotImplementedError
         # return fig, axes??
 
-    
+#%%    
 class ContinuousDataEven(ContinuousData):
     """
     read the ContinuousData documentation.
@@ -615,8 +621,7 @@ def test_am_demodulation_filter():
     
     dt = 1.0 / freq_1 * 0.5
     am = am_demodulation_filter(sig, dt, 32)
-    plot_quick(sine_1)
-    plot_quick(am)
+    plot_quick(sine_1 - am)
     assert sine_1.is_close(am, domain_rtol=0.01, domain_atol=0.05 * uerg.mamp)
 
 test_hilbert()    
