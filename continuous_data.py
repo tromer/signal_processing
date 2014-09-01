@@ -342,6 +342,7 @@ test_gain()
 test_is_same_domain_samples()
 test___add__()
 test___sub__()
+test___mul__()
 
 #%%
 def determine_fft_len(n_samples, mode='accurate'):
@@ -422,10 +423,29 @@ def test_generate_sine():
 def generate_white_noise():
     raise NotImplementedError
     
-def generate_square():
-    raise NotImplementedError
+def generate_square(sample_step, n_samples, amplitude, period, duty=0.5, phase_at_0=0, first_sample=0):
+    if np.abs(phase_at_0) > 2 * np.pi:
+        warnings.warn("you are using phase_at_0 not from [-2 pi, 2 pi], weird")
+    if sample_step > min(duty * period, (1-duty) * period):
+        warnings.warn("the sample step is larger then 'up time' or 'down time', you can miss some wave-fronts")
+    t = np.arange(n_samples) * sample_step + first_sample
+    phase = 2 * np.pi * 1.0 / period * t + phase_at_0
+    square = ContinuousDataEven(amplitude * sp.signal.square(phase), sample_step, first_sample)
+    return square
+    
+def test_generate_square():
+    sample_step = 1 * uerg.sec
+    n_samples = 128
+    period = 10 * uerg.sec
+    amplitude = 1 * uerg.mamp
+    expected_square = ContinuousDataEven(amplitude * sp.signal.square(2 * np.pi * 1.0 / period * sample_step * np.arange(n_samples)), sample_step)
+    square = generate_square(sample_step, n_samples, amplitude, period)
+    assert square.is_close(expected_square)
+    #plot_quick(square)
+
     
 test_generate_sine()
+test_generate_square()
 
 #%%
 def diff(contin, n=1):
