@@ -5,18 +5,24 @@ Created on Sat Aug 30 02:57:11 2014
 @author: noam
 """
 import numpy as np
-from pint_extension import allclose
+import pint_extension
 from global_uerg import uerg
+#%%
 
 
 class Range(object):
     """
     a range in a certain domain. such as 3 to 5 meters
     """
-    def __init__(self, edges):
+    def __init__(self, edges, unit=None):
         assert len(edges) == 2
-        self._edges = edges #should take care of case where it's a toople. mind units!
         
+        if hasattr(edges[0], 'units'):
+            edges = pint_extension.units_list_to_ndarray(edges)
+        else:
+            edges = np.array(edges) * unit
+                
+        self._edges = edges #should take care of case where it's a toople. mind units!
     @property
     def start(self):
         return self._edges[0]
@@ -47,16 +53,16 @@ class Range(object):
         return self.__contains__(x)
         
     def is_close(self, other, rtol=1e-5, atol=None):
-        return allclose(self.edges, other.edges, rtol, atol)
+        return pint_extension.allclose(self.edges, other.edges, rtol, atol)
         
         
 def test_Range():
     range_1 = Range(np.array([3, 5]) * uerg.meter)
-    assert allclose(range_1.start, 3 * uerg.meter)
-    assert allclose(range_1.end, 5 * uerg.meter)
-    assert allclose(range_1.edges, np.array([3,5]) * uerg.meter)
+    assert pint_extension.allclose(range_1.start, 3 * uerg.meter)
+    assert pint_extension.allclose(range_1.end, 5 * uerg.meter)
+    assert pint_extension.allclose(range_1.edges, np.array([3,5]) * uerg.meter)
     #print len(range_1)
-    #assert allclose(len(range_1) , 2 * uerg.meter)
+    #assert pint_extension.allclose(len(range_1) , 2 * uerg.meter)
     assert 4 * uerg.meter in range_1
     assert not 2 * uerg.meter in range_1
     assert np.allclose(np.array([True, True]), range_1.is_each_in(np.array([4, 4]) * uerg.meter))
@@ -64,6 +70,9 @@ def test_Range():
     assert range_1.is_close(range_1)
     range_2 = Range(np.array([3, 4]) * uerg.meter)
     assert not range_1.is_close(range_2)
+    
+    assert range_1.is_close(Range((3 * uerg.meter, 5 * uerg.meter)))
+    assert range_1.is_close(Range((3, 5), uerg.meter))
     
     
 test_Range()
