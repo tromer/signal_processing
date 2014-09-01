@@ -62,6 +62,9 @@ class ContinuousData(object):
     When you encounter an operation that is not implemented for ContinuousData,
     the correct thing to do is to wrap the numpy or scipy operation.
     
+    TODO: maybe I want to implement a domain_samples object. it would have
+    a subclass of even samples
+    
     """
     def __init__(self, values, domain_samples):
         assert len(values) == len(domain_samples)
