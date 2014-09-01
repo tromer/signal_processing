@@ -243,6 +243,9 @@ class ContinuousDataEven(ContinuousData):
             
         else:
             raise NotImplementedError
+            
+    def __mul__(self, other):
+        raise NotImplementedError
         
         
     def gain(self, factor):
@@ -381,7 +384,7 @@ def test_fft():
 test_fft()
 #%%
 def generate_sine(sample_step, n_samples, amplitude, sine_freq, phase_at_0=0, first_sample=0):
-    """ to add: first_sample param """
+    """ TODO: add DC parameter """
     if np.abs(phase_at_0) > 2 * np.pi:
         warnings.warn("you are using phase_at_0 not from [-2 pi, 2 pi], weird")
     if sine_freq > 0.5 * 1.0 / sample_step:
@@ -399,6 +402,12 @@ def test_generate_sine():
     expected_sine = ContinuousDataEven(amplitude * np.sin(2 * np.pi * sine_freq * sample_step * np.arange(n_samples)), sample_step)
     sine = generate_sine(sample_step, n_samples, amplitude, sine_freq)
     assert sine.is_close(expected_sine)
+    
+def generate_white_noise():
+    raise NotImplementedError
+    
+def generate_square():
+    raise NotImplementedError
     
 test_generate_sine()
 
