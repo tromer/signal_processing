@@ -61,7 +61,13 @@ test_get_units()
 #%%
 def units_list_to_ndarray(l):
     assert len(l)
-    unit = get_units(l[0])
+    unit = False
+    i = 0
+    while not unit and i < len(l):
+        if l[i].magnitude != 0:
+            unit = get_units(l[i])
+        i = i + 1
+    
     l_magnitude = []
     for x in l:
         l_magnitude.append(x.to(unit).magnitude)
