@@ -291,6 +291,7 @@ class ContinuousDataEven(ContinuousData):
         new_n = numpy_extension.close_power_of_2(self.n_samples, mode='smaller')
         trimmed = ContinuousDataEven(self.values[:new_n], self.sample_rate, self.first_sample)
         assert trimmed.n_samples == new_n
+        return trimmed
 
 def test_ContinuousDataEven():
     values = np.arange(10) * uerg.amp
@@ -378,7 +379,7 @@ test___add__()
 test___sub__()
 test___mul__()
 test_abs()
-test_trim_to_power_of_2
+test_trim_to_power_of_2()
 
 #%%
 def determine_fft_len(n_samples, mode='accurate'):
