@@ -17,7 +17,7 @@ class Range(object):
     def __init__(self, edges, unit=None):
         assert len(edges) == 2
         
-        if hasattr(edges[0], 'units'):
+        if hasattr(edges[1], 'units'):
             edges = pint_extension.units_list_to_ndarray(edges)
         else:
             edges = np.array(edges) * unit
