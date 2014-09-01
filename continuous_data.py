@@ -112,6 +112,8 @@ class ContinuousData(object):
         """
         raise NotImplementedError
         
+    def __add__(self, other):
+        raise NotImplementedError
     
     def DFT(self):
         raise NotImplementedError
@@ -217,6 +219,26 @@ class ContinuousDataEven(ContinuousData):
         top_index = np.floor(domain_range.end / self.sample_step)
         return ContinuousDataEven(self.values[bottom_index:top_index + 1], self.sample_step, first_sample=bottom_index * self.sample_step)
         
+    def is_same_domain_samples(self, other):
+        return self.n_samples == other.n_samples and \
+        pint_extension.allclose(self.first_sample, other.first_sample) and \
+        pint_extension.allclose(self.sample_step, other.sample_step)
+        
+    def __add__(self, other):
+        if self.is_same_domain_samples(other):
+            return ContinuousDataEven(self.values + other.values, self.sample_step, self.first_sample)
+            
+        else:
+            raise NotImplementedError
+            
+    def __sub__(self, other):
+        if self.is_same_domain_samples(other):
+            return ContinuousDataEven(self.values - other.values, self.sample_step, self.first_sample)
+            
+        else:
+            raise NotImplementedError
+        
+        
     def gain(self, factor):
         """
         see doc of base class
@@ -266,9 +288,35 @@ def test_gain():
     sig_gain = sig.gain(factor)
     assert sig_gain.is_close(expected_sig_gain)
     
+def test_is_same_domain_samples():
+    step_1 = uerg.sec
+    step_2 = uerg.sec * 2
+    start_1 = 0
+    start_2 = 1 * uerg.sec
+    vals_1 = np.arange(10) * uerg.mamp
+    vals_2 = 2 * np.arange(10) * uerg.amp
+    vals_3 = np.arange(5) * uerg.amp
+    assert ContinuousDataEven(vals_1, step_1).is_same_domain_samples(ContinuousDataEven(vals_2, step_1))
+    assert not ContinuousDataEven(vals_1, step_1).is_same_domain_samples(ContinuousDataEven(vals_1, step_2))
+    assert not ContinuousDataEven(vals_1,step_1, start_1).is_same_domain_samples(ContinuousDataEven(vals_1, step_1, start_2))
+    assert not ContinuousDataEven(vals_1, step_1).is_same_domain_samples(ContinuousDataEven(vals_3, step_1))
+
+def test___add__():
+    sig = ContinuousDataEven(np.arange(10) * uerg.mamp, uerg.sec)
+    assert (sig + sig).is_close(sig.gain(2))
+    
+def test___sub__():
+    sig = ContinuousDataEven(np.arange(10) * uerg.mamp, uerg.sec)
+    sig_2 = ContinuousDataEven(np.ones(10) * uerg.mamp, uerg.sec)
+    dif = ContinuousDataEven(np.arange(-1,9) * uerg.mamp, uerg.sec)
+    assert (sig - sig_2).is_close(dif)
+    
 test_ContinuousDataEven()
 test_down_sample()
 test_gain()
+test_is_same_domain_samples()
+test___add__()
+test___sub__()
 
 #%%
 def determine_fft_len(n_samples, mode='accurate'):
@@ -371,6 +419,9 @@ def band_pass_filter(sig, freq_range, mask_len):
     warnings.warn('not tested well')
     #TODO: test well
     freq_range.edges.ito(sig.sample_rate.units)
+    print freq_range.edges
+    print sig.sample_rate
+    assert freq_range.end.magnitude < 0.5 * sig.sample_rate.magnitude
     # if error rises with firwin with units, wrap it: http://pint.readthedocs.org/en/0.5.1/wrapping.html
     mask_1 = sp.signal.firwin(mask_len, freq_range.edges.magnitude, pass_zero=False, nyq=0.5 * sig.sample_rate.magnitude)
     filterred_values = np.convolve(sig.values.magnitude, mask_1, mode="same") * pint_extension.get_units(sig.values)
@@ -540,16 +591,37 @@ def test_am_demodulation_hilbert():
     
 def am_demodulation_convolution(sig, t_smooth):
     raise NotImplementedError
-    n_samples_smooth = np.ceil(t_smooth * sample_rate)
+    n_samples_smooth = np.ceil(t_smooth * sig.sample_rate)
     mask_am = numpy_extension.normalize(np.ones(n_samples_smooth), ord=1)
     sig_am = np.convolve(np.abs(sig_diff), mask_am, mode="same")
     return sig_am
     
+def am_demodulation_filter(sig, dt_smooth, mask_len):
+    top_freq = 1.0 / dt_smooth
+    band = Range([1e-12 * pint_extension.get_units(top_freq), top_freq])
+    return band_pass_filter(sig, band, mask_len = mask_len)
     
+
+def test_am_demodulation_filter():
+    
+    sample_step = 1.0 * uerg.sec
+    time = np.arange(2 ** 15) * sample_step
+    freq_1 = 0.15 * uerg.Hz
+    freq_2 = 0.40 * uerg.Hz
+    phase_1 = 2 * np.pi * freq_1 * time
+    phase_2 = 2 * np.pi * freq_2 * time
+    sine_1 = ContinuousDataEven(np.sin(phase_1) * uerg.mamp, sample_step)
+    sig = ContinuousDataEven((np.sin(phase_1) + np.sin(phase_2)) * uerg.mamp, sample_step)
+    
+    dt = 1.0 / freq_1 * 0.5
+    am = am_demodulation_filter(sig, dt, 32)
+    plot_quick(sine_1)
+    plot_quick(am)
+    assert sine_1.is_close(am, domain_rtol=0.01, domain_atol=0.05 * uerg.mamp)
+
 test_hilbert()    
 test_pm_demodulation()
 test_fm_demodulation()
 test_am_demodulation_hilbert()
-    
-    
-
+test_am_demodulation_filter()
+ 
