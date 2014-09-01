@@ -249,7 +249,12 @@ class ContinuousDataEven(ContinuousData):
             raise NotImplementedError
             
     def __mul__(self, other):
-        raise NotImplementedError
+        if self.is_same_domain_samples(other):
+            return ContinuousDataEven(self.values * other.values, self.sample_step, self.first_sample)
+            
+        else:
+            raise NotImplementedError
+
         
         
     def gain(self, factor):
@@ -324,6 +329,12 @@ def test___sub__():
     sig_2 = ContinuousDataEven(np.ones(10) * uerg.mamp, uerg.sec)
     dif = ContinuousDataEven(np.arange(-1,9) * uerg.mamp, uerg.sec)
     assert (sig - sig_2).is_close(dif)
+    
+def test___mul__():
+    sig = ContinuousDataEven(np.arange(10) * uerg.mamp, uerg.sec)
+    expected_sig_pow_2 = ContinuousDataEven(np.arange(10) ** 2 * uerg.mamp ** 2, uerg.sec)
+    sig_pow_2 = sig * sig
+    assert sig_pow_2.is_close(expected_sig_pow_2)
     
 test_ContinuousDataEven()
 test_down_sample()
