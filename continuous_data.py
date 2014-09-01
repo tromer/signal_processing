@@ -621,8 +621,11 @@ def test_am_demodulation_filter():
     
     dt = 1.0 / freq_1 * 0.5
     am = am_demodulation_filter(sig, dt, 32)
+    fig, junk = plot(sig)
+    plot(sine_1, fig)
+    plot(am, fig)
     plot_quick(sine_1 - am)
-    assert sine_1.is_close(am, domain_rtol=0.01, domain_atol=0.05 * uerg.mamp)
+    assert sine_1.is_close(am, domain_rtol=0.01, domain_atol=0.1 * uerg.mamp)
 
 test_hilbert()    
 test_pm_demodulation()
