@@ -730,15 +730,16 @@ def am_demodulation_convolution(sig, t_smooth):
     return ContinuousDataEven(values_am, sig.sample_step, sig.first_sample)
 
 def test_am_demodulation_convolution():
-    sample_step = 1 * uerg.sec
+    check_range = Range(np.array([2, 30]) * uerg.ksec)
+    sample_step = 1.0 * uerg.sec
     n_samples = 2 ** 15
     freq_1 = 0.15 * uerg.Hz
     freq_2 = 0.40 * uerg.Hz
-    amp = 1 * uerg.mamp
-    sine_1 = generate_sine(sample_step, n_samples, amp, freq_1)
+    amp = uerg.mamp
+    sine_1 = generate_sine(sample_step, n_samples, amp, sine_freq=freq_1)
     sine_2 = generate_sine(sample_step, n_samples, amp, freq_2)
     sig = sine_1 + sine_2
-    
+    """
     #copied from test_am_demodulation_filter
     dt = 1.0 / freq_1 * 0.25
     am = am_demodulation_convolution(sig, dt)
@@ -747,38 +748,66 @@ def test_am_demodulation_convolution():
     plot(am, fig)
     plot_quick(sine_1 - am)
     assert sine_1.is_close(am, domain_rtol=0.01, domain_atol=0.1 * uerg.mamp)
+    """
+    dt = 1.0 / freq_1 * 3
+    period = 100 * uerg.sec
+    sig = generate_square_freq_modulated(sample_step, n_samples, amp, freq_1, period)
+    expected_sig_am = generate_square(sample_step, n_samples, amp, period)
+    sig_am = am_demodulation_convolution(sig, dt)
+    fig, junk = plot_quick(sig)
+    plot(expected_sig_am, fig)
+    plot(sig_am, fig)
+    plot_quick(sig_am - expected_sig_am, fig)
+    # the big tolerance is due to gibs effect
+    assert sig_am[check_range].is_close_l_1(expected_sig_am[check_range], values_rtol=0.2, values_atol=0.2 * amp)
+
     
 def am_demodulation_filter(sig, dt_smooth, mask_len):
     top_freq = 1.0 / dt_smooth
     band = Range([1e-12 * pint_extension.get_units(top_freq), top_freq])
-    return band_pass_filter(sig, band, mask_len = mask_len)
+    return band_pass_filter(sig.abs(), band, mask_len = mask_len)
     
 
 def test_am_demodulation_filter():
-    
+    check_range = Range(np.array([2, 30]) * uerg.ksec)
     sample_step = 1.0 * uerg.sec
-    time = np.arange(2 ** 15) * sample_step
+    n_samples = 2 ** 15
     freq_1 = 0.15 * uerg.Hz
     freq_2 = 0.40 * uerg.Hz
-    phase_1 = 2 * np.pi * freq_1 * time
-    phase_2 = 2 * np.pi * freq_2 * time
-    sine_1 = ContinuousDataEven(np.sin(phase_1) * uerg.mamp, sample_step)
-    sig = ContinuousDataEven((np.sin(phase_1) + np.sin(phase_2)) * uerg.mamp, sample_step)
+    amp = uerg.mamp
+    dt = 1.0 / freq_1 * 0.5    
+    """
+    sine_1 = generate_sine(sample_step, n_samples, amp, sine_freq=freq_1)
+    sine_2 = generate_sine(sample_step, n_samples, amp, freq_2)
+    sig = sine_1 + sine_2
     
-    dt = 1.0 / freq_1 * 0.5
+    
     am = am_demodulation_filter(sig, dt, 128)
     fig, junk = plot(sig)
-    plot(sine_1, fig)
+    plot(sine_1.abs(), fig)
     plot(am, fig)
-    plot_quick(sine_1 - am)
+    plot_quick(sine_1.abs() - am)
     assert sine_1.is_close(am, domain_rtol=0.01, domain_atol=0.1 * uerg.mamp)
-
+    """
+    
+    dt = 1.0 / freq_1 * 3
+    period = 100 * uerg.sec
+    sig = generate_square_freq_modulated(sample_step, n_samples, amp, freq_1, period)
+    expected_sig_am = generate_square(sample_step, n_samples, amp, period)
+    sig_am = am_demodulation_filter(sig, dt, 256)
+    fig, junk = plot_quick(sig)
+    plot(expected_sig_am, fig)
+    plot(sig_am, fig)
+    plot_quick(sig_am - expected_sig_am, fig)
+    # the big tolerance is due to gibs effect
+    assert sig_am[check_range].is_close_l_1(expected_sig_am[check_range], values_rtol=0.2, values_atol=0.2 * amp)
+    
 test_hilbert()    
 test_pm_demodulation()
 test_fm_demodulation()
 test_am_demodulation_hilbert()
 #test_am_demodulation_convolution()
-test_am_demodulation_filter()
+#test_am_demodulation_filter()
 
 #%%
 def resample(sig, new_sample_points):
