@@ -380,6 +380,29 @@ def test_fft():
     
 test_fft()
 #%%
+def generate_sine(sample_step, n_samples, amplitude, sine_freq, phase_at_0=0, first_sample=0):
+    """ to add: first_sample param """
+    if np.abs(phase_at_0) > 2 * np.pi:
+        warnings.warn("you are using phase_at_0 not from [-2 pi, 2 pi], weird")
+    if sine_freq > 0.5 * 1.0 / sample_step:
+        raise("trying to generate undersampled sine signal, abbort! consider the nyquist!")
+    t = np.arange(n_samples) * sample_step + first_sample
+    phase = 2 * np.pi * sine_freq * t + phase_at_0
+    sine = ContinuousDataEven(amplitude * np.sin(phase), sample_step, first_sample)
+    return sine
+    
+def test_generate_sine():
+    sample_step = 1 * uerg.sec
+    n_samples = 128
+    sine_freq = 0.15 * uerg.Hz
+    amplitude = 1 * uerg.mamp
+    expected_sine = ContinuousDataEven(amplitude * np.sin(2 * np.pi * sine_freq * sample_step * np.arange(n_samples)), sample_step)
+    sine = generate_sine(sample_step, n_samples, amplitude, sine_freq)
+    assert sine.is_close(expected_sine)
+    
+test_generate_sine()
+
+#%%
 def diff(contin, n=1):
     """
     a wrap around numpy.diff
@@ -596,11 +619,10 @@ def test_am_demodulation_hilbert():
     assert sine_am[check_range].is_close(expected_sine_am[check_range], values_rtol=0.01)
     
 def am_demodulation_convolution(sig, t_smooth):
-    raise NotImplementedError
     n_samples_smooth = np.ceil(t_smooth * sig.sample_rate)
     mask_am = numpy_extension.normalize(np.ones(n_samples_smooth), ord=1)
-    sig_am = np.convolve(np.abs(sig_diff), mask_am, mode="same")
-    return sig_am
+    values_am = np.convolve(np.abs(sig.values.magnitude), mask_am, mode="same") * pint_extension.get_units(sig.values)
+    return ContinuousDataEven(values_am, sig.sample_step, sig.first_sample)
     
 def am_demodulation_filter(sig, dt_smooth, mask_len):
     top_freq = 1.0 / dt_smooth
@@ -620,7 +642,7 @@ def test_am_demodulation_filter():
     sig = ContinuousDataEven((np.sin(phase_1) + np.sin(phase_2)) * uerg.mamp, sample_step)
     
     dt = 1.0 / freq_1 * 0.5
-    am = am_demodulation_filter(sig, dt, 32)
+    am = am_demodulation_filter(sig, dt, 128)
     fig, junk = plot(sig)
     plot(sine_1, fig)
     plot(am, fig)
@@ -641,6 +663,7 @@ def resample(sig, new_sample_points):
     """
     raise NotImplementedError
     
-def generate_sine(sample_step, n_samples, sine_freq, initial_phase):
-    raise NotImplementedError
+
+    
+    
  
