@@ -286,6 +286,11 @@ class ContinuousDataEven(ContinuousData):
             raise NotImplementedError
         # maybe there should be another interface, with "new sample rate"
         return ContinuousDataEven(self.values[::down_factor], down_factor * self.sample_step, self.first_sample)
+        
+    def trim_to_power_of_2(self):
+        new_n = numpy_extension.close_power_of_2(self.n_samples, mode='smaller')
+        trimmed = ContinuousDataEven(self.values[:new_n], self.sample_rate, self.first_sample)
+        assert trimmed.n_samples == new_n
 
 def test_ContinuousDataEven():
     values = np.arange(10) * uerg.amp
@@ -359,6 +364,12 @@ def test_abs():
     sig_abs = sig.abs()
     assert sig_abs.is_close(expected_sig_abs)
     
+def test_trim_to_power_of_2():
+    sig = ContinuousDataEven(uerg.mamp * np.arange(12), 1 * uerg.sec)
+    expected_sig_trim = ContinuousDataEven(uerg.mamp * np.arange(8), 1 * uerg.sec)
+    sig_trim = sig.trim_to_power_of_2()
+    assert sig_trim.is_close(expected_sig_trim)
+    
 test_ContinuousDataEven()
 test_down_sample()
 test_gain()
@@ -367,6 +378,7 @@ test___add__()
 test___sub__()
 test___mul__()
 test_abs()
+test_trim_to_power_of_2
 
 #%%
 def determine_fft_len(n_samples, mode='accurate'):
@@ -660,8 +672,11 @@ def test_pm_demodulation():
     phase_sig = pm_demodulation(sine)
     print phase_sig.first_sample, phase_sig.last_sample
     print expected_phase_sig.first_sample, expected_phase_sig.last_sample
+    # weird, it acctually gives phase diff of 0.5 pi from what I expect
     assert pint_extension.allclose(phase_sig.first_sample, expected_phase_sig.first_sample)
     assert pint_extension.allclose(phase_sig.last_sample, expected_phase_sig.last_sample, atol=min(phase_sig.sample_step, expected_phase_sig.sample_step))
+    #fig, junk = plot_quick(expected_phase_sig)
+    #plot(phase_sig, fig)
     #assert pint_extension.allclose(phase_sig.sample_step, expected_phase_sig.sample_step)
     #assert phase_sig[check_range].is_close(expected_phase_sig[check_range], values_rtol=0.01)
         
@@ -724,6 +739,7 @@ def test_am_demodulation_hilbert():
     
     
 def am_demodulation_convolution(sig, t_smooth):
+    warnings.warn("not tested well")
     n_samples_smooth = np.ceil(t_smooth * sig.sample_rate)
     mask_am = numpy_extension.normalize(np.ones(n_samples_smooth), ord=1)
     values_am = np.convolve(np.abs(sig.values.magnitude), mask_am, mode="same") * pint_extension.get_units(sig.values)
@@ -763,6 +779,7 @@ def test_am_demodulation_convolution():
 
     
 def am_demodulation_filter(sig, dt_smooth, mask_len):
+    warnings.warn("not tested well")
     top_freq = 1.0 / dt_smooth
     band = Range([1e-12 * pint_extension.get_units(top_freq), top_freq])
     return band_pass_filter(sig.abs(), band, mask_len = mask_len)
