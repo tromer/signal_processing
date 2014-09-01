@@ -11,12 +11,16 @@ from scipy import  signal
 import matplotlib.pyplot as plt
 
 from pulses import Pulses
+import continuous_data
+from continuous_data import ContinuousDataEven
 
 import pint_extension
+from global_uerg import uerg
 #from . import ureg, Q_
 
 IS_DEBUG = False
 #%%
+"""
 def mixer(sig, sample_rate, f_shift):
     mixer_sig = np.cos(2 * np.pi * f_shift * 1.0 / sample_rate * np.arange(len(sig)))
     return mixer_sig * sig
@@ -32,7 +36,7 @@ def mixer_lpf(sig, sample_rate, f_min, f_max, mask_len=2 ** 6):
     return lpf(mixer(sig, sample_rate, f_min), sample_rate, f_cut=df, mask_len=mask_len)
     
 def pm_demodulation(sig, sample_rate):
-    """ baed on hilbert """
+     # baed on hilbert
     analytic_sig = sp.signal.hilbert(sig)
     phase_wrapped = np.angle(analytic_sig)
     phase = np.unwrap(phase_wrapped)
@@ -88,39 +92,39 @@ def test_mixer_lpf():
     plt.plot(freqs, np.abs(np.fft.fft(mixed, N)), label="mixed")
     plt.plot(freqs, np.abs(np.fft.fft(filterred)), label="filterred")
     plt.legend(loc="best")
-
+"""
 #%%
 def fast_convolve(sig, mask, mode):
     """ type of input determine convolution algorithm """
+    raise NotImplementedError
     if case_regular:
         return np.convolve(sig, mask, mode)
     elif case_fft:
         return sp.signal.fftconvolve(sig, mask, mode)
         
 #%%
-def threshold_crosses(sig, sample_rate, threshold, is_above=True):
+def threshold_crosses(sig, threshold, is_above=True):
     """
     returns the location in indexes of crossing up, crossing down
     """
-    above = sig > threshold
+    above = sig.values > threshold
     if not is_above:
         above = np.logical_not(above)
     # the beginning and end count as non pulse
     crossings = np.logical_xor(np.concatenate([above, [False,]]), np.concatenate([[False], above]))
     crossings_indexes = np.where(crossings)[0]
-    crossings_times = 1.0 * crossings_indexes / sample_rate
+    crossings_times = crossings_indexes * sig.sample_step + sig.first_sample
     starts = crossings_times[::2]
     ends = crossings_times[1::2]
     return Pulses(starts, ends)
 #%%
 def test_threshold_crosses():
-    sig = np.array([3, 3, 3, 0, 0, 0, 3, 3, 0])
-    sample_rate = 1.0
-    threshold = 2
+    sig = ContinuousDataEven(np.array([3, 3, 3, 0, 0, 0, 3, 3, 0]) * uerg.mamp, uerg.sec)
+    threshold = 2 * uerg.mamp
     starts_expected = np.array([0, 6])
     ends_expected = np.array([3, 8])
     pulses_expected = Pulses(starts_expected, ends_expected)
-    pulses = threshold_crosses(sig, sample_rate, threshold)
+    pulses = threshold_crosses(sig, threshold)
     assert pulses.is_close(pulses_expected)
     
 
@@ -128,6 +132,7 @@ test_threshold_crosses()
 
 #%%
 def cluster1d(vec, resolution, threshold):
+    raise NotImplementedError
     bins_num = np.ceil(1.0 * vec.ptp() / resolution)
     hist, edges = pint_extension.histogram(vec, bins_num, density=True)
     clusters = threshold_crosses(vec, 1, threshold)
