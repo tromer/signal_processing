@@ -6,6 +6,8 @@ Created on Wed Aug 27 19:14:13 2014
 """
 
 import numpy as np
+from Range import Range
+from global_uerg import uerg
 #%%
 class Pulses(object):
     # should ingerit from object?
@@ -52,7 +54,12 @@ class Pulses(object):
         if len(self) != len(other):
             return False
         return np.allclose(self.starts, other.starts, rtol, atol) and np.allclose(self.ends, other.ends, rtol, atol)
-#%%
+        
+    def is_each_in_range(self, attribute, range_):
+        values = getattr(self, attribute)
+        is_each_in = range_.is_each_in(values)
+        return is_each_in
+
 def test_pulses():
     starts = np.array([0, 2, 4, 10])
     ends = np.array([1, 3, 5, 10.5])
@@ -72,8 +79,19 @@ def test_pulses():
     assert np.allclose(starts[is_each_in], p[is_each_in].starts)
     assert np.allclose(starts[s], p[s].starts)
     assert p.is_close(p)
-#%%
+    
+def test_is_each_in_range():
+    starts = np.array([0, 2, 4, 10]) * uerg.sec
+    ends = np.array([1, 3, 5, 10.5]) * uerg.sec
+    p = Pulses(starts, ends)
+    
+    duration_range = Range([0.8, 1.2], uerg.sec)
+    expected_is_each_in = np.array([True, True, True, False])
+    is_each_in = p.is_each_in_range('durations', duration_range)
+    assert np.allclose(is_each_in, expected_is_each_in)
+
 test_pulses()
+test_is_each_in_range()
 
 
 #%%
