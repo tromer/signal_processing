@@ -59,6 +59,17 @@ class Pulses(object):
         values = getattr(self, attribute)
         is_each_in = range_.is_each_in(values)
         return is_each_in
+        
+    def filter_by_range(self, attribute, range_, mode='include'):
+        """
+        mode - include (leave pulses in range), remove - remove pulses in range
+        """
+        assert mode in ['include', 'remove']
+        is_each_in = self.is_each_in_range(attribute, range_)
+        if mode == 'remove':
+            is_each_in = np.logical_not(is_each_in)
+        
+        return self[is_each_in]
 
 def test_pulses():
     starts = np.array([0, 2, 4, 10])
@@ -90,8 +101,22 @@ def test_is_each_in_range():
     is_each_in = p.is_each_in_range('durations', duration_range)
     assert np.allclose(is_each_in, expected_is_each_in)
 
+def test_filter_by_range():
+    # copied from test_is_each_in_range
+    starts = np.array([0, 2, 4, 10]) * uerg.sec
+    ends = np.array([1, 3, 5, 10.5]) * uerg.sec
+    p = Pulses(starts, ends)
+    
+    duration_range = Range([0.8, 1.2], uerg.sec)
+    expected_is_each_in = np.array([True, True, True, False])
+    expected_p_filterred = p[expected_is_each_in]
+    p_filterred = p.filter_by_range('durations', duration_range)
+    assert p_filterred.is_close(expected_p_filterred)
+    
+    
 test_pulses()
 test_is_each_in_range()
+test_filter_by_range()
 
 
 #%%
