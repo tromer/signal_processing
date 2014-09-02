@@ -10,7 +10,11 @@ from Range import Range
 from global_uerg import uerg
 #%%
 class Pulses(object):
-    # should ingerit from object?
+    """
+    
+    
+    
+    """
     def __init__(self, starts, ends):
         # or np.recarray, or pandas.DataFrame
         self._starts = starts
