@@ -30,6 +30,7 @@ class Pulses(object):
     an existing ContinuousData
     
     Note: it's quite probable that these "types" would be other objects which inherit Segments
+    Note: it should be possible to "extract containers" from Segments based on data
     
     
     examples (corresponding to the examples in ContinuousData):
@@ -92,19 +93,55 @@ class Pulses(object):
         return Pulses(self.starts[key], self.ends[key])
         
     def is_close(self, other, rtol=1e-05, atol=1e-08):
-        # maybe should be names is_close ?
+        """
+        using np.allclose
+        
+        Returns
+        -------------
+        allclose : bool
+            whether two different Segments are more or less the same properties
+            
+        TODO: check that atol works well enough with units.
+        """
         if len(self) != len(other):
             return False
         return np.allclose(self.starts, other.starts, rtol, atol) and np.allclose(self.ends, other.ends, rtol, atol)
         
     def is_each_in_range(self, attribute, range_):
+        """
+        checks whether some attribute of each of the segments is within a certain range
+        
+        parameters
+        -------------------------
+        attribute : str
+            the attribute of Segments we need
+        range_ : Range
+            the range of interest
+            
+        returns
+        ---------------
+        is_each_in : np.ndarray
+            a boolian np.ndarray
+        """
         values = getattr(self, attribute)
         is_each_in = range_.is_each_in(values)
         return is_each_in
         
     def filter_by_range(self, attribute, range_, mode='include'):
         """
-        mode - include (leave pulses in range), remove - remove pulses in range
+        checks whether some attribute of each of the segments is within a certain range
+        filter out Segments that are out of range
+        see documentation of Segments.is_each_in
+        
+        parameters
+        ---------------------
+        mode str
+            'include' (leave pulses in range), 'remove' - remove pulses in range
+            
+        returns
+        ----------
+        filterred: Segments
+            only the Segments within range
         """
         assert mode in ['include', 'remove']
         is_each_in = self.is_each_in_range(attribute, range_)
@@ -163,6 +200,10 @@ test_filter_by_range()
 
 #%%
 def adjoin_close_pulses(pulses, max_distance):
+    """
+    if the segments are close enough, maybe they represent the same segment of interest,
+    that was "broken" due to noise / wring threshold / mistake
+    """
     is_each_gap_big_enough = pulses.end_to_start > max_distance
     is_each_real_start = np.concatenate([[True,], is_each_gap_big_enough])
     is_each_real_end = np.concatenate([is_each_gap_big_enough, [True,]])
@@ -186,6 +227,9 @@ def test_adjoin_close_pulses():
 test_adjoin_close_pulses()
 #%%
 def filter_short_pulses(pulses, min_duration):
+    """
+    TODO: it should be based on filter_by_range
+    """
     is_each_long_enough = pulses.durations > min_duration
     return pulses[is_each_long_enough]
 #%%    
@@ -202,6 +246,25 @@ def test_filter_short_pulses():
 test_filter_short_pulses()
 #%%
 def switch_pulses_and_gaps(pulses, absolute_start=None, absolute_end=None):
+    """
+    returns the gaps between the segments as a Segments instance
+    rational: sometimes it's easier to understand what are the segments which dosn't
+    interest us, and then switch
+    
+    parameters
+    --------------
+    segs : Segments
+    
+    absolute_start, absolute_end : of the same unit like pulses.starts
+        if given, they represent the edges of the "signal", and thus
+        create another "gap-segment" at the start / end.
+        
+    returns
+    ---------------
+    gaps: Segments
+        the gaps
+    
+    """
     # maybe absolute start and end should be taken from the pulses object?
     starts_gaps = pulses.ends[:-1]
     ends_gaps = pulses.starts[1:]
