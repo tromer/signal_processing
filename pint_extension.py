@@ -14,6 +14,18 @@ from global_uerg import uerg
 #from . import ureg, Q_
 
 def allclose(a, b, rtol=1e-5, atol=None):
+    """
+    it's an np.allclose version for vectors with units (of pint module)
+    
+    parameters:
+    a, b, - vectors with units.
+    rtol - relative tolerance
+    atol - if not None, absolute tolerance (with units)
+    if None, the absolute tolerance would be the default of np.allclose in the base units
+    """
+    
+    # TODO: add assert a.dimensionality == b.dimensionality
+    # TODO: make it fetch the units of a_, chnge docstring accordingly
     a_ = a.to_base_units()
     b_ = b.to_base_units()
     
@@ -41,6 +53,12 @@ test_allclose()
 #%%
 
 def get_units(x):
+    """
+    helper function to get 1 with the same units like x
+    I didn't find any pint option to do that,
+    and the implementatino is ugly, based on devision with the magnitude
+    XXX
+    """
     if type(x.magnitude) == np.ndarray:
         x_ = x[np.nonzero(x)]
         if len(x) == 0:
@@ -60,6 +78,10 @@ def test_get_units():
 test_get_units()
 #%%
 def units_list_to_ndarray(l):
+    """
+    takes a list / tuple of numbers with units, rescale them, and converts to
+    a vector with units
+    """
     assert len(l)
     unit = False
     i = 0
@@ -87,6 +109,9 @@ def histogram(a, bins=10, range_=None, weights=None, density=None):
     """
     histogram for vectors with quantities.
     it's basically a wrap around np.histogram
+    
+    obviously a, range_ should have the same units, and also bins if it's not the 
+    number of bins
     """
     # maybe should accept also Range object?
     if not type(a) == uerg.Quantity:
