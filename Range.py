@@ -14,6 +14,7 @@ class Range(object):
     """
     a range in a certain domain. such as 3 to 5 meters.
     it's built with units, (using pint module)
+    TODO: maybe it should be renamed Container / Segment
     """
     def __init__(self, edges, unit=None):
         """
