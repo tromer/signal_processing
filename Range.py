@@ -12,9 +12,15 @@ from global_uerg import uerg
 
 class Range(object):
     """
-    a range in a certain domain. such as 3 to 5 meters
+    a range in a certain domain. such as 3 to 5 meters.
+    it's built with units, (using pint module)
     """
     def __init__(self, edges, unit=None):
+        """
+        parameters:
+        units is the units in case edges is without units
+        edges is a list / tuple / np.ndarray of length 2, which can have units
+        """
         assert len(edges) == 2
         
         if hasattr(edges[1], 'units'):
