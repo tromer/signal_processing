@@ -11,11 +11,49 @@ from global_uerg import uerg
 #%%
 class Pulses(object):
     """
+    Note: see also the object ContinuousData. they go hand in hand together, refer to different aspects of the same subjects
+    this class represents any kind of pulses / segments / ranges / containers (one dimensional).
+    It includes a few kinds that first seem different from each other, has a lot in common.
+    
+    different logical "types" of Segments
+    ------------------------------------------------------------
+    1. Segments that are derived from a ContinuousData
+    it's a ContinuousData that was clusterred / qunatised
+    in a way, it describes some aspect of the ContinuousData, but with less data,
+    so it's a "dimensionallity reduction"
+    
+    it may be used to calculate some properties of each Segment, that are some kind of summation
+    of all the samples within the Segment
+    such as: mean amplitude, max amplitude, total number of occurances
+    
+    2. Segments that are "containers", used to filter / sort / mark same samples of
+    an existing ContinuousData
+    
+    Note: it's quite probable that these "types" would be other objects which inherit Segments
     
     
+    examples (corresponding to the examples in ContinuousData):
+    1. pulses - times of interest in a corresponding signal.
+    such as: when the amplitude is above a certain threshold.
+    2. spatial pulses: locations of interest in a coresponding spatial measurement.
+    such as: locations of mountains, or locations of downhill ares.
+    another example: the spatial measurement is stress as a function of place.
+    the spatial pulses can be places that will probably brake.
+    3. ranges: certain "containers" of interest upon a distribution
+    such as: ranges of 'height' wich are common in the population.
+    4. times of interest, when a certain kinematic property of a system had special values
+    5. frequency ranges, that are frequencies of interest within a spectrum.
+    
+    Note:
+    2. this class is intentioned to be used with units. it's real world measurements.
     
     """
     def __init__(self, starts, ends):
+        """
+        parameters:
+        ---------------------
+        
+        """
         # or np.recarray, or pandas.DataFrame
         self._starts = starts
         self._ends = ends
