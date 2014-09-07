@@ -8,6 +8,13 @@ Created on Thu Aug 21 17:49:27 2014
 import numpy as np
 
 def close_power_of_2(n, mode='smaller'):
+    """
+    find the a close power of 2 of an int.
+    useful when doing some FFTs
+    parameters:
+    n - int
+    mode - 'smaller', 'bigger', 'closer'
+    """
     if type(n) == np.ndarray:
         assert (n >= 1).all()
     else:
@@ -39,7 +46,16 @@ def test_close_power_of_2():
     
 #%%
 def normalize(vec, ord=None, axis=None):
-   return 1.0 * vec / np.linalg.norm(vec, ord, axis)
+    """
+    normalize a vector according to a chosen order
+    usful when creating masks for convolutions
+    
+    parameters:
+    vec - np.ndarray
+    ord - order of norm
+    axis - axis to work on
+    """
+    return 1.0 * vec / np.linalg.norm(vec, ord, axis)
     
 def test_normalize():
     vec = np.array([1, 1])
