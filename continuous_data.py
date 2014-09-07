@@ -176,6 +176,20 @@ def plot_quick(contin, is_abs=False, fmt="-"):
 #%%
 
 def plot(contin, fig=None, is_abs=False, fmt="-"):
+    """
+    add a plot of ContinuousData instance, to an existing figure
+    TODO: allow passing every parameter the plt.plot accepts. i.e - making ot a complete
+    wrapper around plt.plot
+    TODO: make sure somehow that all the plots on the same figure, share x axis dimensionallity
+    and rescale them
+    TODO: instead of putting units on y axis, use legend and put units there
+    
+    parameters:
+    contin
+    fig - a plt.plot figure object
+    is_abs: whether to use np.abs() on the values. mostly for plotting power spectrums
+    fmt - format, like plt.plot fmt
+    """
     # assert contin type?
     # TODO: add support for legend
     warnings.warn("plot is not tested")
@@ -213,7 +227,6 @@ class ContinuousDataEven(ContinuousData):
     the domain samples are evenly spaced
     """
     def __init__(self, values, sample_step, first_sample=0):
-        # would there be a problem because of interface issues?
         self._values = values
         self._sample_step = sample_step
         if not first_sample:
@@ -288,7 +301,12 @@ class ContinuousDataEven(ContinuousData):
         # maybe there should be another interface, with "new sample rate"
         return ContinuousDataEven(self.values[::down_factor], down_factor * self.sample_step, self.first_sample)
         
-    def trim_to_power_of_2(self):
+    def trim_to_power_of_2_XXX(self):
+        """
+        trancate data to power of 2 sample points
+        loss of data, very dangareous
+        """
+        warnings.warn("XXX trim_to_power_of_2_looses_data")
         new_n = numpy_extension.close_power_of_2(self.n_samples, mode='smaller')
         trimmed = ContinuousDataEven(self.values[:new_n], self.sample_step, self.first_sample)
         assert trimmed.n_samples == new_n
@@ -384,6 +402,15 @@ test_trim_to_power_of_2()
 
 #%%
 def determine_fft_len(n_samples, mode='accurate'):
+    """
+    helper function to determine the number of samples for a fft
+    if mode is not 'accurate', it's a power of 2
+    
+    parameters:
+    n_samples
+    mode - 'accurate' like n, 'trim' - smaller then n, 'zero-pad' - bigger then n
+    'closer' - either trim or zero pad, depends which is closer (logarithmic scale)
+    """
     modes_dict = {'trim': 'smaller', 'zero-pad' : 'bigger', 'fast' : 'closer'}
     if mode == 'accurate':
         n_fft = n_samples
@@ -402,6 +429,14 @@ test_determine_fft_len()
     
 #%%
 def fft(contin, n=None, mode='fast'):
+    """
+    fft of a ContinuousData instance.
+    implemented only for ContinuousDataEven
+    a wrap arround np.fft.fft
+    
+    returns: a ContinuousDataEven object that represents the spectrum
+    the frequencies are considerred from -0.5 nyq frequency to 0.5 nyq frequency
+    """
     # shoult insert a way to enforce "fast", poer of 2 stuff
     n_sig = len(contin.values)
     # maybe the process deciding the fft len should be encapsulated
@@ -439,7 +474,12 @@ def test_fft():
 test_fft()
 #%%
 def generate_sine(sample_step, n_samples, amplitude, sine_freq, phase_at_0=0, first_sample=0):
-    """ TODO: add DC parameter """
+    """
+    returns:
+    a ContinuousDataEven which is a sine
+    
+    TODO: add DC parameter
+    """
     if np.abs(phase_at_0) > 2 * np.pi:
         warnings.warn("you are using phase_at_0 not from [-2 pi, 2 pi], weird")
     if sine_freq > 0.5 * 1.0 / sample_step:
@@ -463,7 +503,9 @@ def generate_white_noise():
     
 def generate_square(sample_step, n_samples, amplitude, period, duty=0.5, phase_at_0=0, first_sample=0):
     """
-    min at zero.
+    returns:
+    a ContinuousDataEven which is suqare wave with min at zero and max at amplitude
+    
     TODO: maybe add a parameter of base level.
     """
     if np.abs(phase_at_0) > 2 * np.pi:
@@ -486,6 +528,11 @@ def test_generate_square():
     #plot_quick(square)
     
 def generate_square_freq_modulated(sample_step, n_samples, amplitude, sine_freq, period, duty=0.5, sine_phase_at_0=0, square_phase_at_t_0=0, first_sample=0):
+    """
+    returns:
+    ContinuousDataEven which is a square wave modulated by sine. it's coherentic,
+    means that all the "pulses" are taken from the same sine unstopped
+    """
     envelope = generate_square(sample_step, n_samples, 1 * uerg.dimensionless, period, duty, square_phase_at_t_0, first_sample)
     sine = generate_sine(sample_step, n_samples, amplitude, sine_freq, sine_phase_at_0, first_sample)
     modulated = envelope * sine
@@ -510,8 +557,19 @@ test_generate_square_freq_modulated()
 #%%
 def diff(contin, n=1):
     """
+    numeric differentiation of a ContinuousData
     a wrap around numpy.diff
-    returns a signal of same length
+    
+    returns:
+    ContinuousData of the same type, of the same same length
+    for n == 1:
+    all points except the last one are calculated using np.diff,
+    the last one is defined to be like the one before it.
+    
+    Design issues:
+    it's not clean / beautiful definition for the last sample, but it hardly matters.
+    I decided that it returns a ContinuousData of the same length, so it
+    desn't hurt signals of length 2 ** m, which are easier to fft
     """
     if type(contin) != ContinuousDataEven:
         raise NotImplementedError
@@ -550,6 +608,14 @@ def freq_filter(contin, freq_ranges, ?, ?, ?):
 """
 
 def band_pass_filter(sig, freq_range, mask_len):
+    """
+    band pass filter of ContinuousDataEven
+    
+    parameters:
+    freq_range: a Range of frequencies
+    
+    implemented using np.convolve with a mask. maybe with fft is better
+    """
     warnings.warn('not tested well')
     #TODO: test well
     freq_range.edges.ito(sig.sample_rate.units)
@@ -584,6 +650,11 @@ def test_band_pass_filter():
 
 
 def read_wav(filename, domain_unit=uerg.sec, first_sample=0, value_unit=uerg.milliamp, expected_sample_rate_and_tolerance=None):
+    """
+    read wav file to ContinuousDataEven.
+    implemented only for one channal
+    for multiple channels we probably want to return a list of ContinuousDataEven
+    """
     sample_rate, raw_sig = sp.io.wavfile.read(filename)
     sample_rate = 1.0 * sample_rate / domain_unit
     raw_sig = raw_sig * value_unit
@@ -594,6 +665,15 @@ def read_wav(filename, domain_unit=uerg.sec, first_sample=0, value_unit=uerg.mil
     sig = ContinuousDataEven(raw_sig, 1.0 / sample_rate, first_sample)
     return sig
     #return signal
+    
+def write_wav_return_units(contin, filename):
+    """
+    write contin to wav file, and return the units of the axis, and the first sample
+    
+    Note: I didn't think deeply about the signature of this function
+    """
+    raise NotImplementedError
+    return domain_unit, first_sample, value_unit
    
 def test_read_wav():
     values = np.arange(10) * uerg.milliamp
@@ -613,6 +693,10 @@ test_read_wav()
 #%%
     
 def hilbert(sig, mode='fast'):
+    """
+    returns the analytic signal
+    a wrap around sp.signal.hilbert
+    """
     n_fft = determine_fft_len(sig.n_samples, mode)
     analytic_sig_values = sp.signal.hilbert(sig.values.magnitude, n_fft) * pint_extension.get_units(sig.values)
     new_sample_step = 1.0 * sig.sample_step * sig.n_samples / n_fft
@@ -640,12 +724,14 @@ def test_hilbert():
     
     
 def pm_demodulation(sig, mode='fast'):
-    """ based on hilbert transform.
+    """
+    based on hilbert transform.
     the pm demodulation at the edges is not accurate.
     TODO: map how much of the edges is a problem
     TODO: maybe it should return only the time without the edges.
     TODO: how to improve the pm demodulation at the edges?    
     TODO: maybe should add a "n_fft" parameter
+    TODO: maybe it's better to allow calculation of phase with separation to windows?
     """
     if True:
         warnings.warn("pm-demodulation is not tested well on signals that are not 2**n samples")
@@ -683,6 +769,10 @@ def test_pm_demodulation():
     #assert phase_sig[check_range].is_close(expected_phase_sig[check_range], values_rtol=0.01)
         
 def fm_demodulation(sig, mode='fast'):
+    """
+    fm demodulation
+    based on differentiating the pm demodulation
+    """
     sig_phase = pm_demodulation(sig, mode)
     angular_freq = diff(sig_phase)
     freq = angular_freq.gain(1.0 / (2 * np.pi))
@@ -741,6 +831,10 @@ def test_am_demodulation_hilbert():
     
     
 def am_demodulation_convolution(sig, t_smooth):
+    """
+    params:
+    t_smooth is the width in domain units, that you want to smooth together
+    """
     warnings.warn("not tested well")
     n_samples_smooth = np.ceil(t_smooth * sig.sample_rate)
     mask_am = numpy_extension.normalize(np.ones(n_samples_smooth), ord=1)
