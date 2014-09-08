@@ -181,7 +181,7 @@ def plot(contin, fig=None, is_abs=False, fmt="-"):
     TODO: allow passing every parameter the plt.plot accepts. i.e - making ot a complete
     wrapper around plt.plot
     TODO: make sure somehow that all the plots on the same figure, share x axis dimensionallity
-    and rescale them
+    and rescale them - (fig, x_untis) tuple
     TODO: instead of putting units on y axis, use legend and put units there
     
     parameters:
