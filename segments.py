@@ -117,12 +117,16 @@ class Segments(object):
             the attribute of Segments we need
         range_ : Segment
             the range of interest
+            Note: range_ could also be another Segments instance,
+            with domain with the same units like self.attribute
+            it could be any object with the method is_each_in
             
         returns
         ---------------
         is_each_in : np.ndarray
             a boolian np.ndarray
         """
+        assert hasattr(range_, 'is_each_in')
         values = getattr(self, attribute)
         is_each_in = range_.is_each_in(values)
         return is_each_in
@@ -135,7 +139,7 @@ class Segments(object):
         
         parameters
         ---------------------
-        mode str
+        mode : str
             'include' (leave segments in range), 'remove' - remove segments in range
             
         returns
@@ -289,15 +293,14 @@ def filter_short_segments(segments, min_duration):
     """
     TODO: it should be based on filter_by_range
     """
-    is_each_long_enough = segments.durations > min_duration
-    return segments[is_each_long_enough]
+    return segments.filter_by_range('durations', Segment([0, min_duration]), mode='remove')
 #%%    
 def test_filter_short_segments():
-    starts = np.array([0, 2, 4, 10])
-    ends = np.array([1, 3, 5, 10.5])
+    starts = np.array([0, 2, 4, 10]) * uerg.meter
+    ends = np.array([1, 3, 5, 10.5]) * uerg.meter
     segments = Segments(starts, ends)
-    min_duration = 0.75
-    only_long_segments_expected = Segments(np.array([0, 2, 4]), np.array([1, 3, 5]))
+    min_duration = 0.75 * uerg.meter
+    only_long_segments_expected = Segments(np.array([0, 2, 4]) * uerg.meter, np.array([1, 3, 5]) * uerg.meter)
     only_long_segments = filter_short_segments(segments, min_duration)
     assert only_long_segments.is_close(only_long_segments_expected)
     
