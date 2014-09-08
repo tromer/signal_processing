@@ -28,7 +28,7 @@ ARBITRARY_UNITS_STR = "[AU]"
 
 class ContinuousData(object):
     """
-    Note: see also the object Pulses. they go hand in hand together, refer to different aspects of the same subjects
+    Note: see also the object Segments. they go hand in hand together, refer to different aspects of the same subjects
     this class represents any kind of continuous data (one dimensional).
     It includes a few kinds that first seem different from each other, has a lot in common.
     

@@ -12,8 +12,8 @@ import scipy as sp
 from scipy import  signal
 import matplotlib.pyplot as plt
 
-import pulses
-from pulses import Pulses
+import segments
+from segments import Segments
 import continuous_data
 from continuous_data import ContinuousDataEven
 
@@ -119,31 +119,31 @@ def threshold_crosses(sig, threshold, is_above=True):
     crossings_times = crossings_indexes * sig.sample_step + sig.first_sample
     starts = crossings_times[::2]
     ends = crossings_times[1::2]
-    return Pulses(starts, ends)
+    return Segments(starts, ends)
 #%%
 def test_threshold_crosses():
     sig = ContinuousDataEven(np.array([3, 3, 3, 0, 0, 0, 3, 3, 0]) * uerg.mamp, uerg.sec)
     threshold = 2 * uerg.mamp
     starts_expected = np.array([0, 6])
     ends_expected = np.array([3, 8])
-    pulses_expected = Pulses(starts_expected, ends_expected)
-    pulses = threshold_crosses(sig, threshold)
-    assert pulses.is_close(pulses_expected)
+    segments_expected = Segments(starts_expected, ends_expected)
+    segments = threshold_crosses(sig, threshold)
+    assert segments.is_close(pulses_expected)
     
 
 test_threshold_crosses()
 
 #%%
-def threshold_adjoin_filter_short_pulses(sig, threshold, max_distance, min_duration):
+def threshold_adjoin_filter_short_segments(sig, threshold, max_distance, min_duration):
     """
     concatanates 3 processes one after another:
-    threshold, adjoin, filter_short_pulses
+    threshold, adjoin, filter_short_segments
     """
     warnings.warn("not tested")
     p = threshold_crosses(sig, threshold)
-    # note that it's important to adjoin before filtering short pulses
-    p = pulses.adjoin_close_pulses(p, max_distance)
-    p = pulses.filter_short_pulses(p, min_duration)
+    # note that it's important to adjoin before filtering short segments
+    p = segments.adjoin_close_pulses(p, max_distance)
+    p = segments.filter_short_pulses(p, min_duration)
     return p
 
 #%%
@@ -186,7 +186,7 @@ test_data_to_continuous_histogram()
 def cluster1d(vec, resolution, threshold):
     """
     find main values in histigram. should be probably implemented
-    like finding pulses in every ContinuousData
+    like finding segments in every ContinuousData
     the only difference is defining a resolution here
     """
     raise NotImplementedError
