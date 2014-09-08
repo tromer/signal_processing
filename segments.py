@@ -5,6 +5,10 @@ Created on Wed Aug 27 19:14:13 2014
 @author: noam
 """
 
+import warnings
+#%%
+
+import pint_extension
 import numpy as np
 from segment import Segment
 from global_uerg import uerg
@@ -292,6 +296,8 @@ def adjoin_segments_max_distance(segments, max_distance):
     TODO: determine smartly max_distance, width of segments?
     TODO: iterative process
     """
+    assert segments.starts.dimensionality == max_distance.dimensionality
+    
     is_each_gap_big_enough = segments.end_to_start > max_distance
     is_each_real_start = np.concatenate([[True,], is_each_gap_big_enough])
     is_each_real_end = np.concatenate([is_each_gap_big_enough, [True,]])
@@ -303,11 +309,11 @@ def adjoin_segments_max_distance(segments, max_distance):
     """
 #%%
 def test_adjoin_segments_max_distance():
-    starts = np.array([0, 2, 4, 10])
-    ends = np.array([1, 3, 5, 11])
+    starts = np.array([0, 2, 4, 10]) * uerg.meter
+    ends = np.array([1, 3, 5, 11]) * uerg.meter
     segments = Segments(starts, ends)
-    max_distance = 2
-    adjoined_segments_expected = Segments(np.array([0, 10]), np.array([5, 11]))
+    max_distance = 2 * uerg.meter
+    adjoined_segments_expected = Segments(np.array([0, 10]) * uerg.meter, np.array([5, 11]) * uerg.meter)
     adjoined_segments = adjoin_segments_max_distance(segments, max_distance)
     assert adjoined_segments.is_close(adjoined_segments_expected)
     
@@ -334,19 +340,22 @@ def adjoin_segments_considering_durations(segments, segment_gap_ratio, absolute_
     adjoined_segments : Segments
     """
     assert segment_gap_ratio > 0
+    if hasattr(segment_gap_ratio, 'dimensionality'):
+        assert segment_gap_ratio.dimensionality == uerg.dimensionless.dimensionality
     
     durations = segments.durations
     reference_duration_for_each_gap = 0.5 * (durations[:-1] + durations[1:])
     if absolute_max_dist != None:
-        reference_duration_for_each_gap = np.minimum(reference_duration_for_each_gap, absolute_max_dist)
+        assert absolute_max_dist.dimensionality == segments.starts.dimensionality
+        reference_duration_for_each_gap = pint_extension.minimum(reference_duration_for_each_gap, absolute_max_dist)
     max_distance = reference_duration_for_each_gap * segment_gap_ratio
     adjoined_segments = adjoin_segments_max_distance(segments, max_distance)
     return adjoined_segments
     
 def test_adjoin_segments_considering_durations():
     # copied from test_adjoin_segments_max_distance
-    starts = np.array([0, 2, 4, 10])
-    ends = np.array([1, 3, 5, 11])
+    starts = np.array([0, 2, 4, 10]) * uerg.meter
+    ends = np.array([1, 3, 5, 11]) * uerg.meter
     segments = Segments(starts, ends)
     
     ratio = 1.2
@@ -360,7 +369,7 @@ def test_adjoin_segments_considering_durations():
     assert adjoined_segments.is_close(adjoined_segments_expected)
     
     ratio = 1.2
-    max_dist = 0.8
+    max_dist = 0.8 * uerg.meter
     adjoined_segments_expected = segments
     adjoined_segments = adjoin_segments_considering_durations(segments, ratio, max_dist)
     assert adjoined_segments.is_close(adjoined_segments_expected)
@@ -368,12 +377,29 @@ def test_adjoin_segments_considering_durations():
 test_adjoin_segments_considering_durations()
 
 #%%
-def adjoin_segments_iterable():
+def adjoin_segments(segments, delta=0, ratio=0, max_dist=None, n=1):
     """
-    obviously it works only with considering durations
-    thus the segments aggregate
+    parameters:
+    ----------------
+    n : int
+        number of iterations
     """
-    raise NotImplementedError
+    warnings.warn("adjoin_segments is not tested")
+    if delta != 0: 
+        assert delta.dimensionality == segments.starts.dimensionality
+    if max_dist != None:
+        assert max_dist.dimensionality == segments.starts.dimensionality
+    
+
+    adjoined_segments = segments
+    for i in xrange(n):
+        if delta != 0:
+            adjoined_segments = adjoin_segments_max_distance(adjoined_segments, delta)
+        if ratio != 0:
+            adjoined_segments = adjoin_segments_considering_durations(adjoined_segments, ratio, max_dist)
+            
+    return adjoin_segments
+    
 #%%
 def plot_quick(segments):
     raise NotImplementedError
