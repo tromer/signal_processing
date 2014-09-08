@@ -218,6 +218,25 @@ test_is_each_in_range()
 test_filter_by_range()
 
 #%%
+def filter_short_segments(segments, min_duration):
+    """
+    TODO: it should be based on filter_by_range
+    """
+    return segments.filter_by_range('durations', Segment([0, min_duration]), mode='remove')
+#%%    
+def test_filter_short_segments():
+    starts = np.array([0, 2, 4, 10]) * uerg.meter
+    ends = np.array([1, 3, 5, 10.5]) * uerg.meter
+    segments = Segments(starts, ends)
+    min_duration = 0.75 * uerg.meter
+    only_long_segments_expected = Segments(np.array([0, 2, 4]) * uerg.meter, np.array([1, 3, 5]) * uerg.meter)
+    only_long_segments = filter_short_segments(segments, min_duration)
+    assert only_long_segments.is_close(only_long_segments_expected)
+    
+    
+test_filter_short_segments()
+
+#%%
 def switch_segments_and_gaps(segments, absolute_start=None, absolute_end=None):
     """
     returns the gaps between the segments as a Segments instance
@@ -260,7 +279,7 @@ def test_switch_segments_and_gaps():
 test_switch_segments_and_gaps()
 
 #%%
-def adjoin_close_segments(segments, max_distance):
+def adjoin_segments_max_distance(segments, max_distance):
     """
     if the segments are close enough, maybe they represent the same segment of interest,
     that was "broken" due to noise / wring threshold / mistake
@@ -277,37 +296,62 @@ def adjoin_close_segments(segments, max_distance):
     then xoring with a shift to find ends and starts, then trim the edges
     """
 #%%
-def test_adjoin_close_segments():
+def test_adjoin_segments_max_distance():
     starts = np.array([0, 2, 4, 10])
     ends = np.array([1, 3, 5, 11])
     segments = Segments(starts, ends)
     max_distance = 2
     adjoined_segments_expected = Segments(np.array([0, 10]), np.array([5, 11]))
-    adjoined_segments = adjoin_close_segments(segments, max_distance)
+    adjoined_segments = adjoin_segments_max_distance(segments, max_distance)
     assert adjoined_segments.is_close(adjoined_segments_expected)
     
     
-test_adjoin_close_segments()
+test_adjoin_segments_max_distance()
 #%%
-def filter_short_segments(segments, min_duration):
+def adjoin_segments_considering_durations(segments, segment_gap_ratio):
     """
-    TODO: it should be based on filter_by_range
+    parameters:
+    -----------
+    segments : Segments
+        
+    segment_gap_ratio : float
+        positive
+        the ratio between the segment duration and max gap
+        
+    returns:
+    ---------
+    adjoined_segments : Segments
     """
-    return segments.filter_by_range('durations', Segment([0, min_duration]), mode='remove')
-#%%    
-def test_filter_short_segments():
-    starts = np.array([0, 2, 4, 10]) * uerg.meter
-    ends = np.array([1, 3, 5, 10.5]) * uerg.meter
+    assert segment_gap_ratio > 0
+    
+    durations = segments.durations
+    reference_duration_for_each_gap = 0.5 * (durations[:-1] + durations[1:])
+    max_distance = reference_duration_for_each_gap * segment_gap_ratio
+    adjoined_segments = adjoin_segments_max_distance(segments, max_distance)
+    return adjoined_segments
+    
+def test_adjoin_segments_considering_durations():
+    # copied from test_adjoin_segments_max_distance
+    starts = np.array([0, 2, 4, 10])
+    ends = np.array([1, 3, 5, 11])
     segments = Segments(starts, ends)
-    min_duration = 0.75 * uerg.meter
-    only_long_segments_expected = Segments(np.array([0, 2, 4]) * uerg.meter, np.array([1, 3, 5]) * uerg.meter)
-    only_long_segments = filter_short_segments(segments, min_duration)
-    assert only_long_segments.is_close(only_long_segments_expected)
     
+    ratio = 1.2
+    adjoined_segments_expected = Segments(np.array([0, 10]), np.array([5, 11]))
+    adjoined_segments = adjoin_segments_considering_durations(segments, ratio)
+    assert adjoined_segments.is_close(adjoined_segments_expected)
     
-test_filter_short_segments()
+    ratio = 0.8
+    adjoined_segments_expected = segments
+    adjoined_segments = adjoin_segments_considering_durations(segments, ratio)
+    assert adjoined_segments.is_close(adjoined_segments_expected)
+    
+test_adjoin_segments_considering_durations()
 
+#%%
+def adjoin_segments_iterable():
+    raise NotImplementedError
 #%%
 def plot_quick(segments):
     raise NotImplementedError
-    
+
