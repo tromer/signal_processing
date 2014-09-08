@@ -19,12 +19,24 @@ class Segment(object):
     def __init__(self, edges, unit=None):
         """
         parameters:
-        units is the units in case edges is without units
-        edges is a list / tuple / np.ndarray of length 2, which can have units
+        ----------------
+        edges : list / tuple / np.ndarray of length 2
+            can have units.
+            a leading zero can be without units, so Segments beginning
+            in 0 are easy to make
+        units : pint.Quantity
+            the units in case edges is without units
+        
         """
+        # protecting the data
+        edges = edges[:]
+        
         assert len(edges) == 2
         
         if hasattr(edges[1], 'units'):
+            # case leading 0
+            if edges[0] == 0 and not hasattr(edges[0], 'units'):
+                edges[0] = edges[0] * pint_extension.get_units(edges[1])
             edges = pint_extension.units_list_to_ndarray(edges)
         else:
             edges = np.array(edges) * unit
@@ -62,12 +74,22 @@ class Segment(object):
     def is_close(self, other, rtol=1e-5, atol=None):
         return pint_extension.allclose(self.edges, other.edges, rtol, atol)
         
+    def shift(self, delta):
+        """
+        returns:
+        ----------
+        shifted : Segment
+            the segment shifted by delta
+        """
+        raise NotImplementedError
+        
         
 def test_Segment():
     segment_1 = Segment(np.array([3, 5]) * uerg.meter)
     assert pint_extension.allclose(segment_1.start, 3 * uerg.meter)
     assert pint_extension.allclose(segment_1.end, 5 * uerg.meter)
     assert pint_extension.allclose(segment_1.edges, np.array([3,5]) * uerg.meter)
+    
     #print len(segment_1)
     #assert pint_extension.allclose(len(segment_1) , 2 * uerg.meter)
     assert 4 * uerg.meter in segment_1
@@ -80,6 +102,8 @@ def test_Segment():
     
     assert segment_1.is_close(Segment((3 * uerg.meter, 5 * uerg.meter)))
     assert segment_1.is_close(Segment((3, 5), uerg.meter))
+    
+    assert Segment([0, 1 * uerg.meter]).is_close(Segment([0, 1], uerg.meter))
     
     
 test_Segment()
