@@ -149,6 +149,22 @@ class Pulses(object):
             is_each_in = np.logical_not(is_each_in)
         
         return self[is_each_in]
+        
+    def _is_each_in_many_values(self, x):
+        raise NotImplementedError
+        
+    def _is_each_in_many_segments(self, x):
+        raise NotImplementedError
+        
+    def is_each_in(self, x):
+        """
+        returns
+        ------------
+        is_each_in : np.ndarray
+            a boolian array, for each value of x, whether it's
+            included in one of the segments
+        """
+        raise NotImplementedError
 
 def test_pulses():
     starts = np.array([0, 2, 4, 10])
@@ -203,6 +219,8 @@ def adjoin_close_pulses(pulses, max_distance):
     """
     if the segments are close enough, maybe they represent the same segment of interest,
     that was "broken" due to noise / wring threshold / mistake
+    TODO: determine smartly max_distance, width of pulses?
+    TODO: iterative process
     """
     is_each_gap_big_enough = pulses.end_to_start > max_distance
     is_each_real_start = np.concatenate([[True,], is_each_gap_big_enough])
