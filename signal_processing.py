@@ -19,86 +19,53 @@ from continuous_data import ContinuousDataEven
 
 import pint_extension
 from global_uerg import uerg
-#from . import ureg, Q_
+#%%
+
+
+"""
+this is a signal processing package.
+it's heavily based on numpy, scipy, and uses pint for units support.
+
+Data types
+---------------
+the package introduces a few data types to represent different datas
+easily and efficiently:
+1. ContinuousData - every continuous data, like signals.
+2. Segments - a quantisation / clustering / finding areas of interest
+within signals
+
+Processes
+-------------------
+various processes to manipulate ContinuousData and Segments:
+frequency filtering, adjoining segments together, filtering by some properties.
+automatic parameters finding for various processes (thresholds)
+
+
+
+"""
 
 IS_DEBUG = False
-#%%
-"""
-def mixer(sig, sample_rate, f_shift):
-    mixer_sig = np.cos(2 * np.pi * f_shift * 1.0 / sample_rate * np.arange(len(sig)))
-    return mixer_sig * sig
 
-    
-def lpf(sig, sample_rate, f_cut, mask_len=2 ** 6):
-    mask = sp.signal.firwin(mask_len, cutoff=f_cut, nyq=0.5 * sample_rate)
-    return np.convolve(sig, mask, mode='same')
-    
-def mixer_lpf(sig, sample_rate, f_min, f_max, mask_len=2 ** 6):
-    assert f_max > f_min
-    df = f_max - f_min
-    return lpf(mixer(sig, sample_rate, f_min), sample_rate, f_cut=df, mask_len=mask_len)
-    
-def pm_demodulation(sig, sample_rate):
-     # baed on hilbert
-    analytic_sig = sp.signal.hilbert(sig)
-    phase_wrapped = np.angle(analytic_sig)
-    phase = np.unwrap(phase_wrapped)
-    return phase
-    
-def fm_demodulation(sig, sample_rate):
-    phase = pm_demodulation(sig, sample_rate)
-    angular_freq = np.diff(phase) * sample_rate
-    freq = 1.0 / (2 * np.pi) * angular_freq
-    return freq
-    
-
-def test_pm_and_fm_demodulation():
-    sample_rate = 1.0
-    sample_step = 1.0 / sample_rate
-    time = np.arange(2 ** 10) * sample_step
-    freq = 0.15
-    sine = np.sin(2 * np.pi * freq * time)
-    pm_demo_sine = pm_demodulation(sine, sample_rate)
-    plt.figure()
-    plt.plot(time, pm_demo_sine)
-    plt.figure()
-    plt.plot(time[1:], fm_demodulation(sine, sample_rate))
-    
-
-#%%
-def test_mixer_lpf():
-    plt.close("all")
-    
-    sample_rate = 1 #Hz
-    sample_step = 1.0 / sample_rate
-    N = 2 ** 10
-    time = np.arange(N) * sample_step
-    freq = 0.15 # Hz
-    freq_shift = 0.10 # Hz
-    
-    sine = np.sin(2 * np.pi * freq * time)
-    mixed = mixer(sine, sample_rate, freq_shift)
-    filterred = lpf(mixed, sample_rate, freq)
-    
-    freqs = np.fft.fftfreq(N, 1.0 / sample_rate)
-    
-    plt.figure()
-    plt.xlabel("time")
-    plt.plot(time, sine, label="sine")
-    plt.plot(time, mixed, label="mixed")
-    plt.plot(time, filterred, label="filterred")
-    plt.legend(loc="best")
-    
-    plt.figure()
-    plt.xlabel("freq")
-    plt.plot(freqs, np.abs(np.fft.fft(sine, N)), label="sine")
-    plt.plot(freqs, np.abs(np.fft.fft(mixed, N)), label="mixed")
-    plt.plot(freqs, np.abs(np.fft.fft(filterred)), label="filterred")
-    plt.legend(loc="best")
-"""
-#%%
 def fast_convolve(sig, mask, mode):
-    """ type of input determine convolution algorithm """
+    """
+    determines which implementation of convolve to use, depending
+    on the properties of the inputs. chooses the faster algorithm,
+    between regular convolve, and fft-convolve
+    
+    parameters
+    --------------------
+    sig : ContinuousData
+        signal
+    mask : ContinuousData or np.ndarray
+    TODO: choose the signature
+    
+    returns
+    ------------
+    convolved_signal : ContinuousData
+    
+    
+
+    """
     raise NotImplementedError
     if case_regular:
         return np.convolve(sig, mask, mode)
@@ -108,7 +75,34 @@ def fast_convolve(sig, mask, mode):
 #%%
 def threshold_crosses(sig, threshold, is_above=True):
     """
-    returns the location in indexes of crossing up, crossing down
+    returns segments instance, where a given signal values are above
+    a certain threshold.
+    
+    parameters
+    --------------- 
+    sig : ContinuousData
+        a signal
+    threshold : float with units like the values of sig
+        TODO: for non-constant threshold, we may allow passing
+        a vector of values, or a thrshold which is a signal
+    is_above : bool
+        whether the segments of interest are above the threshold
+        
+    returns
+    -----------
+    segments : Segments
+    
+    
+    Note: this function assumes that the domain of the signal has
+    a mathematical order defined upon it. this applies to most
+    cases. exceptions are when the domain cells are modulu of
+    something, or frequencies.
+    if the domain is modulu derived / cyclic, it's still possible to
+    implement. the "first" sample is "connected" to the last.
+    we find the indexes of threshold crosses the same way,
+    we have a segments instance. now we just have to decide whether
+    it's the segments of interest, or the others are. we check a
+    single value in one of the segments to determine that
     """
     above = sig.values > threshold
     if not is_above:
@@ -135,6 +129,10 @@ test_threshold_crosses()
 
 #%%
 def threshold_adjoin_filter_short_pulses(sig, threshold, max_distance, min_duration):
+    """
+    concatanates 3 processes one after another:
+    threshold, adjoin, filter_short_pulses
+    """
     warnings.warn("not tested")
     p = threshold_crosses(sig, threshold)
     # note that it's important to adjoin before filtering short pulses
@@ -144,6 +142,15 @@ def threshold_adjoin_filter_short_pulses(sig, threshold, max_distance, min_durat
 
 #%%
 def data_to_continuous_histogram(a, bins=10, range_=None, weights=None, density=None):
+    """
+    returns a histogram of some data.
+    it's a wrap aroud pint_extension.histogram
+    
+    returns:
+    -------------
+    hist_continuous : ContinuousData
+        the histogram as a ContinuousData
+    """
     if not type(bins) == int:
         raise NotImplementedError
         # reurning not evenly sampled
@@ -171,6 +178,11 @@ test_data_to_continuous_histogram()
 
 #%%
 def cluster1d(vec, resolution, threshold):
+    """
+    find main values in histigram. should be probably implemented
+    like finding pulses in every ContinuousData
+    the only difference is defining a resolution here
+    """
     raise NotImplementedError
     bins_num = np.ceil(1.0 * vec.ptp() / resolution)
     hist, edges = pint_extension.histogram(vec, bins_num, density=True)
