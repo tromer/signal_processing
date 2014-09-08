@@ -283,6 +283,12 @@ def adjoin_segments_max_distance(segments, max_distance):
     """
     if the segments are close enough, maybe they represent the same segment of interest,
     that was "broken" due to noise / wring threshold / mistake
+
+    parameters:
+    ----------------
+    segments : Segments
+    max_distance : float with units like segments' domain.
+    
     TODO: determine smartly max_distance, width of segments?
     TODO: iterative process
     """
@@ -308,7 +314,7 @@ def test_adjoin_segments_max_distance():
     
 test_adjoin_segments_max_distance()
 #%%
-def adjoin_segments_considering_durations(segments, segment_gap_ratio):
+def adjoin_segments_considering_durations(segments, segment_gap_ratio, absolute_max_dist=None):
     """
     parameters:
     -----------
@@ -317,6 +323,11 @@ def adjoin_segments_considering_durations(segments, segment_gap_ratio):
     segment_gap_ratio : float
         positive
         the ratio between the segment duration and max gap
+
+    absolute_max_dist : float with units like segments' domain.
+        when the segments are very small, we want a big "reach",
+        so the segments stick together. when they are big,
+        we want to prevent them from sticking all together.
         
     returns:
     ---------
@@ -326,6 +337,8 @@ def adjoin_segments_considering_durations(segments, segment_gap_ratio):
     
     durations = segments.durations
     reference_duration_for_each_gap = 0.5 * (durations[:-1] + durations[1:])
+    if absolute_max_dist != None:
+        reference_duration_for_each_gap = np.minimum(reference_duration_for_each_gap, absolute_max_dist)
     max_distance = reference_duration_for_each_gap * segment_gap_ratio
     adjoined_segments = adjoin_segments_max_distance(segments, max_distance)
     return adjoined_segments
@@ -346,10 +359,20 @@ def test_adjoin_segments_considering_durations():
     adjoined_segments = adjoin_segments_considering_durations(segments, ratio)
     assert adjoined_segments.is_close(adjoined_segments_expected)
     
+    ratio = 1.2
+    max_dist = 0.8
+    adjoined_segments_expected = segments
+    adjoined_segments = adjoin_segments_considering_durations(segments, ratio, max_dist)
+    assert adjoined_segments.is_close(adjoined_segments_expected)
+
 test_adjoin_segments_considering_durations()
 
 #%%
 def adjoin_segments_iterable():
+    """
+    obviously it works only with considering durations
+    thus the segments aggregate
+    """
     raise NotImplementedError
 #%%
 def plot_quick(segments):
