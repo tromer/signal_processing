@@ -4,6 +4,7 @@ Created on Wed Aug 27 17:25:50 2014
 
 @author: noam
 """
+import warnings
 
 import numpy as np
 import scipy as sp
@@ -142,6 +143,14 @@ def test_histogram():
     assert allclose(edges, expected_edges)
     
 test_histogram()
+
+
+def minimum(a, b):
+    warnings.warn("not tested")
+    unit = get_units(a)
+    a = a.magnitude
+    b = b.to(unit).magnitude
+    return unit * np.minimum(a, b)
 
 #%%
 
