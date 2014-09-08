@@ -40,6 +40,12 @@ various processes to manipulate ContinuousData and Segments:
 frequency filtering, adjoining segments together, filtering by some properties.
 automatic parameters finding for various processes (thresholds)
 
+some conventions
+---------------------------------
+1. XXX is a marker of highly problematic process.
+2. is_each_..... a name for a boolian array which specifies whether
+each element in another array fullfils some condition. it's a mask.
+
 
 
 """
