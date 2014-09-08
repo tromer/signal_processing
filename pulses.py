@@ -213,6 +213,47 @@ test_pulses()
 test_is_each_in_range()
 test_filter_by_range()
 
+#%%
+def switch_pulses_and_gaps(pulses, absolute_start=None, absolute_end=None):
+    """
+    returns the gaps between the segments as a Segments instance
+    rational: sometimes it's easier to understand what are the segments which dosn't
+    interest us, and then switch
+    
+    parameters
+    --------------
+    segs : Segments
+    
+    absolute_start, absolute_end : of the same unit like pulses.starts
+        if given, they represent the edges of the "signal", and thus
+        create another "gap-segment" at the start / end.
+        
+    returns
+    ---------------
+    gaps: Segments
+        the gaps
+    
+    """
+    # maybe absolute start and end should be taken from the pulses object?
+    starts_gaps = pulses.ends[:-1]
+    ends_gaps = pulses.starts[1:]
+    if absolute_start:
+        starts_gaps = np.concatenate([np.ones(1) * absolute_start, starts_gaps])
+    if absolute_end:
+        ends_gaps = np.concatenate([ends_gaps, np.ones(1) * absolute_end])
+    
+    return Pulses(starts_gaps, ends_gaps)
+#%%
+def test_switch_pulses_and_gaps():
+    starts = np.array([0, 2, 4, 10])
+    ends = np.array([1, 3, 5, 10.5])
+    pulses = Pulses(starts, ends)
+    expected_gaps = Pulses(np.array([1, 3, 5]), np.array([2, 4, 10]))
+    gaps = switch_pulses_and_gaps(pulses)
+    assert gaps.is_close(expected_gaps)
+    
+
+test_switch_pulses_and_gaps()
 
 #%%
 def adjoin_close_pulses(pulses, max_distance):
@@ -262,47 +303,6 @@ def test_filter_short_pulses():
     
     
 test_filter_short_pulses()
-#%%
-def switch_pulses_and_gaps(pulses, absolute_start=None, absolute_end=None):
-    """
-    returns the gaps between the segments as a Segments instance
-    rational: sometimes it's easier to understand what are the segments which dosn't
-    interest us, and then switch
-    
-    parameters
-    --------------
-    segs : Segments
-    
-    absolute_start, absolute_end : of the same unit like pulses.starts
-        if given, they represent the edges of the "signal", and thus
-        create another "gap-segment" at the start / end.
-        
-    returns
-    ---------------
-    gaps: Segments
-        the gaps
-    
-    """
-    # maybe absolute start and end should be taken from the pulses object?
-    starts_gaps = pulses.ends[:-1]
-    ends_gaps = pulses.starts[1:]
-    if absolute_start:
-        starts_gaps = np.concatenate([np.ones(1) * absolute_start, starts_gaps])
-    if absolute_end:
-        ends_gaps = np.concatenate([ends_gaps, np.ones(1) * absolute_end])
-    
-    return Pulses(starts_gaps, ends_gaps)
-#%%
-def test_switch_pulses_and_gaps():
-    starts = np.array([0, 2, 4, 10])
-    ends = np.array([1, 3, 5, 10.5])
-    pulses = Pulses(starts, ends)
-    expected_gaps = Pulses(np.array([1, 3, 5]), np.array([2, 4, 10]))
-    gaps = switch_pulses_and_gaps(pulses)
-    assert gaps.is_close(expected_gaps)
-    
-
-test_switch_pulses_and_gaps()
 
 #%%
 def plot_quick(pulses):
