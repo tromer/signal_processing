@@ -74,9 +74,9 @@ def test_Segment():
     assert not 2 * uerg.meter in segment_1
     assert np.allclose(np.array([True, True]), segment_1.is_each_in(np.array([4, 4]) * uerg.meter))
     
-    assert segment_1.is_close(range_1)
+    assert segment_1.is_close(segment_1)
     segment_2 = Segment(np.array([3, 4]) * uerg.meter)
-    assert not segment_1.is_close(range_2)
+    assert not segment_1.is_close(segment_2)
     
     assert segment_1.is_close(Segment((3 * uerg.meter, 5 * uerg.meter)))
     assert segment_1.is_close(Segment((3, 5), uerg.meter))

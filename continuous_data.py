@@ -384,10 +384,10 @@ def test_abs():
     sig_abs = sig.abs()
     assert sig_abs.is_close(expected_sig_abs)
     
-def test_trim_to_power_of_2():
+def test_trim_to_power_of_2_XXX():
     sig = ContinuousDataEven(uerg.mamp * np.arange(12), 1 * uerg.sec)
     expected_sig_trim = ContinuousDataEven(uerg.mamp * np.arange(8), 1 * uerg.sec)
-    sig_trim = sig.trim_to_power_of_2()
+    sig_trim = sig.trim_to_power_of_2_XXX()
     assert sig_trim.is_close(expected_sig_trim)
     
 test_ContinuousDataEven()
@@ -398,7 +398,7 @@ test___add__()
 test___sub__()
 test___mul__()
 test_abs()
-test_trim_to_power_of_2()
+test_trim_to_power_of_2_XXX()
 
 #%%
 def determine_fft_len(n_samples, mode='accurate'):

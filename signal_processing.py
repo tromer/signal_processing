@@ -128,7 +128,7 @@ def test_threshold_crosses():
     ends_expected = np.array([3, 8])
     segments_expected = Segments(starts_expected, ends_expected)
     segments = threshold_crosses(sig, threshold)
-    assert segments.is_close(pulses_expected)
+    assert segments.is_close(segments_expected)
     
 
 test_threshold_crosses()
@@ -142,8 +142,8 @@ def threshold_adjoin_filter_short_segments(sig, threshold, max_distance, min_dur
     warnings.warn("not tested")
     p = threshold_crosses(sig, threshold)
     # note that it's important to adjoin before filtering short segments
-    p = segments.adjoin_close_pulses(p, max_distance)
-    p = segments.filter_short_pulses(p, min_duration)
+    p = segments.adjoin_close_segments(p, max_distance)
+    p = segments.filter_short_segments(p, min_duration)
     return p
 
 #%%

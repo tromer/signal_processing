@@ -136,7 +136,7 @@ class Segments(object):
         parameters
         ---------------------
         mode str
-            'include' (leave segments in range), 'remove' - remove pulses in range
+            'include' (leave segments in range), 'remove' - remove segments in range
             
         returns
         ----------
@@ -214,7 +214,7 @@ test_is_each_in_range()
 test_filter_by_range()
 
 #%%
-def switch_segments_and_gaps(pulses, absolute_start=None, absolute_end=None):
+def switch_segments_and_gaps(segments, absolute_start=None, absolute_end=None):
     """
     returns the gaps between the segments as a Segments instance
     rational: sometimes it's easier to understand what are the segments which dosn't
@@ -249,14 +249,14 @@ def test_switch_segments_and_gaps():
     ends = np.array([1, 3, 5, 10.5])
     segments = Segments(starts, ends)
     expected_gaps = Segments(np.array([1, 3, 5]), np.array([2, 4, 10]))
-    gaps = switch_segments_and_gaps(pulses)
+    gaps = switch_segments_and_gaps(segments)
     assert gaps.is_close(expected_gaps)
     
 
 test_switch_segments_and_gaps()
 
 #%%
-def adjoin_close_segments(pulses, max_distance):
+def adjoin_close_segments(segments, max_distance):
     """
     if the segments are close enough, maybe they represent the same segment of interest,
     that was "broken" due to noise / wring threshold / mistake
@@ -266,7 +266,7 @@ def adjoin_close_segments(pulses, max_distance):
     is_each_gap_big_enough = segments.end_to_start > max_distance
     is_each_real_start = np.concatenate([[True,], is_each_gap_big_enough])
     is_each_real_end = np.concatenate([is_each_gap_big_enough, [True,]])
-    return Segments(segments.starts[is_each_real_start], pulses.ends[is_each_real_end])
+    return Segments(segments.starts[is_each_real_start], segments.ends[is_each_real_end])
     
     """
     another approach is: raw_signal -> threshold -> convolve with mask=np.ones(n, dtype=bool)
@@ -279,13 +279,13 @@ def test_adjoin_close_segments():
     segments = Segments(starts, ends)
     max_distance = 2
     adjoined_segments_expected = Segments(np.array([0, 10]), np.array([5, 11]))
-    adjoined_segments = adjoin_close_pulses(pulses, max_distance)
-    assert adjoined_segments.is_close(adjoined_pulses_expected)
+    adjoined_segments = adjoin_close_segments(segments, max_distance)
+    assert adjoined_segments.is_close(adjoined_segments_expected)
     
     
 test_adjoin_close_segments()
 #%%
-def filter_short_segments(pulses, min_duration):
+def filter_short_segments(segments, min_duration):
     """
     TODO: it should be based on filter_by_range
     """
@@ -298,8 +298,8 @@ def test_filter_short_segments():
     segments = Segments(starts, ends)
     min_duration = 0.75
     only_long_segments_expected = Segments(np.array([0, 2, 4]), np.array([1, 3, 5]))
-    only_long_segments = filter_short_pulses(pulses, min_duration)
-    assert only_long_segments.is_close(only_long_pulses_expected)
+    only_long_segments = filter_short_segments(segments, min_duration)
+    assert only_long_segments.is_close(only_long_segments_expected)
     
     
 test_filter_short_segments()
