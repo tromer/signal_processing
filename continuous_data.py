@@ -16,7 +16,7 @@ import matplotlib.pyplot as plt
 from global_uerg import uerg
 
 
-from Range import Range
+from segment import Segment
 import numpy_extension
 import pint_extension
 
@@ -153,7 +153,7 @@ def test_ContinuousData():
     assert not sig.is_close(ContinuousData(vals, t + 1 * uerg.sec))
     assert not sig.is_close(ContinuousData(vals + 1 * uerg.volt, t))
 
-    t_range = Range(np.array([2.5, 6.5]) * uerg.sec)
+    t_range = Segment(np.array([2.5, 6.5]) * uerg.sec)
     expected_slice = np.arange(3,7)
     expected_sig_middle = ContinuousData(vals[expected_slice], t[expected_slice])
     sig_middle = sig[t_range]
@@ -324,7 +324,7 @@ def test_ContinuousDataEven():
     assert pint_extension.allclose(sig.first_sample, 0 * sample_step)
     
     # testing a __getitem__ (slicing) is mostly copied from the tester of ContinuousData
-    t_range = Range(np.array([2.5, 6.5]) * uerg.sec)
+    t_range = Segment(np.array([2.5, 6.5]) * uerg.sec)
     expected_slice = np.arange(3,7)
     expected_sig_middle = ContinuousDataEven(values[expected_slice], sample_step, expected_slice[0] * sample_step)
     sig_middle = sig[t_range]
@@ -612,7 +612,7 @@ def band_pass_filter(sig, freq_range, mask_len):
     band pass filter of ContinuousDataEven
     
     parameters:
-    freq_range: a Range of frequencies
+    freq_range: a Segment of frequencies
     
     implemented using np.convolve with a mask. maybe with fft is better
     """
@@ -633,7 +633,7 @@ def test_band_pass_filter():
     np.random.seed(13)
     white_noise = ContinuousDataEven((np.random.rand(2048) - 0.5)* uerg.mamp, sample_step)
     white_noise_spec = fft(white_noise)
-    freq_range = Range(np.array([0.3, 0.4]) * uerg.Hz)
+    freq_range = Segment(np.array([0.3, 0.4]) * uerg.Hz)
     white_noise_filterred = band_pass_filter(white_noise, freq_range, 32)
     white_noise_filterred_spec = fft(white_noise_filterred)
     plot_quick(white_noise_spec, is_abs=True)
@@ -743,7 +743,7 @@ def pm_demodulation(sig, mode='fast'):
     return ContinuousDataEven(phase, analytic_sig.sample_step, analytic_sig.first_sample)
     
 def test_pm_demodulation():
-    check_range = Range(np.array([2, 30]) * uerg.ksec)
+    check_range = Segment(np.array([2, 30]) * uerg.ksec)
     sample_step = 1.0 * uerg.sec
     time = np.arange(2 ** 15) * sample_step
     freq = 0.15 * uerg.Hz
@@ -780,7 +780,7 @@ def fm_demodulation(sig, mode='fast'):
     
 def test_fm_demodulation():
     # copied from test_pm_demodulation
-    check_range = Range(np.array([2, 30]) * uerg.ksec)
+    check_range = Segment(np.array([2, 30]) * uerg.ksec)
     sample_step = 1.0 * uerg.sec
     time = np.arange(2 ** 15) * sample_step
     freq = 0.15 * uerg.Hz
@@ -800,7 +800,7 @@ def am_demodulation_hilbert(sig, mode='fast'):
     return sig_am
     
 def test_am_demodulation_hilbert():
-    check_range = Range(np.array([2, 30]) * uerg.ksec)
+    check_range = Segment(np.array([2, 30]) * uerg.ksec)
     sample_step = 1.0 * uerg.sec
     n_samples = 2 ** 15
     freq = 0.15 * uerg.Hz
@@ -842,7 +842,7 @@ def am_demodulation_convolution(sig, t_smooth):
     return ContinuousDataEven(values_am, sig.sample_step, sig.first_sample)
 
 def test_am_demodulation_convolution():
-    check_range = Range(np.array([2, 30]) * uerg.ksec)
+    check_range = Segment(np.array([2, 30]) * uerg.ksec)
     sample_step = 1.0 * uerg.sec
     n_samples = 2 ** 15
     freq_1 = 0.15 * uerg.Hz
@@ -877,12 +877,12 @@ def test_am_demodulation_convolution():
 def am_demodulation_filter(sig, dt_smooth, mask_len):
     warnings.warn("not tested well")
     top_freq = 1.0 / dt_smooth
-    band = Range([1e-12 * pint_extension.get_units(top_freq), top_freq])
+    band = Segment([1e-12 * pint_extension.get_units(top_freq), top_freq])
     return band_pass_filter(sig.abs(), band, mask_len = mask_len)
     
 
 def test_am_demodulation_filter():
-    check_range = Range(np.array([2, 30]) * uerg.ksec)
+    check_range = Segment(np.array([2, 30]) * uerg.ksec)
     sample_step = 1.0 * uerg.sec
     n_samples = 2 ** 15
     freq_1 = 0.15 * uerg.Hz

@@ -6,7 +6,7 @@ Created on Wed Aug 27 19:14:13 2014
 """
 
 import numpy as np
-from Range import Range
+from segment import Segment
 from global_uerg import uerg
 #%%
 class Pulses(object):
@@ -115,7 +115,7 @@ class Pulses(object):
         -------------------------
         attribute : str
             the attribute of Segments we need
-        range_ : Range
+        range_ : Segment
             the range of interest
             
         returns
@@ -191,7 +191,7 @@ def test_is_each_in_range():
     ends = np.array([1, 3, 5, 10.5]) * uerg.sec
     p = Pulses(starts, ends)
     
-    duration_range = Range([0.8, 1.2], uerg.sec)
+    duration_range = Segment([0.8, 1.2], uerg.sec)
     expected_is_each_in = np.array([True, True, True, False])
     is_each_in = p.is_each_in_range('durations', duration_range)
     assert np.allclose(is_each_in, expected_is_each_in)
@@ -202,7 +202,7 @@ def test_filter_by_range():
     ends = np.array([1, 3, 5, 10.5]) * uerg.sec
     p = Pulses(starts, ends)
     
-    duration_range = Range([0.8, 1.2], uerg.sec)
+    duration_range = Segment([0.8, 1.2], uerg.sec)
     expected_is_each_in = np.array([True, True, True, False])
     expected_p_filterred = p[expected_is_each_in]
     p_filterred = p.filter_by_range('durations', duration_range)
