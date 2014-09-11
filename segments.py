@@ -355,10 +355,14 @@ def adjoin_segments_considering_durations(segments, segment_gap_ratio, absolute_
     
     durations = segments.durations
     reference_duration_for_each_gap = 0.5 * (durations[:-1] + durations[1:])
+    max_distance_due_to_duration = reference_duration_for_each_gap * segment_gap_ratio
+    
     if absolute_max_dist != None:
         assert absolute_max_dist.dimensionality == segments.starts.dimensionality
-        reference_duration_for_each_gap = pint_extension.minimum(reference_duration_for_each_gap, absolute_max_dist)
-    max_distance = reference_duration_for_each_gap * segment_gap_ratio
+        max_distance = pint_extension.minimum(max_distance_due_to_duration, absolute_max_dist)
+    else:
+        max_distance = max_distance_due_to_duration
+    
     adjoined_segments = adjoin_segments_max_distance(segments, max_distance)
     return adjoined_segments
     
