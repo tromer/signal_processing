@@ -60,6 +60,8 @@ class Segments(object):
         
     TODO: maybe allow the definition of a segment with +inf or -inf as edge.
         probably only for container type
+        
+    TODO: add tests that refer to segments with units. it's not tested well enough
     """
     def __init__(self, starts, ends):
         """
@@ -91,7 +93,8 @@ class Segments(object):
         
     @property
     def start_to_start(self):
-        return np.diff(self.starts)
+        # return np.diff(self.starts) # not working because of units
+        return self.starts[1:] - self.starts[:-1]
         
     @property
     def end_to_end(self):
