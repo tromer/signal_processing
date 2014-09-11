@@ -52,6 +52,14 @@ class Segments(object):
     Note:
     2. this class is intentioned to be used with units. it's real world measurements.
     
+    
+    TODO: add methods, or functions for unifying segments, for intersection,
+        for subtruction. so on. it's natural. It may make it easier to remove
+        unwanted segments..
+        maybe this should be only for "container type"
+        
+    TODO: maybe allow the definition of a segment with +inf or -inf as edge.
+        probably only for container type
     """
     def __init__(self, starts, ends):
         """
@@ -295,6 +303,8 @@ def adjoin_segments_max_distance(segments, max_distance):
     
     TODO: determine smartly max_distance, width of segments?
     TODO: iterative process
+    IMPROVE: not a max distance - but a range of distances.
+        thus it's possible to not allow some unwanted distances
     """
     assert segments.starts.dimensionality == max_distance.dimensionality
     
@@ -398,7 +408,7 @@ def adjoin_segments(segments, delta=0, ratio=0, max_dist=None, n=1):
         if ratio != 0:
             adjoined_segments = adjoin_segments_considering_durations(adjoined_segments, ratio, max_dist)
             
-    return adjoin_segments
+    return adjoined_segments
     
 #%%
 def plot_quick(segments):
