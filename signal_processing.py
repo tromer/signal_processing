@@ -183,6 +183,20 @@ def test_data_to_continuous_histogram():
 test_data_to_continuous_histogram()
 
 #%%
+def signal_values_hist(contin, bins=10, range_=None, weights=None, density=None):
+    """
+    returns the histogram of the values of a ContinuousData
+    a wrap around data_to_continuous_histogram
+    
+    returns:
+    -----------
+    hist : ContinuousData
+    """
+    warnings.warn("signal_value_hist is not tested")
+    hist = data_to_continuous_histogram(contin.values, bins, range_, weights, density)
+    return hist
+
+#%%
 def cluster1d(vec, resolution, threshold):
     """
     find main values in histigram. should be probably implemented
