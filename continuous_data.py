@@ -118,6 +118,13 @@ class ContinuousData(object):
     """
     
     def __getitem__(self, domain_range):
+        """
+        parameters:
+        -------------
+        domain_range : Segment
+            the range, from the domain, of which we want the slice.
+            for example: which time range?
+        """
         is_each_in_range = domain_range.is_each_in(self.domain_samples)
         return ContinuousData(self.values[is_each_in_range], self.domain_samples[is_each_in_range])
         
@@ -254,6 +261,14 @@ class ContinuousDataEven(ContinuousData):
         return np.arange(len(self.values)) * self.sample_step + self.first_sample
         
     def __getitem__(self, domain_range):
+        """
+        Note: it's coppied from __getitem__ of ContinuousData
+        parameters:
+        -------------
+        domain_range : Segment
+            the range, from the domain, of which we want the slice.
+            for example: which time range?
+        """
         bottom_index = np.ceil(1.0 * domain_range.start / self.sample_step)
         top_index = np.floor(domain_range.end / self.sample_step)
         return ContinuousDataEven(self.values[bottom_index:top_index + 1], self.sample_step, first_sample=bottom_index * self.sample_step)
