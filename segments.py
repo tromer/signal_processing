@@ -110,7 +110,10 @@ class Segments(object):
         return self.starts[1:] - self.ends[:-1]
         
     def __getitem__(self, key):
-        return Segments(self.starts[key], self.ends[key])
+        if type(key) == int:
+            return Segment([self.starts[key], self.ends[key]])
+        elif type(key) in [type(slice(0,1)), np.ndarray]:
+            return Segments(self.starts[key], self.ends[key])
         
     def is_close(self, other, rtol=1e-05, atol=1e-08):
         """
@@ -200,10 +203,10 @@ class Segments(object):
             raise ValueError("cannot convert to single segment")
 
 def test_segments():
-    starts = np.array([0, 2, 4, 10])
-    ends = np.array([1, 3, 5, 10.5])
+    starts = np.array([0, 2, 4, 10]) * uerg.sec
+    ends = np.array([1, 3, 5, 10.5]) * uerg.sec
     durations = ends - starts
-    start_to_start = np.diff(starts)
+    start_to_start = starts[1:] - starts[:-1]
     end_to_start = starts[1:] - ends[:-1]
     is_each_in = np.array([True, True, False, False])
     s = slice(1, 3)
@@ -215,8 +218,17 @@ def test_segments():
     assert np.allclose(durations, p.durations)
     assert np.allclose(start_to_start, p.start_to_start)
     assert np.allclose(end_to_start, p.end_to_start)
+    # __getitem__
     assert np.allclose(starts[is_each_in], p[is_each_in].starts)
     assert np.allclose(starts[s], p[s].starts)
+    """
+    print p
+    print p.starts
+    print p.starts[0]
+    print p[0]
+    print type(p[0])
+    """
+    assert p[0].is_close(Segment([0,1], uerg.sec))
     assert p.is_close(p)
     
 def test_is_each_in_range():
