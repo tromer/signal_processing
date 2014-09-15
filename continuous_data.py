@@ -124,6 +124,9 @@ class ContinuousData(object):
         domain_range : Segment
             the range, from the domain, of which we want the slice.
             for example: which time range?
+            
+        TODO: since the domain samples should be sorted, maybe there
+        is a more efficient implementation
         """
         is_each_in_range = domain_range.is_each_in(self.domain_samples)
         return ContinuousData(self.values[is_each_in_range], self.domain_samples[is_each_in_range])
