@@ -338,12 +338,15 @@ def test_adjoin_segments_max_distance():
     
 test_adjoin_segments_max_distance()
 #%%
-def adjoin_segments_considering_durations(segments, segment_gap_ratio, absolute_max_dist=None):
+def adjoin_segments_considering_durations(segments, segment_gap_ratio, absolute_max_dist=None, mode='mean'):
     """
+    to determine whether to adjoin two nearby segments, we consider their durations and the gap duration.
+    we calculate a reference_duration for each gap, for comparison
+    
     parameters:
     -----------
     segments : Segments
-        
+    
     segment_gap_ratio : float
         positive
         the ratio between the segment duration and max gap
@@ -352,7 +355,13 @@ def adjoin_segments_considering_durations(segments, segment_gap_ratio, absolute_
         when the segments are very small, we want a big "reach",
         so the segments stick together. when they are big,
         we want to prevent them from sticking all together.
-        
+    
+    mode : str
+      the reference_duration is determined by the durations before and after the gap.
+      'mean'
+      'min'
+      'max'
+      
     returns:
     ---------
     adjoined_segments : Segments
@@ -362,7 +371,15 @@ def adjoin_segments_considering_durations(segments, segment_gap_ratio, absolute_
         assert segment_gap_ratio.dimensionality == uerg.dimensionless.dimensionality
     
     durations = segments.durations
-    reference_duration_for_each_gap = 0.5 * (durations[:-1] + durations[1:])
+    
+    if mode == 'mean':
+        reference_duration_for_each_gap = 0.5 * (durations[:-1] + durations[1:])
+    elif mode == 'min':
+        reference_duration_for_each_gap = pint_extension.minimum(durations[:-1], durations[1:])
+    elif mode == 'max':
+        raise NotImplementedError
+        reference_duration_for_each_gap = pint_extension.maximum(durations[:-1], durations[1:])
+        
     max_distance_due_to_duration = reference_duration_for_each_gap * segment_gap_ratio
     
     if absolute_max_dist != None:
@@ -381,7 +398,7 @@ def test_adjoin_segments_considering_durations():
     segments = Segments(starts, ends)
     
     ratio = 1.2
-    adjoined_segments_expected = Segments(np.array([0, 10]), np.array([5, 11]))
+    adjoined_segments_expected = Segments(np.array([0, 10]) * uerg.meter, np.array([5, 11]) * uerg.meter)
     adjoined_segments = adjoin_segments_considering_durations(segments, ratio)
     assert adjoined_segments.is_close(adjoined_segments_expected)
     
@@ -396,7 +413,37 @@ def test_adjoin_segments_considering_durations():
     adjoined_segments = adjoin_segments_considering_durations(segments, ratio, max_dist)
     assert adjoined_segments.is_close(adjoined_segments_expected)
 
+def test_adjoin_segments_considering_durations_mode_min():
+    starts = np.array([0, 2]) * uerg.meter
+    ends = np.array([1, 2.1]) * uerg.meter
+    segments = Segments(starts, ends)    
+
+    ratio = 1.2
+    adjoined_segments_expected = segments
+    adjoined_segments = adjoin_segments_considering_durations(segments, ratio, mode='min')
+    assert adjoined_segments.is_close(adjoined_segments_expected)
+    
+    starts = np.array([0, 1]) * uerg.meter
+    ends = np.array([0.1, 2]) * uerg.meter
+    segments = Segments(starts, ends)    
+
+    ratio = 1.2
+    adjoined_segments_expected = segments
+    adjoined_segments = adjoin_segments_considering_durations(segments, ratio, mode='min')
+    assert adjoined_segments.is_close(adjoined_segments_expected)
+
+    starts = np.array([0, 2]) * uerg.meter
+    ends = np.array([1, 3]) * uerg.meter
+    segments = Segments(starts, ends)    
+
+    ratio = 1.2
+    adjoined_segments_expected = Segments(np.array([0,]) * uerg.meter, np.array([3,]) * uerg.meter)
+    adjoined_segments = adjoin_segments_considering_durations(segments, ratio, mode='min')
+    assert adjoined_segments.is_close(adjoined_segments_expected)
+
+    
 test_adjoin_segments_considering_durations()
+test_adjoin_segments_considering_durations_mode_min()
 
 #%%
 def adjoin_segments(segments, delta=0, ratio=0, max_dist=None, n=1):
