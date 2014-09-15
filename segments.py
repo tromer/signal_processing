@@ -13,6 +13,8 @@ import numpy as np
 from segment import Segment
 from global_uerg import uerg
 #%%
+import matplotlib.pyplot as plt
+#%%
 class Segments(object):
     """
     Note: see also the object ContinuousData. they go hand in hand together, refer to different aspects of the same subjects
@@ -432,7 +434,13 @@ def mark_starts_ends(segments, fig, color_start='r', color_end='g'):
     lines_start
     lines_end
     """
-    raise NotImplementedError
+    warnings.warn("mark_starts_ends not tested, careful with units")
+    plt.figure(fig.number)
+    y_min, y_max = plt.ylim()
+    starts_lines = plt.vlines(segments.starts, y_min, y_max, colors=color_start, label='starts')
+    ends_lines = plt.vlines(segments.ends, y_min, y_max, colors=color_end, label='ends')
+    plt.legend(loc='best')
+    return starts_lines, ends_lines
     
 def plot_quick(segments):
     raise NotImplementedError
