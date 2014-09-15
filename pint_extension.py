@@ -151,6 +151,15 @@ def minimum(a, b):
     a = a.magnitude
     b = b.to(unit).magnitude
     return unit * np.minimum(a, b)
+    
+def maximum(a, b):
+    warnings.warn("not tested")
+    # copied from pint_extension.minimum
+    unit = get_units(a)
+    a = a.magnitude
+    b = b.to(unit).magnitude
+    return unit * np.maximum(a, b)
+    
 
 #%%
 
