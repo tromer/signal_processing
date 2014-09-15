@@ -189,6 +189,15 @@ class Segments(object):
             included in one of the segments
         """
         raise NotImplementedError
+        
+    def is_single_segment(self):
+        return len(self) == 1
+        
+    def to_single_segment(self):
+        if self.is_single_segment():
+            return Segment([self.starts[0], self.ends[0]])
+        else:
+            raise ValueError("cannot convert to single segment")
 
 def test_segments():
     starts = np.array([0, 2, 4, 10])
@@ -232,10 +241,32 @@ def test_filter_by_range():
     p_filterred = p.filter_by_range('durations', duration_range)
     assert p_filterred.is_close(expected_p_filterred)
     
+
+def test_is_single_segment():
+    starts = np.array([0,]) * uerg.sec
+    ends = np.array([1,]) * uerg.sec
+    p = Segments(starts, ends)
+    assert p.is_single_segment()
+    
+    starts = np.array([0, 2]) * uerg.sec
+    ends = np.array([1, 3]) * uerg.sec
+    p = Segments(starts, ends)
+    assert not p.is_single_segment()
+    
+def test_to_single_segment():
+    starts = np.array([0,]) * uerg.sec
+    ends = np.array([1,]) * uerg.sec
+    p = Segments(starts, ends)
+    expected_single_segment = Segment([0,1], uerg.sec)
+    single_segment = p.to_single_segment()
+    assert single_segment.is_close(expected_single_segment)
+    
     
 test_segments()
 test_is_each_in_range()
 test_filter_by_range()
+test_is_single_segment()
+test_to_single_segment()
 
 #%%
 def filter_short_segments(segments, min_duration):
