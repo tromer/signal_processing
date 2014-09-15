@@ -227,6 +227,17 @@ def plot(contin, fig=None, is_abs=False, fmt="-"):
     #raise NotImplementedError
         # return fig, axes??
 
+
+def plot_under(contin, fig, is_abs=False, fmt="-"):
+    """
+    add subplot of the signal, to an existing plot of another signal.
+    the x axis would be coordinated.
+    should enable easier examining of signals
+    
+    TODO: maybe add parameter of subplot or something
+    """
+    raise NotImplementedError
+
 #%%    
 class ContinuousDataEven(ContinuousData):
     """
