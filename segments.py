@@ -28,7 +28,10 @@ class Segments(object):
     
     it may be used to calculate some properties of each Segment, that are some kind of summation
     of all the samples within the Segment
-    such as: mean amplitude, max amplitude, total number of occurances
+    such as:
+    * mean amplitude
+    * max amplitude
+    * total number of occurances (histogram) / total energy (pulse)
     
     2. Segments that are "containers", used to filter / sort / mark same samples of
     an existing ContinuousData
