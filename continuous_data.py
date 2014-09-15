@@ -436,9 +436,13 @@ def determine_fft_len(n_samples, mode='accurate'):
     if mode is not 'accurate', it's a power of 2
     
     parameters:
-    n_samples
-    mode - 'accurate' like n, 'trim' - smaller then n, 'zero-pad' - bigger then n
-    'closer' - either trim or zero pad, depends which is closer (logarithmic scale)
+    --------------
+    n_samples : int
+    mode : str
+        'accurate' like n
+        'trim' - smaller then n
+        'zero-pad' - bigger then n
+        'closer' - either trim or zero pad, depends which is closer (logarithmic scale)
     """
     modes_dict = {'trim': 'smaller', 'zero-pad' : 'bigger', 'fast' : 'closer'}
     if mode == 'accurate':
@@ -457,11 +461,23 @@ def test_determine_fft_len():
 test_determine_fft_len()
     
 #%%
-def fft(contin, n=None, mode='fast'):
+def fft(contin, n=None, mode='accurate'):
     """
     fft of a ContinuousData instance.
     implemented only for ContinuousDataEven
     a wrap arround np.fft.fft
+    
+    parameters:
+    ----------------
+    n : int
+        number of samples for fft
+    
+    mode : str
+        copied from determine_fft_len
+        'accurate' like n
+        'trim' - smaller then n
+        'zero-pad' - bigger then n
+        'closer' - either trim or zero pad, depends which is closer (logarithmic scale)    
     
     returns: a ContinuousDataEven object that represents the spectrum
     the frequencies are considerred from -0.5 nyq frequency to 0.5 nyq frequency
