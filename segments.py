@@ -445,3 +445,26 @@ def mark_starts_ends(segments, fig, color_start='r', color_end='g'):
 def plot_quick(segments):
     raise NotImplementedError
 
+
+class SegmentsOfContinuous(Segments):
+    """
+    
+    
+    """
+    def __init__(self, starts, ends, source):
+        self._starts = starts
+        self._ends = ends
+        self._source = source
+        
+    @property
+    def source(self):
+        return self._source
+        
+    def each_max_abs_value(self):
+        raise NotImplementedError
+    
+    def each_mean_abs_value(self):
+        raise NotImplementedError
+        
+    def each_integral_value_domain(self):
+        raise NotImplementedError
