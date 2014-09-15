@@ -418,6 +418,19 @@ def adjoin_segments(segments, delta=0, ratio=0, max_dist=None, n=1):
     return adjoined_segments
     
 #%%
+    
+def mark_starts_ends(segments, fig, color_start='r', color_end='g'):
+    """
+    get a figure and plot on it vertical lines according to
+    starts and ends
+    
+    returns:
+    -----------
+    lines_start
+    lines_end
+    """
+    raise NotImplementedError
+    
 def plot_quick(segments):
     raise NotImplementedError
 
