@@ -293,12 +293,27 @@ class ContinuousDataEven(ContinuousData):
         pint_extension.allclose(self.first_sample, other.first_sample) and \
         pint_extension.allclose(self.sample_step, other.sample_step)
         
-    def __add__(self, other):
-        if self.is_same_domain_samples(other):
-            return ContinuousDataEven(self.values + other.values, self.sample_step, self.first_sample)
-            
+    def _extract_values_from_other_for_continuous_data_arithmetic(self, other):
+        """
+        core method to help arithmency between methods
+        """
+        if type(other) == uerg.Quantity:
+            if type(other.magnitude) in [np.ndarray,]:
+                raise ValueError("add const value, or other ContinuousData with same domain samples")
+            else:
+                values = other
         else:
-            raise NotImplementedError
+            # TODO: add gaurdian, that other is another ContinuousData
+            if not self.is_same_domain_samples(other):
+                raise ValueError("diffrent domain samples")
+            else:
+                values = other.values        
+        
+        return values
+        
+    def __add__(self, other):
+        values = self._extract_values_from_other_for_continuous_data_arithmetic(other)    
+        return ContinuousDataEven(self.values + values, self.sample_step, self.first_sample)
             
     def __sub__(self, other):
         if self.is_same_domain_samples(other):
@@ -392,9 +407,25 @@ def test_is_same_domain_samples():
     assert not ContinuousDataEven(vals_1,step_1, start_1).is_same_domain_samples(ContinuousDataEven(vals_1, step_1, start_2))
     assert not ContinuousDataEven(vals_1, step_1).is_same_domain_samples(ContinuousDataEven(vals_3, step_1))
 
+def test__extract_values_from_other_for_continuous_data_arithmetic():
+    # copied from test___add__
+    sig = ContinuousDataEven(np.arange(10) * uerg.mamp, uerg.sec)
+    expected_values = sig.values
+    values = sig._extract_values_from_other_for_continuous_data_arithmetic(sig)
+    assert pint_extension.allclose(values, expected_values)
+    
+    num = 2 * uerg.mamp
+    expected_values = num
+    values = sig._extract_values_from_other_for_continuous_data_arithmetic(num)
+    assert pint_extension.allclose(values, expected_values)
+
 def test___add__():
     sig = ContinuousDataEven(np.arange(10) * uerg.mamp, uerg.sec)
     assert (sig + sig).is_close(sig.gain(2))
+    num = 2 * uerg.mamp
+    add_1 = sig + num
+    expected_add_1 = ContinuousDataEven((2 + np.arange(10)) * uerg.mamp, uerg.sec)
+    assert add_1.is_close(expected_add_1)
     
 def test___sub__():
     sig = ContinuousDataEven(np.arange(10) * uerg.mamp, uerg.sec)
@@ -424,6 +455,7 @@ test_ContinuousDataEven()
 test_down_sample()
 test_gain()
 test_is_same_domain_samples()
+test__extract_values_from_other_for_continuous_data_arithmetic()
 test___add__()
 test___sub__()
 test___mul__()
