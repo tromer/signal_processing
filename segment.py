@@ -7,6 +7,7 @@ Created on Sat Aug 30 02:57:11 2014
 import numpy as np
 import pint_extension
 from global_uerg import uerg
+import operator
 #%%
 
 
@@ -44,14 +45,23 @@ class Segment(object):
         self._edges = edges #should take care of case where it's a toople. mind units!
         
     @classmethod
-    def from_center(cls, center_and_deviation, unit=None):
+    def from_center(cls, center, half_width=None, width=None, unit=None):
         """
         construct a Segment based on center value, and deviation (half width)
         
         http://coding.derkeiler.com/Archive/Python/comp.lang.python/2005-02/1294.html
         http://stackoverflow.com/a/682545
         """
-        raise NotImplementedError
+        if not operator.xor(half_width == None, width == None):
+            raise ValueError("given both half width and width, or not at all")
+        else:
+            if width != None:
+                half_width = 0.5 * width
+        
+        edges = [center - half_width, center + half_width]
+        return cls(edges, unit)
+        
+        
         
     @property
     def start(self):
@@ -120,6 +130,15 @@ def test_Segment():
     assert segment_1.is_close(Segment((3, 5), uerg.meter))
     
     assert Segment([0, 1 * uerg.meter]).is_close(Segment([0, 1], uerg.meter))
-    
+
+def test_from_center():
+    segment_1 = Segment(np.array([3, 5]) * uerg.meter)
+    segment_2 = Segment.from_center(4, half_width=1, unit=uerg.meter)
+    segment_3 = Segment.from_center(4, width=2, unit=uerg.meter)
+    segment_4 = Segment.from_center(4, width=1, unit=uerg.meter)
+    assert segment_1.is_close(segment_2)
+    assert segment_1.is_close(segment_3)
+    assert not segment_1.is_close(segment_4)
     
 test_Segment()
+test_from_center()
