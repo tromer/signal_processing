@@ -756,6 +756,9 @@ def read_wav(filename, domain_unit=uerg.sec, first_sample=0, value_unit=uerg.mil
     channels
         if it's list, it says which channels to return
     
+    XXX TODO: understand whether it reads 16pcm correctly. it's not sure
+    some source:
+    http://nbviewer.ipython.org/github/mgeier/python-audio/blob/master/audio-files/audio-files-with-scipy-io.ipynb#Reading
     
     returns:
     ------------
