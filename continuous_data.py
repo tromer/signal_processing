@@ -191,7 +191,7 @@ def plot(contin, fig=None, is_abs=False, fmt="-"):
     add a plot of ContinuousData instance, to an existing figure
     TODO: allow passing every parameter the plt.plot accepts. i.e - making ot a complete
     wrapper around plt.plot
-    TODO: make sure somehow that all the plots on the same figure, share x axis dimensionallity
+    TODO: make sure somehow that all the plots on the same figure, share x axis dimensionality
     and rescale them - (fig, x_untis) tuple
     TODO: instead of putting units on y axis, use legend and put units there
     
@@ -753,14 +753,17 @@ def read_wav(filename, domain_unit=uerg.sec, first_sample=0, value_unit=uerg.mil
     return sig
     #return signal
     
-def write_wav_return_units(contin, filename):
+def write_wav(contin, filename):
     """
     write contin to wav file, and return the units of the axis, and the first sample
     
     Note: I didn't think deeply about the signature of this function
+    TODO: add way to rescale between the domain unit and sec
     """
-    raise NotImplementedError
-    return domain_unit, first_sample, value_unit
+    if contin.domain_samples.dimensionality != uerg.sec.dimensionality:
+        raise NotImplementedError
+    else:
+        sp.io.wavfile.write(filename, rate=contin.sample_rate.to(uerg.Hz).magnitude, data=contin.values.magnitude)
    
 def test_read_wav():
     values = np.arange(10) * uerg.milliamp
@@ -774,7 +777,21 @@ def test_read_wav():
     assert sig.is_close(sig_read)
     f_temp.close()
     
+def test_write_wav():
+    # copied from test_read_wav
+    values = np.arange(10) * uerg.milliamp
+    sample_rate = 1.0 * uerg.Hz
+    sig = ContinuousDataEven(values, 1.0 / sample_rate)
+    
+    f_temp = tempfile.TemporaryFile()
+    write_wav(sig, f_temp)
+    sig_read = read_wav(f_temp)
+    
+    assert sig.is_close(sig_read)
+    f_temp.close()    
+    
 test_read_wav()
+test_write_wav()
     
     
 #%%
