@@ -45,18 +45,24 @@ class Segment(object):
         self._edges = edges #should take care of case where it's a toople. mind units!
         
     @classmethod
-    def from_center(cls, center, half_width=None, width=None, unit=None):
+    def from_center(cls, center, deviation, unit=None, mode='half_width'):
         """
         construct a Segment based on center value, and deviation (half width)
         
         http://coding.derkeiler.com/Archive/Python/comp.lang.python/2005-02/1294.html
         http://stackoverflow.com/a/682545
+        
+        parameters:
+        -----------------
+        mode : str
+            'half_width', default
+            'width'
         """
-        if not operator.xor(half_width == None, width == None):
-            raise ValueError("given both half width and width, or not at all")
-        else:
-            if width != None:
-                half_width = 0.5 * width
+        
+        if mode == 'half_width':
+            half_width = deviation
+        elif mode == 'width':
+            half_width = 0.5 * deviation
         
         edges = [center - half_width, center + half_width]
         return cls(edges, unit)
@@ -133,9 +139,9 @@ def test_Segment():
 
 def test_from_center():
     segment_1 = Segment(np.array([3, 5]) * uerg.meter)
-    segment_2 = Segment.from_center(4, half_width=1, unit=uerg.meter)
-    segment_3 = Segment.from_center(4, width=2, unit=uerg.meter)
-    segment_4 = Segment.from_center(4, width=1, unit=uerg.meter)
+    segment_2 = Segment.from_center(4, 1, uerg.meter)
+    segment_3 = Segment.from_center(4, 2, uerg.meter, mode='width')
+    segment_4 = Segment.from_center(4, 1, uerg.meter, mode='width')
     assert segment_1.is_close(segment_2)
     assert segment_1.is_close(segment_3)
     assert not segment_1.is_close(segment_4)
