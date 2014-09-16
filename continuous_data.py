@@ -759,6 +759,13 @@ def write_wav(contin, filename):
     
     Note: I didn't think deeply about the signature of this function
     TODO: add way to rescale between the domain unit and sec
+    
+    example
+    --------------
+    s = continuous_data.read_wav("/home/noam/lab_project/Dropbox/Noam/Periodic recordings for Noam/fast-evo1-chassis-10100-C3000-N200_ettus.wav")
+    s_cut = s[Segment([5.720, 6.610], uerg.sec)]
+    continuous_data.write_wav(s_cut, "/home/noam/lab_project/Dropbox/Noam/Periodic recordings for Noam/fast-evo1-chassis-10100-C3000-N200_ettus_cut.wav")
+
     """
     if contin.domain_samples.dimensionality != uerg.sec.dimensionality:
         raise NotImplementedError
