@@ -54,6 +54,8 @@ IS_DEBUG = False
 
 def fast_convolve(sig, mask, mode):
     """
+    XXX XXX this function was put at scipy_extension as a mathematical
+    function
     determines which implementation of convolve to use, depending
     on the properties of the inputs. chooses the faster algorithm,
     between regular convolve, and fft-convolve
