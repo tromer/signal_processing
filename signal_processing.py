@@ -91,6 +91,7 @@ def threshold_crosses(sig, threshold, is_above=True):
     threshold : float with units like the values of sig
         TODO: for non-constant threshold, we may allow passing
         a vector of values, or a thrshold which is a signal
+        TODO: allow passing a range of allowed thresholds
     is_above : bool
         whether the segments of interest are above the threshold
         
