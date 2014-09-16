@@ -314,20 +314,25 @@ class ContinuousDataEven(ContinuousData):
     def __add__(self, other):
         values = self._extract_values_from_other_for_continuous_data_arithmetic(other)    
         return ContinuousDataEven(self.values + values, self.sample_step, self.first_sample)
+        
+    def __radd__(self, other):
+        raise NotImplementedError
+        return self + other
             
     def __sub__(self, other):
-        if self.is_same_domain_samples(other):
-            return ContinuousDataEven(self.values - other.values, self.sample_step, self.first_sample)
-            
-        else:
-            raise NotImplementedError
+        # TODO: add test for operation with num
+        values = self._extract_values_from_other_for_continuous_data_arithmetic(other)    
+        return ContinuousDataEven(self.values - values, self.sample_step, self.first_sample)           
+
             
     def __mul__(self, other):
-        if self.is_same_domain_samples(other):
-            return ContinuousDataEven(self.values * other.values, self.sample_step, self.first_sample)
-            
-        else:
-            raise NotImplementedError
+        # TODO: add test for operation with num
+        values = self._extract_values_from_other_for_continuous_data_arithmetic(other)    
+        return ContinuousDataEven(self.values * values, self.sample_step, self.first_sample)            
+
+    def __rmul__(self, other):
+        raise NotImplementedError
+        return self * other
     
     def abs(self):
         return ContinuousDataEven(np.abs(self.values), self.sample_step, self.first_sample)
