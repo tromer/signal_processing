@@ -736,11 +736,31 @@ def test_band_pass_filter():
 
 
 
-def read_wav(filename, domain_unit=uerg.sec, first_sample=0, value_unit=uerg.milliamp, expected_sample_rate_and_tolerance=None):
+def read_wav(filename, domain_unit=uerg.sec, first_sample=0, value_unit=uerg.milliamp, expected_sample_rate_and_tolerance=None, channels=None):
     """
     read wav file to ContinuousDataEven.
     implemented only for one channal
     for multiple channels we probably want to return a list of ContinuousDataEven
+    
+    parameters:
+    ------------
+    domain_unit
+        the unit of the domain. usually sec
+    
+    first_sample
+        in case it's not 0
+        
+    value_unit
+        the unit of the values
+        
+    channels
+        if it's list, it says which channels to return
+    
+    
+    returns:
+    ------------
+    if channels == None, returns signal
+    if channels != None, returns a list of signals
     """
     sample_rate, raw_sig = sp.io.wavfile.read(filename)
     sample_rate = 1.0 * sample_rate / domain_unit
@@ -749,8 +769,20 @@ def read_wav(filename, domain_unit=uerg.sec, first_sample=0, value_unit=uerg.mil
         # shold raise a meaningful excepion.
         assert np.abs(sample_rate - expected_sample_rate_and_tolerance[0] < expected_sample_rate_and_tolerance[1])
     
-    sig = ContinuousDataEven(raw_sig, 1.0 / sample_rate, first_sample)
-    return sig
+    if channels == None:
+        sig = ContinuousDataEven(raw_sig, 1.0 / sample_rate, first_sample)
+        return sig
+        
+    else:
+        warnings.warn("reading multiple channels is not tested")
+        sig_list = []
+        for c in channels:
+            sig_c = ContinuousDataEven(raw_sig[:, c], 1.0 / sample_rate, first_sample)
+            sig_list.append(sig_c)
+        
+        return sig_list
+            
+        
     #return signal
     
 def write_wav(contin, filename):
