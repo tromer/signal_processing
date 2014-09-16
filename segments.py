@@ -93,6 +93,11 @@ class Segments(object):
         return self._ends
         
     @property
+    def centers(self):
+        raise NotImplementedError
+        return 0.5 * (self.starts + self.ends)
+        
+    @property
     def durations(self):
         return self.ends - self.starts
         

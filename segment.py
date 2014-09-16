@@ -51,6 +51,11 @@ class Segment(object):
         return self._edges[1]
         
     @property
+    def center(self):
+        raise NotImplementedError
+        return 0.5 * (self.start + self.end)
+        
+    @property
     def edges(self):
         return self._edges
         
