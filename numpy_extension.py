@@ -7,6 +7,24 @@ Created on Thu Aug 21 17:49:27 2014
 
 import numpy as np
 
+def is_power_of_2(n):
+    """
+    checks whether a number is a power of 2
+    
+    returns:
+    bool
+    """
+    if n < 0:
+        raise ValueError
+
+    return int(np.log2(n)) == np.log2(n)
+
+def test_is_power_of_2():
+    assert is_power_of_2(2)
+    assert is_power_of_2(32)
+    assert not is_power_of_2(2.1)
+    assert not is_power_of_2(3)
+    
 def close_power_of_2(n, mode='smaller'):
     """
     find the a close power of 2 of an int.
@@ -68,6 +86,7 @@ def test_normalize():
     
 test_close_power_of_2()
 test_normalize()
+test_is_power_of_2()
 
 #%%
 def running_max(vec, m):
