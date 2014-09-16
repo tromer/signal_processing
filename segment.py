@@ -42,6 +42,17 @@ class Segment(object):
             edges = np.array(edges) * unit
                 
         self._edges = edges #should take care of case where it's a toople. mind units!
+        
+    @classmethod
+    def from_center(cls, center_and_deviation, unit=None):
+        """
+        construct a Segment based on center value, and deviation (half width)
+        
+        http://coding.derkeiler.com/Archive/Python/comp.lang.python/2005-02/1294.html
+        http://stackoverflow.com/a/682545
+        """
+        raise NotImplementedError
+        
     @property
     def start(self):
         return self._edges[0]
