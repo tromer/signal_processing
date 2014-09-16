@@ -79,7 +79,6 @@ class Segment(object):
         
     @property
     def center(self):
-        raise NotImplementedError
         return 0.5 * (self.start + self.end)
         
     @property
@@ -88,8 +87,11 @@ class Segment(object):
         
     @property
     def width(self):
-        raise NotImplementedError
         return self.end - self.start
+        
+    @property
+    def width_half(self):
+        return 0.5 * self.width
     
     """   
     def __len__(self):
@@ -121,6 +123,9 @@ def test_Segment():
     assert pint_extension.allclose(segment_1.start, 3 * uerg.meter)
     assert pint_extension.allclose(segment_1.end, 5 * uerg.meter)
     assert pint_extension.allclose(segment_1.edges, np.array([3,5]) * uerg.meter)
+    assert pint_extension.allclose(segment_1.center, 4 *uerg.meter)
+    assert pint_extension.allclose(segment_1.width, 2 * uerg.meter)
+    assert pint_extension.allclose(segment_1.width_half, 1 * uerg.meter)
     
     #print len(segment_1)
     #assert pint_extension.allclose(len(segment_1) , 2 * uerg.meter)
