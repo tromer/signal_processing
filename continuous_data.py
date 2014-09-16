@@ -518,6 +518,10 @@ def test_fft():
     
 test_fft()
 #%%
+
+def generate_const(sample_step, n_samples, value):
+    raise NotImplementedError
+
 def generate_sine(sample_step, n_samples, amplitude, sine_freq, phase_at_0=0, first_sample=0):
     """
     returns:
