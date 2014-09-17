@@ -912,7 +912,9 @@ def read_wav(filename, domain_unit=uerg.sec, first_sample=0, value_unit=uerg.mil
     raw_sig = raw_sig * value_unit
     if expected_sample_rate_and_tolerance != None:
         # shold raise a meaningful excepion.
-        assert np.abs(sample_rate - expected_sample_rate_and_tolerance[0] < expected_sample_rate_and_tolerance[1])
+        is_sample_rate_as_expected = np.abs(sample_rate - expected_sample_rate_and_tolerance[0]) < expected_sample_rate_and_tolerance[1]
+        if not is_sample_rate_as_expected:
+            warnings.warn("sample rate is not as expected")
     
     if channels == None:
         sig = ContinuousDataEven(raw_sig, 1.0 / sample_rate, first_sample)
