@@ -436,6 +436,7 @@ class ContinuousDataEven(ContinuousData):
             channels object is another option, but I think that it's a bad idea
             since the chunks do not share the domain samples. (different time)
         maybe should enable passing Segment, or Segments to specify where to chunk
+        cope with case the signal is too short compared to chunk asked
         
         """
         n_samples_chunk = np.ceil(domain_duration / self.sample_step)
