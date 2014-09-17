@@ -199,6 +199,18 @@ def signal_values_hist(contin, bins=10, range_=None, weights=None, density=None)
     hist = data_to_continuous_histogram(contin.values, bins, range_, weights, density)
     return hist
 
+
+def mark_threshold(fig, threshold, colors="y", label="threshold"):
+    """
+    
+    """
+    warnings.warn("bad behaviour of units, just strips them, not tested")
+    plt.figure(fig.number)
+    x_min, x_max = plt.xlim()
+    threshlines = plt.hlines(threshold.magnitude, x_min, x_max, colors=colors, label=label)
+    plt.legend(loc='best')
+    return threshlines
+
 #%%
 def cluster1d(vec, resolution, threshold):
     """
