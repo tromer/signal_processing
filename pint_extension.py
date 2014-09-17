@@ -56,10 +56,16 @@ test_allclose()
 def get_units(x):
     """
     helper function to get 1 with the same units like x
+    """
+    
+    """
     I didn't find any pint option to do that,
     and the implementatino is ugly, based on devision with the magnitude
     XXX
     """
+    
+    """
+    old old old old 
     if type(x.magnitude) == np.ndarray:
         x_ = x[np.nonzero(x)]
         if len(x) == 0:
@@ -69,6 +75,8 @@ def get_units(x):
         if x.magnitude == 0:
             raise NotImplementedError
         return 1.0 * x / x.magnitude
+    """
+    return Q_(1.0, x.units)
         
 def test_get_units():
     x = 3 * uerg.meter
