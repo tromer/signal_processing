@@ -207,6 +207,12 @@ class Segments(object):
         else:
             raise ValueError("cannot convert to single segment")
 
+    def tofile(self, f):
+        """
+        read doc of fromfile
+        """
+        raise NotImplementedError
+    
 def test_segments():
     starts = np.array([0, 2, 4, 10]) * uerg.sec
     ends = np.array([1, 3, 5, 10.5]) * uerg.sec
@@ -540,6 +546,16 @@ def mark_starts_ends(segments, fig, color_start='r', color_end='g'):
 def plot_quick(segments):
     raise NotImplementedError
 
+
+def fromfile(f):
+    """
+    reads Segments instance from file
+    TODO
+    --------
+    decide which format. probably csv, what about the units?
+    put them in the headers?
+    """
+    raise NotImplementedError
 
 class SegmentsOfContinuous(Segments):
     """

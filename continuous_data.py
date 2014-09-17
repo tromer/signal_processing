@@ -149,6 +149,12 @@ class ContinuousData(object):
         # maybe there is an issue regarding using DFT or IDTF, depending the domain
         # maybe it should be an extra param. seying which one to use
         # maybe should be an external function, not a method
+        
+    def tofile(self, f):
+        """
+        read the docs of fromfile
+        """
+        raise NotImplementedError
 
 def test_ContinuousData():
     t = np.arange(10) * uerg.sec
@@ -835,6 +841,18 @@ def test_write_wav():
 test_read_wav()
 test_write_wav()
     
+    
+#%%
+def fromfile(f):
+    """
+    read ContinuousData / ContinuousDataEven from file
+    TODO:
+    ---------
+    decide about file format.
+    probably a folder with wav file, and txt/csv/xml file for units
+    etc
+    """
+    raise NotImplementedError
     
 #%%
     
