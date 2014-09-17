@@ -9,7 +9,7 @@ import warnings
 import numpy as np
 import scipy as sp
 from scipy import signal
-from global_uerg import uerg
+from global_uerg import uerg, Q_
 
 #%%
 #from . import ureg, Q_

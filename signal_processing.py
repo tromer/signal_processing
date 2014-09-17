@@ -18,7 +18,7 @@ import continuous_data
 from continuous_data import ContinuousDataEven
 
 import pint_extension
-from global_uerg import uerg
+from global_uerg import uerg, Q_
 #%%
 
 

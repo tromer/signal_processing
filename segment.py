@@ -6,7 +6,7 @@ Created on Sat Aug 30 02:57:11 2014
 """
 import numpy as np
 import pint_extension
-from global_uerg import uerg
+from global_uerg import uerg, Q_
 import operator
 #%%
 
