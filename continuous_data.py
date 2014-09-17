@@ -284,6 +284,29 @@ class ContinuousDataEven(ContinuousData):
         return self._first_sample
         
     @property
+    def total_domain_range(self):
+        """
+        
+        returns:
+        ------------
+        domain_range : Segment
+        """
+        raise NotImplementedError
+        
+    @property
+    def total_domain_width(self):
+        """
+        returns the total length of the signal
+        
+        Note:
+        maybe it's possible to base the implementation on total_domain_range
+        at the moment it's done differently
+        
+        TODO: use this method as a first check in comparison
+        """
+        return self.n_samples * self.sample_step
+        
+    @property
     def domain_samples(self):
         #print "******"
         #print self.values
@@ -406,34 +429,36 @@ class ContinuousDataEven(ContinuousData):
         mayeb should return a sig array object, or channels....
         """
         raise NotImplementedError
-        chunks_odd = []
-        chunks_even = []
         n_samples_chunk = np.ceil(domain_duration / self.sample_step)
         if is_power_of_2_samples:
             n_samples_chunk = numpy_extension.close_power_of_2(n_samples_chunk, 'bigger')
-            
+
         n_samples_tot = self.n_samples
         n_of_chunks_odd = np.floor(n_samples_tot / n_samples_chunk)
         n_of_chunks_even = np.floor((n_samples_tot - 0.5 * n_samples_chunk) / n_samples_chunk)
-        
-        chunks_odd_data = self.values[:n_samples_chunk * n_of_chunks_odd].reshape((n_samples_chunk, n_of_chunks_odd))
-        chunks_even_data = self.values[0.5 * n_samples_chunk : n_samples_chunk * n_of_chunks_even].reshape((n_samples_chunk, n_of_chunks_even))
-        
+
+        chunks_odd = []
+        chunks_odd_data = self.values[:n_samples_chunk * n_of_chunks_odd].reshape((n_samples_chunk, n_of_chunks_odd))        
         chunk_odd_first_samples = self.first_sample + self.sample_step * n_samples_chunk * np.arange(n_of_chunks_odd)
-        chunk_even_first_samples = self.first_sample + self.sample_step * 0.5 * n_samples_chunk + self.sample_step * n_samples_chunk * np.arange(n_of_chunks_odd)
-        
         assert chunks_odd_data.shape[1] == len(chunk_odd_first_samples)
-        assert chunks_even_data.shape[1] == len(chunk_even_first_samples)
-        
+
         for i in xrange(len(chunk_odd_first_samples)):
             chunk = ContinuousDataEven(chunks_odd_data[:,i], self.sample_step, chunk_odd_first_samples[i])
             chunks_odd.append(chunk)
-            
-        for i in xrange(len(chunk_even_first_samples)):
-            chunk = ContinuousDataEven(chunks_even_data[:,i], self.sample_step, chunk_even_first_samples[i])
-            chunks_even.append(chunk)
-            
-        chunks = chunks_odd + chunks_even
+
+        if not is_overlap:
+            chunks = chunks_odd
+        else:
+            chunks_even = []
+            chunks_even_data = self.values[0.5 * n_samples_chunk : n_samples_chunk * n_of_chunks_even].reshape((n_samples_chunk, n_of_chunks_even))
+            chunk_even_first_samples = self.first_sample + self.sample_step * 0.5 * n_samples_chunk + self.sample_step * n_samples_chunk * np.arange(n_of_chunks_odd)        
+            assert chunks_even_data.shape[1] == len(chunk_even_first_samples)
+                
+            for i in xrange(len(chunk_even_first_samples)):
+                chunk = ContinuousDataEven(chunks_even_data[:,i], self.sample_step, chunk_even_first_samples[i])
+                chunks_even.append(chunk)
+                
+            chunks = chunks_odd + chunks_even
     
         if mode_last_chunk != 'throw':
             raise NotImplementedError
@@ -449,6 +474,7 @@ def test_ContinuousDataEven():
     assert pint_extension.allclose(sig.sample_step, sample_step)
     assert pint_extension.allclose(sig.sample_rate, 1.0 / sample_step)
     assert pint_extension.allclose(sig.values, values)
+    assert pint_extension.allclose(sig.total_domain_width, 10 * uerg.sec)
     assert pint_extension.allclose(sig.domain_samples, np.arange(10) * sample_step)
     assert sig.is_close(ContinuousData(values, np.arange(10) * sample_step))
     assert pint_extension.allclose(sig.first_sample, 0 * sample_step)
@@ -535,6 +561,14 @@ def test_trim_to_power_of_2_XXX():
     expected_sig_trim = ContinuousDataEven(uerg.mamp * np.arange(8), 1 * uerg.sec)
     sig_trim = sig.trim_to_power_of_2_XXX()
     assert sig_trim.is_close(expected_sig_trim)
+
+
+def test_get_chunks():
+    N = 32
+    sig = ContinuousDataEven(np.arange(N) * uerg.mamp, uerg.sec)
+    chunk_duration = 3 * uerg.sec
+    raise NotImplementedError
+    
     
 test_ContinuousDataEven()
 test_down_sample()
@@ -546,7 +580,7 @@ test___sub__()
 test___mul__()
 test_abs()
 test_trim_to_power_of_2_XXX()
-
+#test_get_chunks()
 #%%
 def determine_fft_len(n_samples, mode='accurate'):
     """
