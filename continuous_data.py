@@ -399,11 +399,11 @@ class ContinuousDataEven(ContinuousData):
         assert trimmed.n_samples == new_n
         return trimmed
         
-    def get_chunks(self, domain_duration, is_power_of_2_samples=True, is_overlap=True, mode_last_chunk='throw'):
+    def get_chunks(self, domain_duration, is_power_of_2_samples=True, is_overlap=False, mode_last_chunk='throw'):
         """
         get small chunks of the signal
         
-        parameters:
+        parameters
         -----------------
         domain_duration : uerg.Quantity
             the duration / len / width of the chunk
@@ -417,7 +417,7 @@ class ContinuousDataEven(ContinuousData):
             what to do with the last chunk, which is smaller?
             'throw' - just don't give it back
             
-        returns:
+        returns
         ----------
         a list of signals.
         if performence issues erise, it's better to return a
@@ -426,19 +426,21 @@ class ContinuousDataEven(ContinuousData):
         TODO:
         --------
         there is a lot of code duplication with the odd and even
-        mayeb should return a sig array object, or channels....
+        maybe should return a sig array object
+            channels object is another option, but I think that it's a bad idea
+            since the chunks do not share the domain samples. (different time)
+        maybe should enable passing Segment, or Segments to specify where to chunk
+        
         """
-        raise NotImplementedError
         n_samples_chunk = np.ceil(domain_duration / self.sample_step)
         if is_power_of_2_samples:
             n_samples_chunk = numpy_extension.close_power_of_2(n_samples_chunk, 'bigger')
 
-        n_samples_tot = self.n_samples
-        n_of_chunks_odd = np.floor(n_samples_tot / n_samples_chunk)
-        n_of_chunks_even = np.floor((n_samples_tot - 0.5 * n_samples_chunk) / n_samples_chunk)
+        n_samples_tot = self.n_samples   
 
         chunks_odd = []
-        chunks_odd_data = self.values[:n_samples_chunk * n_of_chunks_odd].reshape((n_samples_chunk, n_of_chunks_odd))        
+        n_of_chunks_odd = np.floor(n_samples_tot / n_samples_chunk)
+        chunks_odd_data = self.values[:n_samples_chunk * n_of_chunks_odd].reshape((n_of_chunks_odd, n_samples_chunk)).transpose()
         chunk_odd_first_samples = self.first_sample + self.sample_step * n_samples_chunk * np.arange(n_of_chunks_odd)
         assert chunks_odd_data.shape[1] == len(chunk_odd_first_samples)
 
@@ -450,8 +452,9 @@ class ContinuousDataEven(ContinuousData):
             chunks = chunks_odd
         else:
             chunks_even = []
-            chunks_even_data = self.values[0.5 * n_samples_chunk : n_samples_chunk * n_of_chunks_even].reshape((n_samples_chunk, n_of_chunks_even))
-            chunk_even_first_samples = self.first_sample + self.sample_step * 0.5 * n_samples_chunk + self.sample_step * n_samples_chunk * np.arange(n_of_chunks_odd)        
+            n_of_chunks_even = np.floor((n_samples_tot - 0.5 * n_samples_chunk) / n_samples_chunk)
+            chunks_even_data = self.values[0.5 * n_samples_chunk : 0.5 * n_samples_chunk + n_samples_chunk * n_of_chunks_even].reshape((n_of_chunks_even, n_samples_chunk)).transpose()
+            chunk_even_first_samples = self.first_sample + self.sample_step * 0.5 * n_samples_chunk + self.sample_step * n_samples_chunk * np.arange(n_of_chunks_even)
             assert chunks_even_data.shape[1] == len(chunk_even_first_samples)
                 
             for i in xrange(len(chunk_even_first_samples)):
@@ -567,7 +570,18 @@ def test_get_chunks():
     N = 32
     sig = ContinuousDataEven(np.arange(N) * uerg.mamp, uerg.sec)
     chunk_duration = 3 * uerg.sec
-    raise NotImplementedError
+    chunked_odd = sig.get_chunks(chunk_duration, is_overlap=False)
+    chunked = sig.get_chunks(chunk_duration, is_overlap=True)
+    expected_chunked_odd = [ContinuousDataEven(np.arange(4 * i, 4 * (i + 1)) * uerg.mamp, uerg.sec, uerg.sec * 4 * i) for i in range(8)]
+    for i in xrange(len(chunked_odd)):
+        assert chunked_odd[i].is_close(expected_chunked_odd[i])
+        
+    expected_chunked_even = [ContinuousDataEven(np.arange(2 + 4 * i, 2 + 4 * (i + 1)) * uerg.mamp, uerg.sec, uerg.sec * ( 4 * i + 2)) for i in range(7)]
+    expected_chunked = expected_chunked_odd + expected_chunked_even
+    
+    for i in xrange(len(chunked)):
+        assert chunked[i].is_close(expected_chunked[i])
+
     
     
 test_ContinuousDataEven()
@@ -580,7 +594,7 @@ test___sub__()
 test___mul__()
 test_abs()
 test_trim_to_power_of_2_XXX()
-#test_get_chunks()
+test_get_chunks()
 #%%
 def determine_fft_len(n_samples, mode='accurate'):
     """
