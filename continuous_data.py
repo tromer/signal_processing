@@ -67,6 +67,12 @@ class ContinuousData(object):
     TODO: maybe I want to implement a domain_samples object. it would have
     a subclass of even samples
     
+    TODO: maybe it's smart to implement a similar object with few channels.
+    It may be useful in some implementation and performance issues,
+    since the channels would be a 2D np.ndarray, and channel-wise
+    operations like fft would be applied along axis, and be
+    efficient.
+    
     """
     def __init__(self, values, domain_samples):
         assert len(values) == len(domain_samples)
