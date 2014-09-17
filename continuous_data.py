@@ -388,6 +388,12 @@ class ContinuousDataEven(ContinuousData):
         # maybe there should be another interface, with "new sample rate"
         return ContinuousDataEven(self.values[::down_factor], down_factor * self.sample_step, self.first_sample)
         
+    def is_power_of_2_samples(self):
+        """
+        check for performance issues
+        """
+        return numpy_extension.is_power_of_2(self.n_samples)
+        
     def trim_to_power_of_2_XXX(self):
         """
         trancate data to power of 2 sample points
@@ -559,6 +565,13 @@ def test_abs():
     sig_abs = sig.abs()
     assert sig_abs.is_close(expected_sig_abs)
     
+def test_is_power_of_2_samples():
+    sig = ContinuousDataEven(np.ones(16) * uerg.mamp, uerg.sec)
+    assert sig.is_power_of_2_samples()
+
+    sig = ContinuousDataEven(np.ones(13) * uerg.mamp, uerg.sec)
+    assert not sig.is_power_of_2_samples()
+    
 def test_trim_to_power_of_2_XXX():
     sig = ContinuousDataEven(uerg.mamp * np.arange(12), 1 * uerg.sec)
     expected_sig_trim = ContinuousDataEven(uerg.mamp * np.arange(8), 1 * uerg.sec)
@@ -593,6 +606,7 @@ test___add__()
 test___sub__()
 test___mul__()
 test_abs()
+test_is_power_of_2_samples()
 test_trim_to_power_of_2_XXX()
 test_get_chunks()
 #%%
