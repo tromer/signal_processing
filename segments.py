@@ -67,6 +67,8 @@ class Segments(object):
         probably only for container type
         
     TODO: add tests that refer to segments with units. it's not tested well enough
+    
+    TODO: add interface of starts, ends, unit=None
     """
     def __init__(self, starts, ends):
         """
@@ -75,6 +77,8 @@ class Segments(object):
         
         """
         # or np.recarray, or pandas.DataFrame
+        if len(starts) != len(ends):
+            raise ValueError("ends and starts mush have same len")
         self._starts = starts
         self._ends = ends
         # global_start, global_end?
