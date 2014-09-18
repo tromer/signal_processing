@@ -186,7 +186,7 @@ def test_data_to_continuous_histogram():
 test_data_to_continuous_histogram()
 
 #%%
-def signal_values_hist(contin, bins=10, range_=None, weights=None, density=None):
+def signal_values_hist(contin, bins=100, range_=None, weights=None, density=None):
     """
     returns the histogram of the values of a ContinuousData
     a wrap around data_to_continuous_histogram
@@ -199,6 +199,15 @@ def signal_values_hist(contin, bins=10, range_=None, weights=None, density=None)
     """
     warnings.warn("signal_value_hist is not tested")
     hist = data_to_continuous_histogram(contin.values, bins, range_, weights, density)
+    return hist
+
+
+def segments_attribute_hist(segments, attribute, bins=100, range_=None, weights=None, density=None):
+    """
+    TODO: test, maybe should be in module segments
+    """
+    warnings.warn("not tested")
+    hist = data_to_continuous_histogram(getattr(segments, attribute), bins, range_, weights, density)
     return hist
 
 
