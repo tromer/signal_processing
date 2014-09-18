@@ -206,6 +206,12 @@ class Segments(object):
             return Segment([self.starts[0], self.ends[0]])
         else:
             raise ValueError("cannot convert to single segment")
+            
+    def is_empty(self):
+        """
+        maybe there are no segments at all?
+        """
+        return len(self) == 0
 
     def tofile(self, f):
         """
@@ -284,12 +290,22 @@ def test_to_single_segment():
     single_segment = p.to_single_segment()
     assert single_segment.is_close(expected_single_segment)
     
+
+def test_is_empty():
+    s = Segments(np.array([]) * uerg.m, np.array([]) * uerg.m)
+    assert s.is_empty()
+    
+    starts = np.array([0,]) * uerg.sec
+    ends = np.array([1,]) * uerg.sec
+    p = Segments(starts, ends)
+    assert not p.is_empty()    
     
 test_segments()
 test_is_each_in_range()
 test_filter_by_range()
 test_is_single_segment()
 test_to_single_segment()
+test_is_empty()
 
 #%%
 def filter_short_segments(segments, min_duration):
@@ -564,25 +580,25 @@ def fromfile(f):
 
 
 #%%
-def concatecate(segments_list):
+def concatenate(segments_list):
     """
     concatenates segments, if they are all one after another
     """
     for i in xrange(len(segments_list) - 1):
-        if segments_list[i].ends[-1] > segments_list[i+1].starts[0]:
+        if segments_list[i].ends[-1] > segments_list[i + 1].starts[0]:
             raise ValueError("not in order")
             
     all_starts = map(lambda segments : segments.starts, segments_list)
     all_ends = map(lambda segments : segments.ends, segments_list)
     return Segments(pint_extension.concatenate(all_starts), pint_extension.concatenate(all_ends))
     
-def test_concatecate():
+def test_concatenate():
     s_1 = Segments(np.array([1, 3]) * uerg.meter, np.array([2, 4]) * uerg.meter)
     s_2 = Segments(np.array([5, 7]) * uerg.meter, np.array([6, 8]) * uerg.meter)
     s_3 = Segments(np.array([1, 3, 5, 7]) * uerg.meter, np.array([2, 4, 6, 8]) * uerg.meter)
-    assert s_3.is_close(concatecate([s_1, s_2]))
+    assert s_3.is_close(concatenate([s_1, s_2]))
     
-test_concatecate()
+test_concatenate()
 
 
 def from_single_segment(segment):
