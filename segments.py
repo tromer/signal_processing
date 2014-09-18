@@ -416,9 +416,14 @@ def adjoin_segments_considering_durations(segments, segment_gap_ratio, absolute_
       'min'
       'max'
       
+      
     returns:
     ---------
     adjoined_segments : Segments
+    
+    TODO:
+    ----------
+    an obvious problem with 'min' mode - when there are two big pulses close, and another small one in the middle.
     """
     assert segment_gap_ratio > 0
     if hasattr(segment_gap_ratio, 'dimensionality'):
