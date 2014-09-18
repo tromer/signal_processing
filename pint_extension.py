@@ -196,7 +196,7 @@ def test_rescale_all():
     for i in range(3):
         assert allclose(rescaled[i], expected_results[i])
     
-test_rescale_all()
+
 
 def strip_units(vec_list, unit=None):
     """
@@ -208,7 +208,7 @@ def strip_units(vec_list, unit=None):
     """
     scaled = rescale_all(vec_list, unit)
     unit = get_units(scaled[0])
-    mag = map(lambda(v) : v.magnitue, scaled)
+    mag = map(lambda(v) : v.magnitude, scaled)
     return mag, unit
 
 def test_strip_units():
@@ -218,8 +218,26 @@ def test_strip_units():
     assert np.allclose(mag, np.array([1, 2, 1]))
 
 def concatenate(vec_list):
-    raise NotImplementedError
+    """
+    returns:
+    -------------
+    concatenated vectors with rescaled units
+    """
+    mag, unit = strip_units(vec_list)
+    return unit * np.concatenate(mag)
     
+
+def test_concatenate():
+    a = np.arange(3) * uerg.meter
+    b = np.arange(3) * uerg.meter
+    c = np.arange(3) * 100 * uerg.cmeter
+    expected_concat = np.concatenate([np.arange(3), np.arange(3), np.arange(3)]) * uerg.meter
+    concat = concatenate([a, b, c])
+    assert allclose(concat, expected_concat)
+
+test_rescale_all()
+test_strip_units()
+test_concatenate()
 
 """
 TODO: making pint work well with matplotlib
