@@ -235,9 +235,24 @@ def test_concatenate():
     concat = concatenate([a, b, c])
     assert allclose(concat, expected_concat)
 
+
+def array(vec):
+    """
+    vec or list with units -> array with units
+    """
+    mag, unit = strip_units(vec)
+    return unit * np.array(mag)
+    
+def test_array():
+    l = [1 * uerg.meter, 2 * uerg.meter, 100 * uerg.cmeter]
+    expected_v = np.array([1, 2, 1]) * uerg.meter
+    v = array(l)
+    assert allclose(v, expected_v)
+
 test_rescale_all()
 test_strip_units()
 test_concatenate()
+test_array()
 
 """
 TODO: making pint work well with matplotlib
