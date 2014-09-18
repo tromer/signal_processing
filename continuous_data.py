@@ -199,8 +199,16 @@ def plot_quick(contin, is_abs=False, fmt="-"):
     # creat the figure here
     return plot(contin, fig=None, is_abs=is_abs, fmt=fmt)
 #%%
+    
+def visual_test_plot_quick():
+    t = np.arange(10) * uerg.sec
+    vals = np.arange(10) * uerg.volt
+    sig = ContinuousData(vals, t)
+    plot_quick(sig)
+    
+#visual_test_plot_quick()
 
-def plot(contin, fig=None, is_abs=False, fmt="-"):
+def plot(contin, fig=None, subplot=None, share_x=None, is_abs=False, fmt="-", ):
     """
     add a plot of ContinuousData instance, to an existing figure
     TODO: allow passing every parameter the plt.plot accepts. i.e - making ot a complete
@@ -210,8 +218,10 @@ def plot(contin, fig=None, is_abs=False, fmt="-"):
     TODO: instead of putting units on y axis, use legend and put units there
     
     parameters:
+    -------------
     contin
     fig - a plt.plot figure object
+    subplot - list indicating subplot like [3,1,1] - of 3 lines, and 1 col, subplot 1 (on top)
     is_abs: whether to use np.abs() on the values. mostly for plotting power spectrums
     fmt - format, like plt.plot fmt
     """
@@ -224,6 +234,9 @@ def plot(contin, fig=None, is_abs=False, fmt="-"):
         fig = plt.figure()
     else:
         plt.figure(fig.number)
+        
+    if subplot != None:
+        plt.subplot(*subplot, sharex=share_x)
     
     x = contin.domain_samples
     y = contin.values
@@ -246,15 +259,50 @@ def plot(contin, fig=None, is_abs=False, fmt="-"):
         # return fig, axes??
 
 
-def plot_under(contin, fig, is_abs=False, fmt="-"):
+def visual_test_plot():
+    t = np.arange(10) * uerg.sec
+    vals = np.arange(10) * uerg.volt
+    sig = ContinuousData(vals, t)
+    plot(sig)
+    
+# visual_test_plot_quick()
+
+def plot_under(contin_list, fig=None, is_abs=False, fmt="-"):
     """
+    plot a few signals one above the other
+    
+    
+    
+    
+    OLD OLD OLD XXX
     add subplot of the signal, to an existing plot of another signal.
     the x axis would be coordinated.
     should enable easier examining of signals
     
     TODO: maybe add parameter of subplot or something
     """
-    raise NotImplementedError
+    warnings.warn("not tested well for units, nots tested")
+    if fig != None:
+        raise NotImplementedError
+    
+    f = plt.figure()
+    lines = []
+    N = len(contin_list)
+    ax = plt.subplot(N, 1, 1)
+
+    for i in xrange(N):
+        junk, line = plot(contin_list[i], f, [N, 1, i + 1], share_x=ax)
+        lines.append(line)
+    
+    return f, lines
+    
+def visual_test_plot_under():
+    t = np.arange(10) * uerg.sec
+    vals = np.arange(10) * uerg.amp
+    sig = ContinuousData(vals, t)
+    sig_2 = sig
+    sig_list = [sig, sig_2]
+    plot_under(sig_list)
 
 #%%    
 class ContinuousDataEven(ContinuousData):
@@ -860,9 +908,11 @@ def concatenate(sig_list):
 def test_concatenate():
     sig_1 = ContinuousDataEven(np.arange(32) * uerg.mamp, uerg.sec)
     chunks = sig_1.get_chunks(15 * uerg.sec)
+    """
     print len(chunks)
     print sig_1.values
     print chunks[0].values
+    """
     sig_2 = concatenate(chunks)
     assert sig_1.is_close(sig_2)
     
