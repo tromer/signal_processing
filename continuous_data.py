@@ -17,6 +17,8 @@ from global_uerg import uerg, Q_
 
 
 from segment import Segment
+import segments
+from segments import  Segments
 import numpy_extension
 import scipy_extension
 import pint_extension
@@ -126,7 +128,7 @@ class ContinuousData(object):
         return self.domain_samples.ptp()
     """
     
-    def __getitem__(self, domain_range):
+    def __getitem__(self, key):
         """
         parameters:
         -------------
@@ -137,8 +139,13 @@ class ContinuousData(object):
         TODO: since the domain samples should be sorted, maybe there
         is a more efficient implementation
         """
-        is_each_in_range = domain_range.is_each_in(self.domain_samples)
-        return ContinuousData(self.values[is_each_in_range], self.domain_samples[is_each_in_range])
+        if type(key) in [Segment,]:
+            domain_range = key
+            is_each_in_range = domain_range.is_each_in(self.domain_samples)
+            return ContinuousData(self.values[is_each_in_range], self.domain_samples[is_each_in_range])
+            
+        elif type(key) in [Segments,]:
+            return [self[domain_range] for domain_range in key]
         
     def gain(self, factor):
         """
@@ -178,11 +185,19 @@ def test_ContinuousData():
     assert not sig.is_close(ContinuousData(vals, t + 1 * uerg.sec))
     assert not sig.is_close(ContinuousData(vals + 1 * uerg.volt, t))
 
+    # ___getitem__
     t_range = Segment(np.array([2.5, 6.5]) * uerg.sec)
     expected_slice = np.arange(3,7)
     expected_sig_middle = ContinuousData(vals[expected_slice], t[expected_slice])
     sig_middle = sig[t_range]
     assert sig_middle.is_close(expected_sig_middle)
+    
+    t_ranges = Segments(np.array([2.5, 7.5]) * uerg.sec, np.array([6.5, 8.5]) * uerg.sec)
+    sig_list = sig[t_ranges]
+    ranges = t_ranges.to_segments_list()
+    expected_sig_list = [sig[ranges[0]], sig[ranges[1]]]
+    for i in range(len(sig_list)):
+        assert sig_list[i].is_close(expected_sig_list[i])
     
 test_ContinuousData()
 
