@@ -96,7 +96,7 @@ class Segments(object):
     def centers(self):
         raise NotImplementedError
         return 0.5 * (self.starts + self.ends)
-        
+    
     @property
     def durations(self):
         return self.ends - self.starts
@@ -561,6 +561,46 @@ def fromfile(f):
     put them in the headers?
     """
     raise NotImplementedError
+
+
+#%%
+def concatecate(segments_list):
+    """
+    concatenates segments, if they are all one after another
+    """
+    for i in xrange(len(segments_list) - 1):
+        if segments_list[i].ends[-1] > segments_list[i+1].starts[0]:
+            raise ValueError("not in order")
+            
+    all_starts = map(lambda segments : segments.starts, segments_list)
+    all_ends = map(lambda segments : segments.ends, segments_list)
+    return Segments(pint_extension.concatenate(all_starts), pint_extension.concatenate(all_ends))
+    
+def test_concatecate():
+    s_1 = Segments(np.array([1, 3]) * uerg.meter, np.array([2, 4]) * uerg.meter)
+    s_2 = Segments(np.array([5, 7]) * uerg.meter, np.array([6, 8]) * uerg.meter)
+    s_3 = Segments(np.array([1, 3, 5, 7]) * uerg.meter, np.array([2, 4, 6, 8]) * uerg.meter)
+    assert s_3.is_close(concatecate([s_1, s_2]))
+    
+test_concatecate()
+
+
+def from_single_segment(segment):
+    """
+    returns:
+    -------------
+    segments : Segments
+        containing only one segment
+    """
+    return Segments(pint_extension.array([segment.start,]), pint_extension.array([segment.end,]))
+    
+def test_from_single_segment():
+    s = Segment([2, 3], uerg.meter)
+    expected_segments = Segments(np.array([2,]) * uerg.meter, np.array([3,]))
+    segments = from_single_segment(s)
+    assert segments.is_close(expected_segments)
+
+test_from_single_segment()
 
 class SegmentsOfContinuous(Segments):
     """
