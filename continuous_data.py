@@ -402,7 +402,12 @@ class ContinuousDataEven(ContinuousData):
             return [self[domain_range] for domain_range in key]
         
         
+    def move_first_sample(self, new_first_sample=0):
+        """
         
+        """
+        warnings.warn("not tested")
+        return ContinuousDataEven(self.values, self.sample_step, new_first_sample)
         
         
     def is_same_domain_samples(self, other):
