@@ -282,6 +282,7 @@ class ContinuousDataEven(ContinuousData):
     @property
     def first_sample(self):
         return self._first_sample
+    
         
     @property
     def total_domain_range(self):
@@ -306,10 +307,17 @@ class ContinuousDataEven(ContinuousData):
         """
         return self.n_samples * self.sample_step
         
+    """
+    @property
+    def last_sample(self):
+        # TODO: possible to create a better implementation then in the father class
+    """
+        
     @property
     def domain_samples(self):
         #print "******"
         #print self.values
+        """ TODO: mayebe some cashing would be helpful? """
         return np.arange(len(self.values)) * self.sample_step + self.first_sample
         
     def __getitem__(self, domain_range):
@@ -611,6 +619,316 @@ test_is_power_of_2_samples()
 test_trim_to_power_of_2_XXX()
 test_get_chunks()
 #%%
+
+
+
+def read_wav(filename, domain_unit=uerg.sec, first_sample=0, value_unit=uerg.milliamp, expected_sample_rate_and_tolerance=None, channels=None):
+    """
+    read wav file to ContinuousDataEven.
+    implemented only for one channal
+    for multiple channels we probably want to return a list of ContinuousDataEven
+    
+    parameters:
+    ------------
+    domain_unit
+        the unit of the domain. usually sec
+    
+    first_sample
+        in case it's not 0
+        
+    value_unit
+        the unit of the values
+        
+    channels
+        if it's list, it says which channels to return
+    
+    XXX TODO: understand whether it reads 16pcm correctly. it's not sure
+    some source:
+    http://nbviewer.ipython.org/github/mgeier/python-audio/blob/master/audio-files/audio-files-with-scipy-io.ipynb#Reading
+    
+    returns:
+    ------------
+    if channels == None, returns signal
+    if channels != None, returns a list of signals
+    """
+    sample_rate, raw_sig = sp.io.wavfile.read(filename)
+    sample_rate = 1.0 * sample_rate / domain_unit
+    raw_sig = raw_sig * value_unit
+    if expected_sample_rate_and_tolerance != None:
+        # shold raise a meaningful excepion.
+        is_sample_rate_as_expected = np.abs(sample_rate - expected_sample_rate_and_tolerance[0]) < expected_sample_rate_and_tolerance[1]
+        if not is_sample_rate_as_expected:
+            warnings.warn("sample rate is not as expected")
+    
+    if channels == None:
+        sig = ContinuousDataEven(raw_sig, 1.0 / sample_rate, first_sample)
+        return sig
+        
+    else:
+        warnings.warn("reading multiple channels is not tested")
+        sig_list = []
+        for c in channels:
+            sig_c = ContinuousDataEven(raw_sig[:, c], 1.0 / sample_rate, first_sample)
+            sig_list.append(sig_c)
+        
+        return sig_list
+            
+        
+    #return signal
+    
+def write_wav(contin, filename):
+    """
+    write contin to wav file, and return the units of the axis, and the first sample
+    
+    Note: I didn't think deeply about the signature of this function
+    TODO: add way to rescale between the domain unit and sec
+    
+    example
+    --------------
+    s = continuous_data.read_wav("/home/noam/lab_project/Dropbox/Noam/Periodic recordings for Noam/fast-evo1-chassis-10100-C3000-N200_ettus.wav")
+    s_cut = s[Segment([5.720, 6.610], uerg.sec)]
+    continuous_data.write_wav(s_cut, "/home/noam/lab_project/Dropbox/Noam/Periodic recordings for Noam/fast-evo1-chassis-10100-C3000-N200_ettus_cut.wav")
+
+    """
+    if contin.domain_samples.dimensionality != uerg.sec.dimensionality:
+        raise NotImplementedError
+    else:
+        sp.io.wavfile.write(filename, rate=contin.sample_rate.to(uerg.Hz).magnitude, data=contin.values.magnitude)
+
+
+def fromfile(f):
+    """
+    read ContinuousData / ContinuousDataEven from file
+    TODO:
+    ---------
+    decide about file format.
+    probably a folder with wav file, and txt/csv/xml file for units
+    etc
+    """
+    raise NotImplementedError
+    
+   
+def test_read_wav():
+    values = np.arange(10) * uerg.milliamp
+    sample_rate = 1.0 * uerg.Hz
+    sig = ContinuousDataEven(values, 1.0 / sample_rate)
+    
+    f_temp = tempfile.TemporaryFile()
+    sp.io.wavfile.write(f_temp, sample_rate.magnitude, values.magnitude)
+    sig_read = read_wav(f_temp)
+    
+    assert sig.is_close(sig_read)
+    f_temp.close()
+    
+def test_write_wav():
+    # copied from test_read_wav
+    values = np.arange(10) * uerg.milliamp
+    sample_rate = 1.0 * uerg.Hz
+    sig = ContinuousDataEven(values, 1.0 / sample_rate)
+    
+    f_temp = tempfile.TemporaryFile()
+    write_wav(sig, f_temp)
+    sig_read = read_wav(f_temp)
+    
+    assert sig.is_close(sig_read)
+    f_temp.close()    
+    
+test_read_wav()
+test_write_wav()
+
+
+#%%
+
+def generate_const(sample_step, n_samples, value):
+    raise NotImplementedError
+
+def generate_sine(sample_step, n_samples, amplitude, sine_freq, phase_at_0=0, first_sample=0):
+    """
+    returns:
+    a ContinuousDataEven which is a sine
+    
+    TODO: add DC parameter
+    """
+    if np.abs(phase_at_0) > 2 * np.pi:
+        warnings.warn("you are using phase_at_0 not from [-2 pi, 2 pi], weird")
+    if sine_freq > 0.5 * 1.0 / sample_step:
+        raise("trying to generate undersampled sine signal, abbort! consider the nyquist!")
+    t = np.arange(n_samples) * sample_step + first_sample
+    phase = 2 * np.pi * sine_freq * t + phase_at_0
+    sine = ContinuousDataEven(amplitude * np.sin(phase), sample_step, first_sample)
+    return sine
+    
+def test_generate_sine():
+    sample_step = 1 * uerg.sec
+    n_samples = 128
+    sine_freq = 0.15 * uerg.Hz
+    amplitude = 1 * uerg.mamp
+    expected_sine = ContinuousDataEven(amplitude * np.sin(2 * np.pi * sine_freq * sample_step * np.arange(n_samples)), sample_step)
+    sine = generate_sine(sample_step, n_samples, amplitude, sine_freq)
+    assert sine.is_close(expected_sine)
+    
+def generate_white_noise():
+    raise NotImplementedError
+    
+def generate_square(sample_step, n_samples, amplitude, period, duty=0.5, phase_at_0=0, first_sample=0):
+    """
+    returns:
+    a ContinuousDataEven which is suqare wave with min at zero and max at amplitude
+    
+    TODO: maybe add a parameter of base level.
+    """
+    if np.abs(phase_at_0) > 2 * np.pi:
+        warnings.warn("you are using phase_at_0 not from [-2 pi, 2 pi], weird")
+    if sample_step > min(duty * period, (1-duty) * period):
+        warnings.warn("the sample step is larger then 'up time' or 'down time', you can miss some wave-fronts")
+    t = np.arange(n_samples) * sample_step + first_sample
+    phase = 2 * np.pi * 1.0 / period * t + phase_at_0
+    square = ContinuousDataEven(amplitude * 0.5 * (1 + sp.signal.square(phase)), sample_step, first_sample)
+    return square
+    
+def test_generate_square():
+    sample_step = 1 * uerg.sec
+    n_samples = 128
+    period = 10 * uerg.sec
+    amplitude = 1 * uerg.mamp
+    expected_square = ContinuousDataEven(amplitude * 0.5 * (1 + sp.signal.square(2 * np.pi * 1.0 / period * sample_step * np.arange(n_samples))), sample_step)
+    square = generate_square(sample_step, n_samples, amplitude, period)
+    assert square.is_close(expected_square)
+    #plot_quick(square)
+    
+def generate_square_freq_modulated(sample_step, n_samples, amplitude, sine_freq, period, duty=0.5, sine_phase_at_0=0, square_phase_at_t_0=0, first_sample=0):
+    """
+    returns:
+    ContinuousDataEven which is a square wave modulated by sine. it's coherentic,
+    means that all the "pulses" are taken from the same sine unstopped
+    """
+    envelope = generate_square(sample_step, n_samples, 1 * uerg.dimensionless, period, duty, square_phase_at_t_0, first_sample)
+    sine = generate_sine(sample_step, n_samples, amplitude, sine_freq, sine_phase_at_0, first_sample)
+    modulated = envelope * sine
+    return modulated
+    
+def test_generate_square_freq_modulated():
+    sample_step = 1 * uerg.sec
+    n_samples = 2 ** 12
+    sine_freq = 0.15 * uerg.Hz
+    amplitude = 1 * uerg.mamp
+    period = 100 * uerg.sec
+    modulated = generate_square_freq_modulated(sample_step, n_samples, amplitude, sine_freq, period)
+    envelope = generate_square(sample_step, n_samples, 1 * uerg.dimensionless, period)
+    sine = generate_sine(sample_step, n_samples, amplitude, sine_freq)
+    assert modulated.is_close(envelope * sine)
+
+    
+test_generate_sine()
+test_generate_square()
+test_generate_square_freq_modulated()
+#%%
+
+def concatenate(sig_list):
+    """
+    concatenate signals
+    
+    parameters:
+    -------------------
+    sig_list : list of ContinuousData
+    
+    returns:
+    -----------------
+    sig : ContinuousData
+    """
+    if not np.unique(map(type, sig_list))[0] == ContinuousDataEven:
+        raise NotImplementedError("concatenate implemented only for ContinuousDataEven type")
+        
+    sample_steps = pint_extension.array(map(lambda(s) : s.sample_step, sig_list))
+    sample_step = sig_list[0].sample_step
+    if not pint_extension.allclose(sample_step, sample_steps):
+        raise NotImplementedError("concatenate implemented only for ContinuousDataEven type, with same sample rate")
+        
+    
+        
+    first_samples = pint_extension.array(map(lambda(s) : s.first_sample, sig_list))
+    last_samples = pint_extension.array(map(lambda(s) : s.last_sample, sig_list))
+    
+    gaps = first_samples[1:] - last_samples[:-1]
+    if not pint_extension.allclose(sample_step, gaps):
+        raise NotImplementedError("concatenate implemented only for ContinuousDataEven type, with same sample rate, and right one after the other, at diffrence of sample_step")
+        
+    values = pint_extension.concatenate(map(lambda s : s.values, sig_list))
+    sig = ContinuousDataEven(values, sample_step, sig_list[0].first_sample)
+    return sig
+    
+def test_concatenate():
+    sig_1 = ContinuousDataEven(np.arange(32) * uerg.mamp, uerg.sec)
+    chunks = sig_1.get_chunks(15 * uerg.sec)
+    print len(chunks)
+    print sig_1.values
+    print chunks[0].values
+    sig_2 = concatenate(chunks)
+    assert sig_1.is_close(sig_2)
+    
+test_concatenate()
+
+
+
+
+
+
+
+
+
+
+#%%
+def diff(contin, n=1):
+    """
+    numeric differentiation of a ContinuousData
+    a wrap around numpy.diff
+    
+    returns:
+    ContinuousData of the same type, of the same same length
+    for n == 1:
+    all points except the last one are calculated using np.diff,
+    the last one is defined to be like the one before it.
+    
+    Design issues:
+    it's not clean / beautiful definition for the last sample, but it hardly matters.
+    I decided that it returns a ContinuousData of the same length, so it
+    desn't hurt signals of length 2 ** m, which are easier to fft
+    """
+    if type(contin) != ContinuousDataEven:
+        raise NotImplementedError
+    
+    new_vals = np.empty(len(contin.values))
+    if n != 1:
+        raise NotImplementedError
+    elif n == 1:
+        new_vals[:-1] = np.diff(contin.values.magnitude, 1)
+        new_vals[-1] = new_vals[-2]
+        new_vals = new_vals * pint_extension.get_units(contin.values) * contin.sample_rate ** n
+        
+    return ContinuousDataEven(new_vals, contin.sample_step, contin.first_sample)
+    
+def test_diff():
+    #copied from other test
+    values = np.arange(10) * uerg.amp
+    sample_step = 1.0 * uerg.sec
+    sig = ContinuousDataEven(values, sample_step)
+    expected_diffs = np.ones(10) * uerg.amp / uerg.sec
+    expected_sig_diff = ContinuousDataEven(expected_diffs, sample_step)
+    sig_diff = diff(sig)
+    assert sig_diff.is_close(expected_sig_diff)
+    
+test_diff()
+#%%
+
+
+
+
+
+
+
+
+
+
 def determine_fft_len(n_samples, mode='accurate'):
     """
     helper function to determine the number of samples for a fft
@@ -700,132 +1018,9 @@ def test_fft():
 test_fft()
 #%%
 
-def generate_const(sample_step, n_samples, value):
-    raise NotImplementedError
 
-def generate_sine(sample_step, n_samples, amplitude, sine_freq, phase_at_0=0, first_sample=0):
-    """
-    returns:
-    a ContinuousDataEven which is a sine
-    
-    TODO: add DC parameter
-    """
-    if np.abs(phase_at_0) > 2 * np.pi:
-        warnings.warn("you are using phase_at_0 not from [-2 pi, 2 pi], weird")
-    if sine_freq > 0.5 * 1.0 / sample_step:
-        raise("trying to generate undersampled sine signal, abbort! consider the nyquist!")
-    t = np.arange(n_samples) * sample_step + first_sample
-    phase = 2 * np.pi * sine_freq * t + phase_at_0
-    sine = ContinuousDataEven(amplitude * np.sin(phase), sample_step, first_sample)
-    return sine
-    
-def test_generate_sine():
-    sample_step = 1 * uerg.sec
-    n_samples = 128
-    sine_freq = 0.15 * uerg.Hz
-    amplitude = 1 * uerg.mamp
-    expected_sine = ContinuousDataEven(amplitude * np.sin(2 * np.pi * sine_freq * sample_step * np.arange(n_samples)), sample_step)
-    sine = generate_sine(sample_step, n_samples, amplitude, sine_freq)
-    assert sine.is_close(expected_sine)
-    
-def generate_white_noise():
-    raise NotImplementedError
-    
-def generate_square(sample_step, n_samples, amplitude, period, duty=0.5, phase_at_0=0, first_sample=0):
-    """
-    returns:
-    a ContinuousDataEven which is suqare wave with min at zero and max at amplitude
-    
-    TODO: maybe add a parameter of base level.
-    """
-    if np.abs(phase_at_0) > 2 * np.pi:
-        warnings.warn("you are using phase_at_0 not from [-2 pi, 2 pi], weird")
-    if sample_step > min(duty * period, (1-duty) * period):
-        warnings.warn("the sample step is larger then 'up time' or 'down time', you can miss some wave-fronts")
-    t = np.arange(n_samples) * sample_step + first_sample
-    phase = 2 * np.pi * 1.0 / period * t + phase_at_0
-    square = ContinuousDataEven(amplitude * 0.5 * (1 + sp.signal.square(phase)), sample_step, first_sample)
-    return square
-    
-def test_generate_square():
-    sample_step = 1 * uerg.sec
-    n_samples = 128
-    period = 10 * uerg.sec
-    amplitude = 1 * uerg.mamp
-    expected_square = ContinuousDataEven(amplitude * 0.5 * (1 + sp.signal.square(2 * np.pi * 1.0 / period * sample_step * np.arange(n_samples))), sample_step)
-    square = generate_square(sample_step, n_samples, amplitude, period)
-    assert square.is_close(expected_square)
-    #plot_quick(square)
-    
-def generate_square_freq_modulated(sample_step, n_samples, amplitude, sine_freq, period, duty=0.5, sine_phase_at_0=0, square_phase_at_t_0=0, first_sample=0):
-    """
-    returns:
-    ContinuousDataEven which is a square wave modulated by sine. it's coherentic,
-    means that all the "pulses" are taken from the same sine unstopped
-    """
-    envelope = generate_square(sample_step, n_samples, 1 * uerg.dimensionless, period, duty, square_phase_at_t_0, first_sample)
-    sine = generate_sine(sample_step, n_samples, amplitude, sine_freq, sine_phase_at_0, first_sample)
-    modulated = envelope * sine
-    return modulated
-    
-def test_generate_square_freq_modulated():
-    sample_step = 1 * uerg.sec
-    n_samples = 2 ** 12
-    sine_freq = 0.15 * uerg.Hz
-    amplitude = 1 * uerg.mamp
-    period = 100 * uerg.sec
-    modulated = generate_square_freq_modulated(sample_step, n_samples, amplitude, sine_freq, period)
-    envelope = generate_square(sample_step, n_samples, 1 * uerg.dimensionless, period)
-    sine = generate_sine(sample_step, n_samples, amplitude, sine_freq)
-    assert modulated.is_close(envelope * sine)
 
-    
-test_generate_sine()
-test_generate_square()
-test_generate_square_freq_modulated()
 
-#%%
-def diff(contin, n=1):
-    """
-    numeric differentiation of a ContinuousData
-    a wrap around numpy.diff
-    
-    returns:
-    ContinuousData of the same type, of the same same length
-    for n == 1:
-    all points except the last one are calculated using np.diff,
-    the last one is defined to be like the one before it.
-    
-    Design issues:
-    it's not clean / beautiful definition for the last sample, but it hardly matters.
-    I decided that it returns a ContinuousData of the same length, so it
-    desn't hurt signals of length 2 ** m, which are easier to fft
-    """
-    if type(contin) != ContinuousDataEven:
-        raise NotImplementedError
-    
-    new_vals = np.empty(len(contin.values))
-    if n != 1:
-        raise NotImplementedError
-    elif n == 1:
-        new_vals[:-1] = np.diff(contin.values.magnitude, 1)
-        new_vals[-1] = new_vals[-2]
-        new_vals = new_vals * pint_extension.get_units(contin.values) * contin.sample_rate ** n
-        
-    return ContinuousDataEven(new_vals, contin.sample_step, contin.first_sample)
-    
-def test_diff():
-    #copied from other test
-    values = np.arange(10) * uerg.amp
-    sample_step = 1.0 * uerg.sec
-    sig = ContinuousDataEven(values, sample_step)
-    expected_diffs = np.ones(10) * uerg.amp / uerg.sec
-    expected_sig_diff = ContinuousDataEven(expected_diffs, sample_step)
-    sig_diff = diff(sig)
-    assert sig_diff.is_close(expected_sig_diff)
-    
-test_diff()
-#%%
     
 """
 def freq_filter(contin, freq_ranges, ?, ?, ?):
@@ -882,121 +1077,6 @@ def test_band_pass_filter():
 
 
 
-def read_wav(filename, domain_unit=uerg.sec, first_sample=0, value_unit=uerg.milliamp, expected_sample_rate_and_tolerance=None, channels=None):
-    """
-    read wav file to ContinuousDataEven.
-    implemented only for one channal
-    for multiple channels we probably want to return a list of ContinuousDataEven
-    
-    parameters:
-    ------------
-    domain_unit
-        the unit of the domain. usually sec
-    
-    first_sample
-        in case it's not 0
-        
-    value_unit
-        the unit of the values
-        
-    channels
-        if it's list, it says which channels to return
-    
-    XXX TODO: understand whether it reads 16pcm correctly. it's not sure
-    some source:
-    http://nbviewer.ipython.org/github/mgeier/python-audio/blob/master/audio-files/audio-files-with-scipy-io.ipynb#Reading
-    
-    returns:
-    ------------
-    if channels == None, returns signal
-    if channels != None, returns a list of signals
-    """
-    sample_rate, raw_sig = sp.io.wavfile.read(filename)
-    sample_rate = 1.0 * sample_rate / domain_unit
-    raw_sig = raw_sig * value_unit
-    if expected_sample_rate_and_tolerance != None:
-        # shold raise a meaningful excepion.
-        is_sample_rate_as_expected = np.abs(sample_rate - expected_sample_rate_and_tolerance[0]) < expected_sample_rate_and_tolerance[1]
-        if not is_sample_rate_as_expected:
-            warnings.warn("sample rate is not as expected")
-    
-    if channels == None:
-        sig = ContinuousDataEven(raw_sig, 1.0 / sample_rate, first_sample)
-        return sig
-        
-    else:
-        warnings.warn("reading multiple channels is not tested")
-        sig_list = []
-        for c in channels:
-            sig_c = ContinuousDataEven(raw_sig[:, c], 1.0 / sample_rate, first_sample)
-            sig_list.append(sig_c)
-        
-        return sig_list
-            
-        
-    #return signal
-    
-def write_wav(contin, filename):
-    """
-    write contin to wav file, and return the units of the axis, and the first sample
-    
-    Note: I didn't think deeply about the signature of this function
-    TODO: add way to rescale between the domain unit and sec
-    
-    example
-    --------------
-    s = continuous_data.read_wav("/home/noam/lab_project/Dropbox/Noam/Periodic recordings for Noam/fast-evo1-chassis-10100-C3000-N200_ettus.wav")
-    s_cut = s[Segment([5.720, 6.610], uerg.sec)]
-    continuous_data.write_wav(s_cut, "/home/noam/lab_project/Dropbox/Noam/Periodic recordings for Noam/fast-evo1-chassis-10100-C3000-N200_ettus_cut.wav")
-
-    """
-    if contin.domain_samples.dimensionality != uerg.sec.dimensionality:
-        raise NotImplementedError
-    else:
-        sp.io.wavfile.write(filename, rate=contin.sample_rate.to(uerg.Hz).magnitude, data=contin.values.magnitude)
-   
-def test_read_wav():
-    values = np.arange(10) * uerg.milliamp
-    sample_rate = 1.0 * uerg.Hz
-    sig = ContinuousDataEven(values, 1.0 / sample_rate)
-    
-    f_temp = tempfile.TemporaryFile()
-    sp.io.wavfile.write(f_temp, sample_rate.magnitude, values.magnitude)
-    sig_read = read_wav(f_temp)
-    
-    assert sig.is_close(sig_read)
-    f_temp.close()
-    
-def test_write_wav():
-    # copied from test_read_wav
-    values = np.arange(10) * uerg.milliamp
-    sample_rate = 1.0 * uerg.Hz
-    sig = ContinuousDataEven(values, 1.0 / sample_rate)
-    
-    f_temp = tempfile.TemporaryFile()
-    write_wav(sig, f_temp)
-    sig_read = read_wav(f_temp)
-    
-    assert sig.is_close(sig_read)
-    f_temp.close()    
-    
-test_read_wav()
-test_write_wav()
-    
-    
-#%%
-def fromfile(f):
-    """
-    read ContinuousData / ContinuousDataEven from file
-    TODO:
-    ---------
-    decide about file format.
-    probably a folder with wav file, and txt/csv/xml file for units
-    etc
-    """
-    raise NotImplementedError
-    
-#%%
     
 def hilbert(sig, mode='fast'):
     """
