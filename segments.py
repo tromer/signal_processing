@@ -593,6 +593,7 @@ def from_single_segment(segment):
         containing only one segment
     """
     return Segments(pint_extension.array([segment.start,]), pint_extension.array([segment.end,]))
+        
     
 def test_from_single_segment():
     s = Segment([2, 3], uerg.meter)
@@ -601,6 +602,22 @@ def test_from_single_segment():
     assert segments.is_close(expected_segments)
 
 test_from_single_segment()
+
+
+def concatenate_single_segments(segs_list):
+    """
+    have to be one after another
+    """
+    as_segments = map(from_single_segment, segs_list)
+    return concatecate(as_segments)
+    
+def test_concatecate_single_segments():
+    s = Segments(uerg.meter * np.array([1, 3]), uerg.meter * np.array([2,4]))
+    seg_list = [s[0], s[1]]
+    s_2 = concatenate_single_segments(seg_list)
+    assert s.is_close(s_2)
+    
+test_concatecate_single_segments()
 
 class SegmentsOfContinuous(Segments):
     """
