@@ -194,6 +194,8 @@ def signal_values_hist(contin, bins=10, range_=None, weights=None, density=None)
     returns:
     -----------
     hist : ContinuousData
+    
+    TODO: maybe this should be a method of ContinuousData
     """
     warnings.warn("signal_value_hist is not tested")
     hist = data_to_continuous_histogram(contin.values, bins, range_, weights, density)
