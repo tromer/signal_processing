@@ -383,7 +383,7 @@ class ContinuousDataEven(ContinuousData):
         """ TODO: mayebe some cashing would be helpful? """
         return np.arange(len(self.values)) * self.sample_step + self.first_sample
         
-    def __getitem__(self, domain_range):
+    def __getitem__(self, key):
         """
         Note: it's coppied from __getitem__ of ContinuousData
         parameters:
@@ -392,9 +392,18 @@ class ContinuousDataEven(ContinuousData):
             the range, from the domain, of which we want the slice.
             for example: which time range?
         """
-        bottom_index = np.ceil(1.0 * domain_range.start / self.sample_step)
-        top_index = np.floor(domain_range.end / self.sample_step)
-        return ContinuousDataEven(self.values[bottom_index:top_index + 1], self.sample_step, first_sample=bottom_index * self.sample_step)
+        if type(key) in [Segment,]:
+            domain_range = key
+            bottom_index = np.ceil(1.0 * domain_range.start / self.sample_step)
+            top_index = np.floor(domain_range.end / self.sample_step)
+            return ContinuousDataEven(self.values[bottom_index:top_index + 1], self.sample_step, first_sample=bottom_index * self.sample_step)
+            
+        elif type(key) in [Segments,]:
+            return [self[domain_range] for domain_range in key]
+        
+        
+        
+        
         
     def is_same_domain_samples(self, other):
         return self.n_samples == other.n_samples and \
