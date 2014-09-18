@@ -586,6 +586,35 @@ def plot_quick(segments):
     raise NotImplementedError
 
 
+def from_segments_list(segments_list):
+    """
+    assumes 
+    XXXXXXXX XXX
+    """
+    raise NotImplementedError
+    sorted_by_start = sorted(segments_list, key=lambda s : s.start)
+    starts = pint_extension.array(map(lambda s : s.start, sorted_by_start))
+    ends = pint_extension.array(map(lambda s : s.end, sorted_by_start))
+    segments_maybe_overlap = Segments(starts, ends)
+    segments = adjoin_segments_max_distance(segments_maybe_overlap, max_distance=0 * pint_extension.get_units(segments_maybe_overlap.starts))
+    return segments
+    
+def test_from_segments_list():
+    s_list = [Segment([0, 1], uerg.m), Segment([2, 3], uerg.m)]
+    expected_segments = Segments(np.array([0, 2]) * uerg.m, np.array([1, 3]) * uerg.m)
+    segments = from_segments_list(s_list)
+    assert segments.is_close(expected_segments)
+    
+    s_list = [Segment([0, 3], uerg.m), Segment([1, 2], uerg.m)]
+    expected_segments = Segments(np.array([0, ]) * uerg.m, np.array([3,]) * uerg.m)
+    segments = from_segments_list(s_list)
+    assert segments.is_close(expected_segments)    
+    
+#test_from_segments_list()
+    
+    
+    
+
 def fromfile(f):
     """
     reads Segments instance from file
@@ -649,7 +678,7 @@ def concatenate_single_segments(segs_list):
     have to be one after another
     """
     as_segments = map(from_single_segment, segs_list)
-    return concatecate(as_segments)
+    return concatenate(as_segments)
     
 def test_concatecate_single_segments():
     s = Segments(uerg.meter * np.array([1, 3]), uerg.meter * np.array([2,4]))
@@ -658,6 +687,11 @@ def test_concatecate_single_segments():
     assert s.is_close(s_2)
     
 test_concatecate_single_segments()
+
+
+
+    
+
 
 class SegmentsOfContinuous(Segments):
     """
