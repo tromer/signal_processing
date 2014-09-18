@@ -583,11 +583,17 @@ def fromfile(f):
 def concatenate(segments_list):
     """
     concatenates segments, if they are all one after another
+    TOOD: test when there are empty segments
     """
+    # filter out empty segments instances
+    segments_list = filter(None, segments_list)
+    
     for i in xrange(len(segments_list) - 1):
         if segments_list[i].ends[-1] > segments_list[i + 1].starts[0]:
             raise ValueError("not in order")
-            
+    
+
+        
     all_starts = map(lambda segments : segments.starts, segments_list)
     all_ends = map(lambda segments : segments.ends, segments_list)
     return Segments(pint_extension.concatenate(all_starts), pint_extension.concatenate(all_ends))
