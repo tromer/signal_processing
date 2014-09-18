@@ -213,6 +213,14 @@ class Segments(object):
         """
         return len(self) == 0
 
+    def to_segments_list(self):
+        """
+        returns:
+        ------------
+        a list of segment instances
+        """
+        return map(Segment, zip(self.starts, self.ends))
+
     def tofile(self, f):
         """
         read doc of fromfile
@@ -300,12 +308,22 @@ def test_is_empty():
     p = Segments(starts, ends)
     assert not p.is_empty()    
     
+def test_to_segments_list():
+    starts = np.array([0, 2]) * uerg.sec
+    ends = np.array([1, 3]) * uerg.sec
+    p = Segments(starts, ends)
+    l = p.to_segments_list()
+    expected_l = [Segment([0, 1], uerg.sec), Segment([2, 3], uerg.sec)]
+    for i in range(len(l)):
+        assert l[i].is_close(expected_l[i])
+    
 test_segments()
 test_is_each_in_range()
 test_filter_by_range()
 test_is_single_segment()
 test_to_single_segment()
 test_is_empty()
+test_to_segments_list()
 
 #%%
 def filter_short_segments(segments, min_duration):
