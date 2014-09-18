@@ -82,11 +82,22 @@ def test_normalize():
     vec_n_2 = vec / np.sqrt(2)
     assert np.allclose(normalize(vec), vec_n_2)
     
+
+def deviation_from_reference(vec, ref):
+    """
+    like standard deviation, but not from mean, but from an arbitrary value.
+    for example, when trying to fit data to half a gaussian, centerred at zero
+    """
+    return np.sqrt(np.mean((vec - ref) ** 2))
     
+def test_deviation_from_reference():
+    a = np.arange(10)
+    assert np.allclose(deviation_from_reference(a, np.mean(a)), np.std(a))
     
 test_close_power_of_2()
 test_normalize()
 test_is_power_of_2()
+test_deviation_from_reference()
 
 #%%
 def running_max(vec, m):
