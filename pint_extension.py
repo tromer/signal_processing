@@ -91,6 +91,7 @@ def units_list_to_ndarray(l):
     takes a list / tuple of numbers with units, rescale them, and converts to
     a vector with units
     """
+    warnings.warn("deprecated, use rescale_all")
     assert len(l)
     unit = False
     i = 0
@@ -171,6 +172,54 @@ def maximum(a, b):
 
 #%%
 
+def rescale_all(vec_list, unit=None):
+    """
+    rescales a list of vectors with units
+    """
+    if unit != None:
+        raise NotImplementedError
+        
+    if unit == None:
+        unit = get_units(vec_list[0])
+    
+    for v in vec_list:
+        if not v.dimensionality == unit.dimensionality:
+            raise ValueError("not same dimensionality")
+        
+    scaled = map(lambda v, unit : v.to(unit), vec_list, unit * np.ones(len(vec_list)))
+    return scaled
+    
+def test_rescale_all():
+    l = [1 * uerg.meter, 2 * uerg.meter, 100 * uerg.cmeter]
+    rescaled = rescale_all(l)
+    expected_results = np.array([1, 2, 1]) * uerg.meter
+    for i in range(3):
+        assert allclose(rescaled[i], expected_results[i])
+    
+test_rescale_all()
+
+def strip_units(vec_list, unit=None):
+    """
+    returns:
+    -----------
+    mag : list of vectors without untis
+    
+    unit : the unit
+    """
+    scaled = rescale_all(vec_list, unit)
+    unit = get_units(scaled[0])
+    mag = map(lambda(v) : v.magnitue, scaled)
+    return mag, unit
+
+def test_strip_units():
+    l = [1 * uerg.meter, 2 * uerg.meter, 100 * uerg.cmeter]
+    mag, unit = strip_units(l)
+    assert unit == uerg.meter
+    assert np.allclose(mag, np.array([1, 2, 1]))
+
+def concatenate(vec_list):
+    raise NotImplementedError
+    
 
 """
 TODO: making pint work well with matplotlib
