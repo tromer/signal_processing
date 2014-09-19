@@ -1500,7 +1500,7 @@ def filter_downsample_fm_demodulation_base_band_filter(raw_sig, freq_range, freq
     # maybe we want to filter, only after finding where are the traces, and with the exact band of the real raw_sig (not noise)
     filterred = band_pass_filter(raw_sig, freq_range, freq_mask_len)
     
-    if IS_DEBUG:
+    if False:
         plot_quick(filterred[parameters.time_for_quick_plot])
     
     # step_3: down sampling, (which also aliases, and changed the freq of the signal)
@@ -1513,14 +1513,14 @@ def filter_downsample_fm_demodulation_base_band_filter(raw_sig, freq_range, freq
     # just add and use modulu (roll it)
     down = filterred.down_sample(down_factor)
     
-    if IS_DEBUG:
+    if False:
         plot_quick(down)
         plot_quick(fft(down), is_abs=True)
     
     # step_4: fm demodulation
     de_fm = fm_demodulation(down, mode='fast')
     
-    if IS_DEBUG:
+    if False:
         plot_quick(de_fm)
     
     # step 4.1 filter the base-band signal
