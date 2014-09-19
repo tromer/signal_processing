@@ -18,7 +18,9 @@ import continuous_data
 from continuous_data import ContinuousDataEven
 
 import pint_extension
+import numpy_extension
 from global_uerg import uerg, Q_
+
 #%%
 
 
@@ -232,13 +234,27 @@ def auto_threshold(sig, mode, factor):
         'mean'
         'median'
         'zero'
+        
+    returns:
+    -----------
+    thresh
     """
+    warnings.warn("auto_threshold not tested")
     vals = sig.values
     if mode == 'mean':
         center = np.mean(vals)
         deviation = np.std(vals)
     elif mode == 'median':
+        center = pint_extension.median(vals)
+        deviation = numpy_extension.deviation_from_reference(vals, center)
+    elif mode == 'zero':
+        center = 0
+        deviation = numpy_extension.deviation_from_reference(vals, center)
         
+    thresh = center + factor * deviation
+    return thresh
+ 
+    
 
 #%%
 def cluster1d(vec, resolution, threshold):
