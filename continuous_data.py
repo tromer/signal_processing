@@ -418,12 +418,13 @@ class ContinuousDataEven(ContinuousData):
     def _extract_values_from_other_for_continuous_data_arithmetic(self, other):
         """
         core method to help arithmency between methods
+        TODO: add more test not tested enough. some bugs
         """
         
         if type(other) in [float, int]:
             values = other
         
-        if type(other) == uerg.Quantity:
+        elif type(other) == uerg.Quantity:
             if type(other.magnitude) in [np.ndarray,]:
                 raise ValueError("add const value, or other ContinuousData with same domain samples")
             else:
@@ -454,11 +455,15 @@ class ContinuousDataEven(ContinuousData):
     def __mul__(self, other):
         # TODO: add test for operation with num
         values = self._extract_values_from_other_for_continuous_data_arithmetic(other)    
-        return ContinuousDataEven(self.values * values, self.sample_step, self.first_sample)            
+        return ContinuousDataEven(self.values * values, self.sample_step, self.first_sample)
 
     def __rmul__(self, other):
         raise NotImplementedError
         return self * other
+        
+    def __div__(self, other):
+        values = self._extract_values_from_other_for_continuous_data_arithmetic(other)    
+        return ContinuousDataEven(self.values / values, self.sample_step, self.first_sample)            
     
     def abs(self):
         return ContinuousDataEven(np.abs(self.values), self.sample_step, self.first_sample)
@@ -649,6 +654,11 @@ def test___mul__():
     sig_pow_2 = sig * sig
     assert sig_pow_2.is_close(expected_sig_pow_2)
     
+def test___div__():
+        sig = ContinuousDataEven(np.arange(1, 10) * uerg.mamp, uerg.sec)
+        assert (sig / sig).is_close(ContinuousDataEven(1 * uerg.dimensionless * np.ones(9), uerg.sec))
+        assert (sig / 2.0).is_close(ContinuousDataEven(0.5 * np.arange(1, 10) * uerg.mamp, uerg.sec))
+    
 def test_abs():
     sig = ContinuousDataEven((-1) * np.ones(10) * uerg.mamp, uerg.sec)
     expected_sig_abs = ContinuousDataEven(np.ones(10) * uerg.mamp, uerg.sec)
@@ -695,6 +705,7 @@ test__extract_values_from_other_for_continuous_data_arithmetic()
 test___add__()
 test___sub__()
 test___mul__()
+test___div__()
 test_abs()
 test_is_power_of_2_samples()
 test_trim_to_power_of_2_XXX()
