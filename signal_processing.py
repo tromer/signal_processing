@@ -151,6 +151,29 @@ def threshold_adjoin_filter_short_segments(sig, threshold, max_distance, min_dur
     p = segments.filter_short_segments(p, min_duration)
     return p
 
+
+#%%
+def threshold_aggregate_filter_short(sig, threshold, max_dist, duration_ratio, absolute_max_dist, max_pulse_duration):
+    """
+    TODO: add documentation, test
+    """
+    warnings.warn("threshold_aggregate_filter_short not tested")
+    backgrounds = threshold_crosses(sig, threshold)
+    # remove small drops in the middle, and drops near the edge
+    backgrounds = segments.adjoin_segments_max_distance(backgrounds, max_dist)
+    
+    
+    # remove big drops in the middle
+    backgrounds = segments.adjoin_segments_considering_durations(backgrounds, duration_ratio, absolute_max_dist, mode='min')
+    # remove interrupts. some interupts are a little bit too close
+    # so removing only by a factor multiplied by the interrupt duration
+    # is not enough. we filter harder
+    backgrounds = segments.filter_short_segments(backgrounds, max_pulse_duration)
+    # TODO: fine tuning - get entire background pulse
+    return backgrounds
+
+
+
 #%%
 def data_to_continuous_histogram(a, bins=10, range_=None, weights=None, density=None):
     """
