@@ -928,6 +928,12 @@ def concatenate(sig_list):
     -----------------
     sig : ContinuousData
     """
+    if len(sig_list) == 0:
+        raise ValueError("no signals in the list")
+        
+    if len(sig_list) == 1:
+        return sig_list[0]
+    
     if not np.unique(map(type, sig_list))[0] == ContinuousDataEven:
         raise NotImplementedError("concatenate implemented only for ContinuousDataEven type")
         
@@ -943,6 +949,8 @@ def concatenate(sig_list):
     
     gaps = first_samples[1:] - last_samples[:-1]
     if not pint_extension.allclose(sample_step, gaps):
+        print gaps
+        print sample_step
         raise NotImplementedError("concatenate implemented only for ContinuousDataEven type, with same sample rate, and right one after the other, at diffrence of sample_step")
         
     values = pint_extension.concatenate(map(lambda s : s.values, sig_list))
