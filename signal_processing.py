@@ -221,6 +221,24 @@ def mark_threshold(fig, threshold, colors="y", label="threshold"):
     threshlines = plt.hlines(threshold.magnitude, x_min, x_max, colors=colors, label=label)
     plt.legend(loc='best')
     return threshlines
+    
+def auto_threshold(sig, mode, factor):
+    """
+    a auto threshold of values of signal
+    
+    parameters:
+    ------------------
+    mode : str
+        'mean'
+        'median'
+        'zero'
+    """
+    vals = sig.values
+    if mode == 'mean':
+        center = np.mean(vals)
+        deviation = np.std(vals)
+    elif mode == 'median':
+        
 
 #%%
 def cluster1d(vec, resolution, threshold):
