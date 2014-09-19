@@ -1038,24 +1038,42 @@ def visual_test_correlate():
     plot_quick(sig_c, "o")
     
 
-def correlate_find_new_location(sig_stable, sig_sliding, mode='valid'):
+def correlate_find_new_location(sig_stable, sig_sliding, mode='valid', is_return_max=False):
     """
+    for most of the documentation refer to correlate
+    TODO: the signature of this function is not stable, according to user input it returns either 1 or 2 values
     
+    parameters:
+    --------------------
+    is_return_max : bool
+        can return also the max value, in order to compare the success of different correlations
+    
+    
+    
+    behind the scences:
+    ----------------------
     using correlate and np.argmax
     """
     corr = correlate(sig_stable, sig_sliding, mode)
     top_index = np.argmax(corr.values)
     top_domain_sample = corr.first_sample + corr.sample_step * top_index
-    return top_domain_sample
+    max_value = corr.values[top_index]
+    
+    if not is_return_max:
+        return top_domain_sample
+    else:
+        return top_domain_sample, max_value
     
 def test_correlate_find_new_location():
     v = np.concatenate([np.arange(10), np.arange(10)[::-1]])
     sig_stable = ContinuousDataEven(v * uerg.mamp, uerg.sec, 10 * uerg.sec)
     sig_sliding = ContinuousDataEven(v * uerg.mamp, uerg.sec)
-    new_location = correlate_find_new_location(sig_stable, sig_sliding, 'full')
+    new_location, max_val = correlate_find_new_location(sig_stable, sig_sliding, 'full', is_return_max=True)
     print new_location
     expected_new_location = 10 * uerg.sec
+    expected_max_val = 2 * (np.arange(10) ** 2).sum() * uerg.mamp ** 2 * uerg.sec
     assert pint_extension.allclose(new_location, expected_new_location)
+    assert pint_extension.allclose(max_val, expected_max_val)
     
 test_diff()
 #visual_test_correlate()
