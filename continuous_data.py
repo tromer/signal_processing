@@ -419,6 +419,10 @@ class ContinuousDataEven(ContinuousData):
         """
         core method to help arithmency between methods
         """
+        
+        if type(other) in [float, int]:
+            values = other
+        
         if type(other) == uerg.Quantity:
             if type(other.magnitude) in [np.ndarray,]:
                 raise ValueError("add const value, or other ContinuousData with same domain samples")
