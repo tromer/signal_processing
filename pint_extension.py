@@ -248,11 +248,22 @@ def test_array():
     expected_v = np.array([1, 2, 1]) * uerg.meter
     v = array(l)
     assert allclose(v, expected_v)
+    
+def median(vec):
+    return get_units(vec) * np.median(vec.magnitude)
+    
+def test_median():
+    v = np.arange(10) * uerg.m
+    med = median(v)
+    expected_median = 4.5 * uerg.m
+    assert allclose(med, expected_median)
 
 test_rescale_all()
 test_strip_units()
 test_concatenate()
 test_array()
+
+test_median()
 
 """
 TODO: making pint work well with matplotlib
