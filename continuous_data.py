@@ -995,8 +995,71 @@ def test_diff():
     expected_sig_diff = ContinuousDataEven(expected_diffs, sample_step)
     sig_diff = diff(sig)
     assert sig_diff.is_close(expected_sig_diff)
+
+
+def correlate(sig_stable, sig_sliding, mode='valid'):
+    """
+    a correlation between 2 signals. we try to relocate the sliding sig, to fit the location of the stable sig
+    
+    parameters:
+    --------------------
+    sig_stable : ContinuousData
+    
+    sig_sliding : ContinuousData
+    
+    returns:
+    -------------
+    the correlation as signal. the peak of the correlation should inticate the bast location for the first sample of sig_sliding
+    
+    
+    """
+    warnings.warn("correlate is not tested")
+    if not type(sig_stable) in [ContinuousDataEven,] or not type(sig_sliding) in [ContinuousDataEven,]:
+        raise NotImplementedError
+        
+    if not pint_extension.allclose(sig_stable.sample_step, sig_sliding.sample_step):
+        raise NotImplementedError
+        
+    a = sig_stable.values.magnitude
+    b = sig_sliding.values.magnitude
+    c = np.correlate(a, b, mode)
+    sig_c_values = c * pint_extension.get_units(sig_stable.values) * pint_extension.get_units(sig_sliding.values) * sig_stable.sample_step
+    first_sample = (-1) * sig_stable.sample_step * (-1 + 0.5 * (sig_stable.n_samples + sig_sliding.n_samples)) + sig_stable.first_sample
+    sig_c = ContinuousDataEven(sig_c_values, sig_stable.sample_step, first_sample)
+    return sig_c
+    
+def visual_test_correlate():
+    v = np.concatenate([np.arange(10), np.arange(10)[::-1]])
+    sig_stable = ContinuousDataEven(v * uerg.mamp, uerg.sec, 10 * uerg.sec)
+    sig_sliding = ContinuousDataEven(v * uerg.mamp, uerg.sec, 20 * uerg.sec)
+    sig_c = correlate(sig_stable, sig_sliding, mode='full')
+    plot_quick(sig_stable, "o")
+    plot_quick(sig_sliding, "o")
+    plot_quick(sig_c, "o")
+    
+
+def correlate_find_new_location(sig_stable, sig_sliding, mode='valid'):
+    """
+    
+    using correlate and np.argmax
+    """
+    corr = correlate(sig_stable, sig_sliding, mode)
+    top_index = np.argmax(corr.values)
+    top_domain_sample = corr.first_sample + corr.sample_step * top_index
+    return top_domain_sample
+    
+def test_correlate_find_new_location():
+    v = np.concatenate([np.arange(10), np.arange(10)[::-1]])
+    sig_stable = ContinuousDataEven(v * uerg.mamp, uerg.sec, 10 * uerg.sec)
+    sig_sliding = ContinuousDataEven(v * uerg.mamp, uerg.sec)
+    new_location = correlate_find_new_location(sig_stable, sig_sliding, 'full')
+    print new_location
+    expected_new_location = 10 * uerg.sec
+    assert pint_extension.allclose(new_location, expected_new_location)
     
 test_diff()
+#visual_test_correlate()
+test_correlate_find_new_location()
 #%%
 
 
