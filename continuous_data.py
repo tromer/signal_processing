@@ -713,6 +713,10 @@ test_get_chunks()
 #%%
 
 
+"""
+io
+
+"""
 
 def read_wav(filename, domain_unit=uerg.sec, first_sample=0, value_unit=uerg.milliamp, expected_sample_rate_and_tolerance=None, channels=None):
     """
@@ -831,6 +835,11 @@ test_write_wav()
 
 #%%
 
+"""
+some constructors of interesting signals
+
+"""
+
 def generate_const(sample_step, n_samples, value):
     raise NotImplementedError
 
@@ -916,6 +925,13 @@ test_generate_square()
 test_generate_square_freq_modulated()
 #%%
 
+"""
+non mathematical manipulations
+
+"""
+
+
+
 def concatenate(sig_list):
     """
     concatenate signals
@@ -980,6 +996,12 @@ test_concatenate()
 
 
 #%%
+
+"""
+mathematical manipulations - except fouriers
+
+"""
+
 def diff(contin, n=1):
     """
     numeric differentiation of a ContinuousData
@@ -1098,16 +1120,43 @@ def test_correlate_find_new_location():
     assert pint_extension.allclose(new_location, expected_new_location)
     assert pint_extension.allclose(max_val, expected_max_val)
     
+def clip(sig, values_range):
+    """
+    parameters:
+    ---------------------
+    sig : ContinuousData
+    
+    values_range : Segment
+    
+    """
+    if type(sig) != ContinuousDataEven:
+        raise NotImplementedError
+    
+    clipped_vals = np.clip(sig.values, values_range.start, values_range.end)
+    clipped = ContinuousDataEven(clipped_vals, sig.sample_step, sig.first_sample)
+    return clipped
+    
+def test_clip():
+    v = np.arange(10) * uerg.mamp
+    sig = ContinuousDataEven(v, uerg.sec)
+    Range = Segment([3, 6], uerg.mamp)
+    clipped = clip(sig, Range)
+    expected_clipped = ContinuousDataEven(np.clip(v, 3 * uerg.mamp, 6 * uerg.mamp), uerg.sec)
+    assert clipped.is_close(expected_clipped)
+    
 test_diff()
 #visual_test_correlate()
 test_correlate_find_new_location()
+test_clip()
 #%%
 
 
 
 
+"""
+fourier, and demodulations
 
-
+"""
 
 
 
