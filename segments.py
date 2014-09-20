@@ -373,8 +373,10 @@ def switch_segments_and_gaps(segments, absolute_start=None, absolute_end=None):
     starts_gaps = segments.ends[:-1]
     ends_gaps = segments.starts[1:]
     if absolute_start:
+        raise NotImplementedError
         starts_gaps = np.concatenate([np.ones(1) * absolute_start, starts_gaps])
     if absolute_end:
+        raise NotImplementedError
         ends_gaps = np.concatenate([ends_gaps, np.ones(1) * absolute_end])
     
     return Segments(starts_gaps, ends_gaps)
@@ -386,8 +388,20 @@ def test_switch_segments_and_gaps():
     expected_gaps = Segments(np.array([1, 3, 5]), np.array([2, 4, 10]))
     gaps = switch_segments_and_gaps(segments)
     assert gaps.is_close(expected_gaps)
-    
-
+    """
+    starts = np.array([0, 2, 4, 10]) * uerg.meter
+    ends = np.array([1, 3, 5, 10.5]) * uerg.meter
+    segments = Segments(starts, ends)
+    abs_start = -5 * uerg.meter
+    abs_end = 20 * uerg.meter
+    expected_gaps = Segments(np.array([-5, 1, 3, 5, 10.5]) * uerg.meter, np.array([0, 2, 4, 10, 20]) * uerg.meter)
+    gaps = switch_segments_and_gaps(segments, abs_start, abs_end)
+    print gaps.starts
+    print gaps.ends
+    print expected_gaps.starts
+    print expected_gaps.ends
+    assert gaps.is_close(expected_gaps)
+    """
 test_switch_segments_and_gaps()
 
 #%%
