@@ -258,6 +258,9 @@ def test_segments():
     print type(p[0])
     """
     assert p[0].is_close(Segment([0,1], uerg.sec))
+    assert p[1].is_close(Segment([2,3], uerg.sec))
+    assert p[-1].is_close(Segment([10,10.5], uerg.sec))
+    
     assert p.is_close(p)
     
 def test_is_each_in_range():
