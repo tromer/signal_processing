@@ -87,6 +87,10 @@ def deviation_from_reference(vec, ref):
     """
     like standard deviation, but not from mean, but from an arbitrary value.
     for example, when trying to fit data to half a gaussian, centerred at zero
+    
+    TODO: idea for possible noise robust algorithm:
+    center : use median instead of mean
+    deviation : use median of delta_from_center ** 2 instead of mean
     """
     return np.sqrt(np.mean((vec - ref) ** 2))
     
