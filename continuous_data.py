@@ -139,6 +139,9 @@ class ContinuousData(object):
         TODO: since the domain samples should be sorted, maybe there
         is a more efficient implementation
         """
+        if type(key) in [int, float]:
+            raise KeyError("wrong key. key for ContinuousData is Segment or Segments of the same domain")
+        
         if type(key) in [Segment,]:
             domain_range = key
             is_each_in_range = domain_range.is_each_in(self.domain_samples)
@@ -392,6 +395,10 @@ class ContinuousDataEven(ContinuousData):
             the range, from the domain, of which we want the slice.
             for example: which time range?
         """
+        if type(key) in [int, float]:
+            raise KeyError("wrong key. key for ContinuousData is Segment or Segments of the same domain")
+        
+
         if type(key) in [Segment,]:
             domain_range = key
             bottom_index = np.ceil(1.0 * domain_range.start / self.sample_step)
