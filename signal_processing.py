@@ -261,6 +261,13 @@ def auto_threshold(sig, mode, factor):
     returns:
     -----------
     thresh
+    
+    TODO: Idea for a "flexible" auto threshold.
+    idea 1: sliding window.
+    idea 2: the flexible mean by convolution with 1 / n * np.ones(n)
+    then (vec - mean) ** 2
+    then another convolution for mean
+    then sqrt
     """
     warnings.warn("auto_threshold not tested")
     vals = sig.values
