@@ -1067,16 +1067,28 @@ def correlate(sig_stable, sig_sliding, mode='valid'):
     """
     warnings.warn("correlate is not tested")
     if not type(sig_stable) in [ContinuousDataEven,] or not type(sig_sliding) in [ContinuousDataEven,]:
-        raise NotImplementedError
+        raise NotImplementedError("implemented only for ContinuousDataEven")
         
     if not pint_extension.allclose(sig_stable.sample_step, sig_sliding.sample_step):
-        raise NotImplementedError
+        raise NotImplementedError("implemented only for same sample step signals")
         
+    if sig_stable.n_samples < sig_sliding.n_samples:
+        warnings.warn("note that sig_stable has less points then sig_sliding, why is thay?")
+    
+    # values        
     a = sig_stable.values.magnitude
     b = sig_sliding.values.magnitude
     c = np.correlate(a, b, mode)
     sig_c_values = c * pint_extension.get_units(sig_stable.values) * pint_extension.get_units(sig_sliding.values) * sig_stable.sample_step
-    first_sample = (-1) * sig_stable.sample_step * (-1 + 0.5 * (sig_stable.n_samples + sig_sliding.n_samples)) + sig_stable.first_sample
+    
+    #times
+    if mode == 'full':
+        first_sample = (-1) * sig_stable.sample_step * (-1 + 0.5 * (sig_stable.n_samples + sig_sliding.n_samples)) + sig_stable.first_sample
+    elif mode == 'same':
+        raise NotImplementedError("timing the correlation not implemented for same mode")
+    elif mode == 'valid':
+        raise NotImplementedError("timing the correlation not implemented for valid mode")
+    
     sig_c = ContinuousDataEven(sig_c_values, sig_stable.sample_step, first_sample)
     return sig_c
     
@@ -1162,7 +1174,7 @@ test_clip()
 
 """
 fourier, and demodulations
-
+TODO: there are some problematic issues with fft / hilbert /demodulations with not 2 ** n samples signals.
 """
 
 
