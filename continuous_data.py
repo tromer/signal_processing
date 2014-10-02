@@ -1020,10 +1020,12 @@ def diff(contin, n=1):
     all points except the last one are calculated using np.diff,
     the last one is defined to be like the one before it.
     
-    Design issues:
+    TODO: Design issues:
+    --------------
     it's not clean / beautiful definition for the last sample, but it hardly matters.
     I decided that it returns a ContinuousData of the same length, so it
     desn't hurt signals of length 2 ** m, which are easier to fft
+    maybe it's better to return a signal that have samples in the middle between each two samples of the original signal
     """
     if type(contin) != ContinuousDataEven:
         raise NotImplementedError
