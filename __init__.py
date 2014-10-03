@@ -26,8 +26,7 @@ each element in another array fullfils some condition. it's a mask.
 
 from global_uerg import uerg, Q_
 
-import numpy_extension
-import pint_extension
+from .extensions import numpy_extension, scipy_extension, pint_extension
 
 import .segment
 from .segment import Segment
