@@ -1,3 +1,20 @@
+import warnings
+
+import numpy as np
+import scipy as sp
+from scipy import  signal
+import matplotlib.pyplot as plt
+
+import segments
+from segments import Segments
+import continuous_data
+from continuous_data import ContinuousDataEven
+
+import pint_extension
+import numpy_extension
+from global_uerg import uerg, Q_
+
+
 def data_to_continuous_histogram(a, bins=10, range_=None, weights=None, density=None):
     """
     returns a histogram of some data.
