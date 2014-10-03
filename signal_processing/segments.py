@@ -8,7 +8,7 @@ Created on Wed Aug 27 19:14:13 2014
 import warnings
 #%%
 
-import pint_extension
+from .extensions import pint_extension
 import numpy as np
 from segment import Segment
 from global_uerg import uerg, Q_
@@ -77,12 +77,14 @@ class Segments(object):
         
         """
         # or np.recarray, or pandas.DataFrame
+        """ TODO: make this gaurdian work
         if len(starts) != len(ends):
             raise ValueError("ends and starts mush have same len")
-        if not ((starts[1:] - starts[:-1]) > 0).all():
+        if not ((starts[1:] - starts[:-1]) > 0).magnitude.all():
             warnings.warn("the segments are not strictly one after another")
-        if not ((ends[1:] - ends[:-1]) > 0).all():
+        if not ((ends[1:] - ends[:-1]) > 0).magnitude.all():
             warnings.warn("the segments are not strictly one after another")
+        """
         
         self._starts = starts
         self._ends = ends

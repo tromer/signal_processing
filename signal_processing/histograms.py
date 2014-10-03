@@ -10,8 +10,8 @@ from segments import Segments
 import continuous_data
 from continuous_data import ContinuousDataEven
 
-import pint_extension
-import numpy_extension
+from .extensions import pint_extension
+from .extensions import numpy_extension
 from global_uerg import uerg, Q_
 
 
