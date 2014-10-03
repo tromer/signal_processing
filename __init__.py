@@ -35,5 +35,8 @@ from .segments import Segments, SegmentsOfContinuous
 import .continuous_data
 from .continuous_data import ContinuousData, ContinuousDataEven
 
+from .histograms import *
+from .threshold import *
+
 
 
