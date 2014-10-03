@@ -79,6 +79,11 @@ class Segments(object):
         # or np.recarray, or pandas.DataFrame
         if len(starts) != len(ends):
             raise ValueError("ends and starts mush have same len")
+        if not ((starts[1:] - starts[:-1]) > 0).all():
+            warnings.warn("the segments are not strictly one after another")
+        if not ((ends[1:] - ends[:-1]) > 0).all():
+            warnings.warn("the segments are not strictly one after another")
+        
         self._starts = starts
         self._ends = ends
         # global_start, global_end?
@@ -716,7 +721,7 @@ test_concatecate_single_segments()
 
 class SegmentsOfContinuous(Segments):
     """
-    
+    this object 
     
     """
     def __init__(self, starts, ends, source):
