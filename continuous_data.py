@@ -43,6 +43,8 @@ class ContinuousData(object):
     3. a distribution: the number of occurances in a population, as a function of age / height / amplitude
     4. a kinematic property of a system: position / velocity / acceleration / angle as a function of time.
     5. even a spectrum of a signal - the magnitude as a function of frequency.
+    6. any connection between two continuous variables, such as a response curv of harmonic ocsillator:
+    amplitude of the ocsillator as a function of the frequency of external force.
     
     There are some differences beween these kinds of data. Maybe some of them would be implemented as a subclass
     
