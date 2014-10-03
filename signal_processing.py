@@ -27,35 +27,6 @@ from global_uerg import uerg, Q_
 
 
 IS_DEBUG = False
-
-def fast_convolve(sig, mask, mode):
-    """
-    XXX XXX this function was put at scipy_extension as a mathematical
-    function
-    determines which implementation of convolve to use, depending
-    on the properties of the inputs. chooses the faster algorithm,
-    between regular convolve, and fft-convolve
-    
-    parameters
-    --------------------
-    sig : ContinuousData
-        signal
-    mask : ContinuousData or np.ndarray
-    TODO: choose the signature
-    
-    returns
-    ------------
-    convolved_signal : ContinuousData
-    
-    
-
-    """
-    raise NotImplementedError
-    if case_regular:
-        return np.convolve(sig, mask, mode)
-    elif case_fft:
-        return sp.signal.fftconvolve(sig, mask, mode)
-        
 #%%
 def threshold_crosses(sig, threshold, is_above=True):
     """
