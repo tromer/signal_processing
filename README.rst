@@ -21,4 +21,12 @@ some conventions
 2. is_each_..... a name for a boolian array which specifies whether
 each element in another array fullfils some condition. it's a mask.
 
+TODO
+---------------------------------
+* use a refactoring tool. vim rope?
+refactoring issues:
+    name - first_sample, last_sample > sample_start, sample_end
+    separate tests
+    separate big files to classes, sub modules (generators, fft, demodulations, plot, io...)
+
 

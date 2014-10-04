@@ -15,13 +15,4 @@ from .threshold import *
 
 # __all__ is not included here, since I do not expect from signal_processing import *, a statement that will create great confusion
 
-#TODO
-"""
-* use a refactoring tool. vim rope?
-refactoring issues:
-    name - first_sample, last_sample > sample_start, sample_end
-    separate tests
-    separate big files to classes, sub modules (generators, fft, demodulations, plot, io...)
 
-
-"""
