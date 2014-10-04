@@ -9,4 +9,10 @@ setup(name='signal_processing',
       author_email='gavishnoam@gmail.com',
       license='_______',
       packages=['signal_processing'],
+      install_requires=[
+          'numpy',
+          'scipy',
+          'matplotlib',
+          'pint',
+      ],
       zip_safe=False)
