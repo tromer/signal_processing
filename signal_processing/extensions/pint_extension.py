@@ -258,6 +258,11 @@ def test_array():
     expected_v = np.array([1, 2, 1]) * uerg.meter
     v = array(l)
     assert allclose(v, expected_v)
+
+    l_2 = [1 * uerg.sec, 3 * uerg.sec]
+    expected_v_2 = np.array([1,3]) * uerg.sec
+    v_2 = array(l)
+    assert allclose(v_2, expected_v_2)
     
 def median(vec):
     return get_units(vec) * np.median(vec.magnitude)
