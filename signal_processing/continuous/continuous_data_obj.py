@@ -5,13 +5,6 @@ Created on Sat Aug 30 01:29:39 2014
 @author: noam
 """
 
-import warnings
-import tempfile
-#%%
-import numpy as np
-import scipy as sp
-from scipy.io import wavfile
-import matplotlib.pyplot as plt
 
 """
 from global_uerg import uerg, Q_
@@ -26,16 +19,17 @@ from . import scipy_extension
 from . import pint_extension
 """
 
+"""
 from signal_processing import uerg, Q_
 from signal_processing.segment import Segment
 from signal_processing import segments
 from signal_processing.segments import Segments
 from signal_processing.extensions import numpy_extension, scipy_extension, pint_extension
+"""
 
 
 #%%
 
-ARBITRARY_UNITS_STR = "[AU]"
 #%%
 
 class ContinuousData(object):

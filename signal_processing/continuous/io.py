@@ -3,6 +3,10 @@ io
 
 """
 
+from scipy.io import wavfile
+
+from signal_processing import uerg
+
 def read_wav(filename, domain_unit=uerg.sec, first_sample=0, value_unit=uerg.milliamp, expected_sample_rate_and_tolerance=None, channels=None):
     """
     read wav file to ContinuousDataEven.

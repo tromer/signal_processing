@@ -1,3 +1,5 @@
+from continuous_data_obj import ContinuousData
+
 class ContinuousDataEven(ContinuousData):
     """
     read the ContinuousData documentation.

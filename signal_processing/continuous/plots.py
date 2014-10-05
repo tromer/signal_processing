@@ -1,3 +1,6 @@
+
+ARBITRARY_UNITS_STR = "[AU]"
+
 def plot_quick(contin, is_abs=False, fmt="-"):
     """
     contin is a ContinuousData object
