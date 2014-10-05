@@ -8,7 +8,7 @@ def readme():
 setup(name='signal_processing',
       version='0.1',
       description='natural interface for signal processing of signals and pulses',
-      url='http://github.com/__________/_________',
+      url='https://github.com/noamg/signal_processing',
       author='Noam Gavish',
       author_email='gavishnoam@gmail.com',
       license='_______',
