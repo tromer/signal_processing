@@ -196,7 +196,7 @@ def rescale_all(l, unit=None):
         if not v.dimensionality == unit.dimensionality:
             raise ValueError("not same dimensionality")
             
-    scaled = map(lambda v, unit : v.to(unit), l, unit * np.ones(len(l)))
+    scaled = map(lambda v : v.to(unit), l)
     return scaled
     
 def test_rescale_all():
@@ -261,7 +261,7 @@ def test_array():
 
     l_2 = [1 * uerg.sec, 3 * uerg.sec]
     expected_v_2 = np.array([1,3]) * uerg.sec
-    v_2 = array(l)
+    v_2 = array(l_2)
     assert allclose(v_2, expected_v_2)
     
 def median(vec):
