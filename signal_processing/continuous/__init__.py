@@ -3,9 +3,9 @@ from continuous_data_even_obj import ContinuousDataEven
 
 import plots
 import non_mathematical_manipulations
-import mathematical_manipulations
+import math
 import generators
 import io
 import filters
 import demodulations
-import complex_processes
+import misc
