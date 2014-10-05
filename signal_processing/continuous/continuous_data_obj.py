@@ -13,7 +13,10 @@ import scipy as sp
 from scipy.io import wavfile
 import matplotlib.pyplot as plt
 
+"""
 from global_uerg import uerg, Q_
+"""
+from . import uerg, Q_
 
 
 from segment import Segment

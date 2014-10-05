@@ -1,5 +1,9 @@
-
+"""
 from global_uerg import uerg, Q_
+"""
+from pint import UnitRegistry
+uerg = UnitRegistry()
+Q_ = uerg.Quantity
 
 from .extensions import numpy_extension, scipy_extension, pint_extension
 

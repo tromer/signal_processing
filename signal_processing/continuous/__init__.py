@@ -1,3 +1,5 @@
+from signal_processing import uerg, Q_
+
 from continuous_data_obj import ContinuousData
 from continuous_data_even_obj import ContinuousDataEven
 from plots import *
