@@ -46,19 +46,6 @@ def concatenate(sig_list):
     sig = ContinuousDataEven(values, sample_step, sig_list[0].first_sample)
     return sig
     
-def test_concatenate():
-    sig_1 = ContinuousDataEven(np.arange(32) * uerg.mamp, uerg.sec)
-    chunks = sig_1.get_chunks(15 * uerg.sec)
-    """
-    print len(chunks)
-    print sig_1.values
-    print chunks[0].values
-    """
-    sig_2 = concatenate(chunks)
-    assert sig_1.is_close(sig_2)
-    
-test_concatenate()
-
 
 def resample(sig, new_sample_points):
     """
