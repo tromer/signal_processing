@@ -154,6 +154,7 @@ def auto_threshold(sig, mode, factor):
     then another convolution for mean
     then sqrt
     """
+    # TODO: rename it to estimate_noise_level
     warnings.warn("auto_threshold not tested")
     vals = sig.values
     if mode == 'mean':
