@@ -38,7 +38,7 @@ class Segment(object):
             # case leading 0
             if edges[0] == 0 and not hasattr(edges[0], 'units'):
                 edges[0] = edges[0] * pint_extension.get_units(edges[1])
-            edges = pint_extension.units_list_to_ndarray(edges)
+            edges = pint_extension.rescale_all(edges)
         else:
             edges = np.array(edges) * unit
                 
