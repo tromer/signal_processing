@@ -55,6 +55,7 @@ Main issues before first release
    * XXX
    * design issus
    * not tested
+   * rename
 
 5. tag a commit as release 0.1
 
