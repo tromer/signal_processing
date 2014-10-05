@@ -1,4 +1,8 @@
 import numpy as np
+
+from continuous_data_even_obj import ContinuousDataEven
+
+
 from signal_processing.extensions import pint_extension
 
 """

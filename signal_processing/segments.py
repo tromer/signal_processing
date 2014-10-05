@@ -11,7 +11,8 @@ import warnings
 from .extensions import pint_extension
 import numpy as np
 from segment import Segment
-from global_uerg import uerg, Q_
+from signal_processing import uerg
+
 #%%
 import matplotlib.pyplot as plt
 #%%

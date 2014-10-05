@@ -2,9 +2,13 @@
 io
 
 """
+import warnings
 
 import numpy as np
+import scipy as sp
 from scipy.io import wavfile
+
+from continuous_data_even_obj import ContinuousDataEven
 
 from signal_processing import uerg
 

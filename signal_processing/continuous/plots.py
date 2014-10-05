@@ -2,6 +2,7 @@
 import warnings
 import numpy as np
 import matplotlib.pyplot as plt
+from signal_processing import uerg
 
 ARBITRARY_UNITS_STR = "[AU]"
 

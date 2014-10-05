@@ -7,9 +7,8 @@ Created on Wed Aug 27 17:25:50 2014
 import warnings
 
 import numpy as np
-import scipy as sp
-from scipy import signal
-from signal_processing.global_uerg import uerg, Q_
+
+from signal_processing import uerg, Q_
 
 #%%
 #from . import ureg, Q_

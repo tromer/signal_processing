@@ -1,5 +1,12 @@
+import warnings
+
 import scipy as sp
 from scipy import signal
+
+from continuous_data_even_obj import ContinuousDataEven
+
+from signal_processing.extensions import pint_extension
+from signal_processing.extensions import scipy_extension
     
 """
 def freq_filter(contin, freq_ranges, ?, ?, ?):

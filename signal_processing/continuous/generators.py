@@ -3,6 +3,10 @@ import numpy as np
 import scipy as sp
 from scipy import signal
 
+from continuous_data_even_obj import ContinuousDataEven
+
+from signal_processing import uerg
+
 """
 some constructors of interesting signals
 

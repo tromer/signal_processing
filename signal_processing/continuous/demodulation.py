@@ -1,5 +1,15 @@
 import warnings
 import numpy as np
+
+from signal_processing.segment import Segment
+
+from continuous_data_even_obj import ContinuousDataEven
+from signal_processing.continuous.math import hilbert
+from signal_processing.continuous.math import diff
+from signal_processing.continuous.filters import band_pass_filter
+from signal_processing import uerg
+from signal_processing.extensions import pint_extension
+from signal_processing.extensions import numpy_extension
     
 #TODO: there are some problematic issues with fft / hilbert /demodulations with not 2 ** n samples signals.
 

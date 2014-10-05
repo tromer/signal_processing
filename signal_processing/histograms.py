@@ -1,18 +1,11 @@
 import warnings
 
-import numpy as np
-import scipy as sp
-from scipy import  signal
-import matplotlib.pyplot as plt
 
-import segments
-from segments import Segments
-import continuous_data
-from continuous_data import ContinuousDataEven
+from continuous.continuous_data_even_obj import ContinuousDataEven
 
 from .extensions import pint_extension
-from .extensions import numpy_extension
-from global_uerg import uerg, Q_
+
+from signal_processing import uerg
 
 
 def data_to_continuous_histogram(a, bins=10, range_=None, weights=None, density=None):
