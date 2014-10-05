@@ -34,22 +34,22 @@ each element in another array fullfils some condition. it's a mask.
 Main issues before first release
 ---------------------------------
 1. refactoring issues:
-    name - first_sample, last_sample > sample_start, sample_end
-    separate tests
-    separate big files to classes, sub modules (generators, fft, demodulations, plot, io...)
+   1. name - first_sample, last_sample > sample_start, sample_end
+   2. separate tests
+   3.  separate big files to classes, sub modules (generators, fft, demodulations, plot, io...)
     *  use a refactoring tool. vim rope?
 2. testing:
-   choose a testing package (probably nose or pytest)
-   seperate tests and create a testing script
-   add tests
-   grep all the "not tested" signs (there are warnings that some functions are not tested
+   1. choose a testing package (probably nose or pytest)
+   2. seperate tests and create a testing script
+   3. add tests
+   4. grep all the "not tested" signs (there are warnings that some functions are not tested
 3. choose the right license.
 4. choose a way to manage the issues and TODO's.
    grepable text that indicates issue in the code:
-   TODO
-   XXX
-   design issus
-   not tested
+   * TODO
+   * XXX
+   * design issus
+   * not tested
 
 5. tag a commit as release 0.1
 
