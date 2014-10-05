@@ -172,9 +172,19 @@ def maximum(a, b):
 
 #%%
 
-def rescale_all(vec_list, unit=None):
+def rescale_all(l, unit=None):
     """
-    rescales a list of vectors with units
+    rescales objects to the same unit
+    such as a list of vectors with units
+
+    note
+    ----------
+    there is no need for a specific case for arrays with units, because arrays with units have the same unit in the first place.
+
+    see also
+    -----------
+    strip_units
+    array
     """
     if unit != None:
         raise NotImplementedError
@@ -182,11 +192,11 @@ def rescale_all(vec_list, unit=None):
     if unit == None:
         unit = get_units(vec_list[0])
     
-    for v in vec_list:
+    for v in l:
         if not v.dimensionality == unit.dimensionality:
             raise ValueError("not same dimensionality")
-        
-    scaled = map(lambda v, unit : v.to(unit), vec_list, unit * np.ones(len(vec_list)))
+            
+    scaled = map(lambda v, unit : v.to(unit), l, unit * np.ones(len(l)))
     return scaled
     
 def test_rescale_all():
