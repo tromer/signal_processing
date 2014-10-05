@@ -7,8 +7,10 @@ import segment
 from .segment import Segment
 import segments
 from .segments import Segments, SegmentsOfContinuous
-import continuous_data
-from .continuous_data import ContinuousData, ContinuousDataEven
+
+import continuous
+from .continuous.continuous_data_obj import ContinuousData
+from .continuous.continuous_data_even_obj import ContinuousDataEven
 
 from .histograms import *
 from .threshold import *
