@@ -1,3 +1,8 @@
+import warnings
+import numpy as np
+import scipy as sp
+from scipy import signal
+
 """
 mathematical manipulations - except fouriers
 

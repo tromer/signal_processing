@@ -1,3 +1,5 @@
+import scipy as sp
+from scipy import signal
     
 """
 def freq_filter(contin, freq_ranges, ?, ?, ?):

@@ -1,3 +1,4 @@
+import numpy as np
 from continuous_data_obj import ContinuousData
 
 class ContinuousDataEven(ContinuousData):

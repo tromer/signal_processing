@@ -3,6 +3,7 @@ io
 
 """
 
+import numpy as np
 from scipy.io import wavfile
 
 from signal_processing import uerg
