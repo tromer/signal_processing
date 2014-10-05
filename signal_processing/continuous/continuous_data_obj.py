@@ -16,15 +16,21 @@ import matplotlib.pyplot as plt
 """
 from global_uerg import uerg, Q_
 """
+"""
 from . import uerg, Q_
-
-
 from . import Segment
 from . import segments
 from . import  Segments
 from . import numpy_extension
 from . import scipy_extension
 from . import pint_extension
+"""
+
+from signal_processing import uerg, Q_
+from signal_processing.segment import Segment
+from signal_processing import segments
+from signal_processing.segments import Segments
+from signal_processing.extensions import numpy_extension, scipy_extension, pint_extension
 
 
 #%%
