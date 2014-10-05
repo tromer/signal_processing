@@ -7,5 +7,5 @@ import math
 import generators
 import io
 import filters
-import demodulations
+import demodulation
 import misc
