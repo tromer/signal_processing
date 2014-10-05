@@ -34,10 +34,12 @@ each element in another array fullfils some condition. it's a mask.
 Main issues before first release
 ---------------------------------
 1. refactoring issues:
+
    1. name - first_sample, last_sample > sample_start, sample_end
    2. separate tests
    3.  separate big files to classes, sub modules (generators, fft, demodulations, plot, io...)
-    *  use a refactoring tool. vim rope?
+
+    * use a refactoring tool. vim rope?
 2. testing:
    
    1. choose a testing package (probably nose or pytest)
@@ -48,6 +50,7 @@ Main issues before first release
 3. choose the right license.
 4. choose a way to manage the issues and TODO's.
    grepable text that indicates issue in the code:
+
    * TODO
    * XXX
    * design issus
