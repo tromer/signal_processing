@@ -19,12 +19,12 @@ from global_uerg import uerg, Q_
 from . import uerg, Q_
 
 
-from segment import Segment
-import segments
-from segments import  Segments
-from .extensions import numpy_extension
-from .extensions import scipy_extension
-from .extensions import pint_extension
+from . import Segment
+from . import segments
+from . import  Segments
+from . import numpy_extension
+from . import scipy_extension
+from . import pint_extension
 
 
 #%%
