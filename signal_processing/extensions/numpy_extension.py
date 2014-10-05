@@ -106,4 +106,12 @@ test_deviation_from_reference()
 #%%
 def running_max(vec, m):
     """ to implement in C """
-    return
+    raise NotImplementedError
+
+def running_median(vec, m):
+     """ to implement in C """
+     raise NotImplementedError
+
+def running_quantile(vec, m, ratio):
+    """ to implement in C """
+    raise NotImplementedError
