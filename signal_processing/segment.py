@@ -142,6 +142,8 @@ def test_Segment():
     
     assert Segment([0, 1 * uerg.meter]).is_close(Segment([0, 1], uerg.meter))
 
+    segment_3 = Segment(np.array([2.5, 6.5]) * uerg.sec)
+
 def test_from_center():
     segment_1 = Segment(np.array([3, 5]) * uerg.meter)
     segment_2 = Segment.from_center(4, 1, uerg.meter)
