@@ -190,7 +190,7 @@ def rescale_all(l, unit=None):
         raise NotImplementedError
         
     if unit == None:
-        unit = get_units(vec_list[0])
+        unit = get_units(l[0])
     
     for v in l:
         if not v.dimensionality == unit.dimensionality:
