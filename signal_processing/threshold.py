@@ -11,8 +11,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 from signal_processing.segments.segments_obj import Segments
-from signal_processing.segments.segments_obj import adjoin
-from signal_processing.segments.segments_obj import manipulate
+from signal_processing.segments import adjoin
+from signal_processing.segments import manipulate
 
 
 from .extensions import pint_extension
