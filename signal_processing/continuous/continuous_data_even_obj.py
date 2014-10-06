@@ -6,7 +6,7 @@ from continuous_data_obj import ContinuousData
 from signal_processing.extensions import pint_extension
 from signal_processing.extensions import numpy_extension
 from signal_processing.segment import Segment
-from signal_processing.segments import Segments
+from signal_processing.segments.segments_obj import Segments
 
 from signal_processing import uerg
 

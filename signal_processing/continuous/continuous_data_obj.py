@@ -28,7 +28,7 @@ from signal_processing.extensions import numpy_extension, scipy_extension, pint_
 """
 from signal_processing.extensions import pint_extension
 from signal_processing.segment import Segment
-from signal_processing.segments import Segments
+from signal_processing.segments.segments_obj import Segments
 
 #%%
 
