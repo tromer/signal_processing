@@ -30,7 +30,7 @@ def band_pass_filter(sig, freq_range, mask_len):
     XXX TODO: shuold change interface. maks len is something without units. shoult receive something else
     XXX this function is not stable with downsampling for this reason
     """
-    warnings.warn('not tested well')
+    warnings.warn('not tested')
     #TODO: test well
     freq_range.edges.ito(sig.sample_rate.units)
     print freq_range.edges
