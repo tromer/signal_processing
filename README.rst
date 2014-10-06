@@ -58,6 +58,7 @@ Main issues before first release
    * not tested
    * rename
 
-5. tag a commit as release 0.1
+#. tag a commit as release 0.1
+#. improve use of exceptions. design the package exceptions, and use pint exceptions for units errors
 
 
