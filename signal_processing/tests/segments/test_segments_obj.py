@@ -1,3 +1,13 @@
+import numpy as np
+
+from signal_processing.segment import Segment
+from signal_processing.segments.segments_obj import Segments
+
+
+from signal_processing import uerg
+
+
+
 def test_segments():
     starts = np.array([0, 2, 4, 10]) * uerg.sec
     ends = np.array([1, 3, 5, 10.5]) * uerg.sec
@@ -99,30 +109,12 @@ test_to_single_segment()
 test_is_empty()
 test_to_segments_list()
 
-def test_from_segments_list():
-    s_list = [Segment([0, 1], uerg.m), Segment([2, 3], uerg.m)]
-    expected_segments = Segments(np.array([0, 2]) * uerg.m, np.array([1, 3]) * uerg.m)
-    segments = Segments.from_segments_list(s_list)
-    assert segments.is_close(expected_segments)
-    
-    s_list = [Segment([0, 3], uerg.m), Segment([1, 2], uerg.m)]
-    expected_segments = Segments(np.array([0, ]) * uerg.m, np.array([3,]) * uerg.m)
-    segments = Segments.from_segments_list(s_list)
-    assert segments.is_close(expected_segments)    
-    
-#test_from_segments_list()
-def test_concatecate_single_segments():
-    s = Segments(uerg.meter * np.array([1, 3]), uerg.meter * np.array([2,4]))
-    seg_list = [s[0], s[1]]
-    s_2 = segments.concatenate_single_segments(seg_list)
-    assert s.is_close(s_2)
-    
-test_concatecate_single_segments()
+
 
 def test_from_single_segment():
     s = Segment([2, 3], uerg.meter)
     expected_segments = Segments(np.array([2,]) * uerg.meter, np.array([3,]))
-    segments = from_single_segment(s)
+    segments = Segments.from_single_segment(s)
     assert segments.is_close(expected_segments)
 
 test_from_single_segment()
