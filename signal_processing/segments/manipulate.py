@@ -1,3 +1,13 @@
+import numpy as np
+
+from signal_processing.segment import Segment
+
+from signal_processing.extensions import pint_extension
+
+from segments_obj import Segments
+
+import adjoin
+
 def concatenate(segments_list):
     """
     concatenates segments, if they are all one after another
@@ -27,7 +37,7 @@ def from_segments_list(cls, segments_list):
     starts = pint_extension.array(map(lambda s : s.start, sorted_by_start))
     ends = pint_extension.array(map(lambda s : s.end, sorted_by_start))
     segments_maybe_overlap = Segments(starts, ends)
-    segments = adjoin_segments_max_distance(segments_maybe_overlap, max_distance=0 * pint_extension.get_units(segments_maybe_overlap.starts))
+    segments = adjoin.adjoin_segments_max_distance(segments_maybe_overlap, max_distance=0 * pint_extension.get_units(segments_maybe_overlap.starts))
     return segments
      
 
@@ -37,7 +47,7 @@ def XXX_concatenate_single_segments(segs_list):
     remove one of the constructors!
     have to be one after another
     """
-    as_segments = map(from_single_segment, segs_list)
+    as_segments = map(Segments.from_single_segment, segs_list)
     return concatenate(as_segments)    
 
 def switch_segments_and_gaps(segments, absolute_start=None, absolute_end=None):

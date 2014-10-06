@@ -1,3 +1,5 @@
+from segments_obj import Segments
+
 class SegmentsOfContinuous(Segments):
     """
     this object represents segments of interest of some continuous data.

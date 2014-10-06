@@ -5,9 +5,9 @@ Created on Wed Aug 27 19:14:13 2014
 @author: noam
 """
 
-from .extensions import pint_extension
+from signal_processing.extensions import pint_extension
 import numpy as np
-from segment import Segment
+from signal_processing.segment import Segment
 
 class Segments(object):
     """

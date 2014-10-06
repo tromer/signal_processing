@@ -1,3 +1,14 @@
+import warnings
+
+import numpy as np
+
+from signal_processing import uerg
+
+from signal_processing.extensions import pint_extension
+
+from segments_obj import Segments
+
+
 def adjoin_segments_max_distance(segments, max_distance):
     """
     if the segments are close enough, maybe they represent the same segment of interest,
@@ -97,7 +108,7 @@ def adjoin_segments(segments_, delta=0, ratio=0, max_dist=None, n=1):
         assert max_dist.dimensionality == segments_.starts.dimensionality
     
 
-    adjoined_segments = segments
+    adjoined_segments = segments_
     for i in xrange(n):
         if delta != 0:
             adjoined_segments = adjoin_segments_max_distance(adjoined_segments, delta)

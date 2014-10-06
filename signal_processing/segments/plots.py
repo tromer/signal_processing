@@ -1,3 +1,6 @@
+import warnings
+import matplotlib.pyplot as plt
+
 def mark_starts_ends(segments_, fig, color_start='r', color_end='g'):
     """
     get a figure and plot on it vertical lines according to
