@@ -1,7 +1,7 @@
 import numpy as np
 
 from signal_processing.continuous.continuous_data_even_obj import ContinuousDataEven
-from signal_processing.segments import Segments
+from signal_processing.segments.segments_obj import Segments
 
 from signal_processing import uerg
 
