@@ -1,3 +1,14 @@
+import numpy as np
+
+from signal_processing import uerg
+
+from signal_processing.extensions import pint_extension
+
+from signal_processing.continuous.continuous_data_obj import ContinuousData
+
+from signal_processing.segment import Segment
+from signal_processing.segments import Segments
+
 def test_ContinuousData():
     t = np.arange(10) * uerg.sec
     vals = np.arange(10) * uerg.volt

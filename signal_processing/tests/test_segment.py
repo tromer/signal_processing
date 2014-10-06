@@ -1,3 +1,8 @@
+import numpy as np
+
+from signal_processing import uerg
+from signal_processing.extensions import pint_extension
+from signal_processing.segment import Segment
         
 def test_Segment():
     segment_1 = Segment(np.array([3, 5]) * uerg.meter)

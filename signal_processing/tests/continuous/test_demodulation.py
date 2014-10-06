@@ -1,3 +1,17 @@
+import numpy as np
+
+from signal_processing import uerg
+
+from signal_processing.extensions import pint_extension
+
+from signal_processing.continuous.continuous_data_even_obj import ContinuousDataEven
+
+from signal_processing.segment import Segment
+
+from signal_processing.continuous import demodulation
+from signal_processing.continuous import generators
+from signal_processing.continuous.plots import plot, plot_quick
+
 def test_pm_demodulation():
     check_range = Segment(np.array([2, 30]) * uerg.ksec)
     sample_step = 1.0 * uerg.sec
@@ -6,14 +20,14 @@ def test_pm_demodulation():
     phase = 2 * np.pi * freq * time
     sine = ContinuousDataEven(np.sin(phase) * uerg.mamp, sample_step)
     expected_phase_sig = ContinuousDataEven(phase, sample_step)
-    phase_sig = pm_demodulation(sine)
+    phase_sig = demodulation.pm_demodulation(sine)
     assert phase_sig[check_range].is_close(expected_phase_sig[check_range], values_rtol=0.01)
     
     time = np.arange(2 ** 15 - 100) * sample_step
     phase = 2 * np.pi * freq * time
     sine = ContinuousDataEven(np.sin(phase) * uerg.mamp, sample_step)
     expected_phase_sig = ContinuousDataEven(phase, sample_step)
-    phase_sig = pm_demodulation(sine)
+    phase_sig = demodulation.pm_demodulation(sine)
     print phase_sig.first_sample, phase_sig.last_sample
     print expected_phase_sig.first_sample, expected_phase_sig.last_sample
     # weird, it acctually gives phase diff of 0.5 pi from what I expect
@@ -33,7 +47,7 @@ def test_fm_demodulation():
     phase = 2 * np.pi * freq * time
     sine = ContinuousDataEven(np.sin(phase) * uerg.mamp, sample_step)
     expected_freq_sig = ContinuousDataEven(np.ones(2 ** 15) * freq, sample_step)
-    freq_sig = fm_demodulation(sine)
+    freq_sig = demodulation.fm_demodulation(sine)
     assert freq_sig[check_range].is_close(expected_freq_sig[check_range], values_rtol=0.01)
  
 def test_am_demodulation_hilbert():
@@ -42,9 +56,9 @@ def test_am_demodulation_hilbert():
     n_samples = 2 ** 15
     freq = 0.15 * uerg.Hz
     amp = uerg.mamp
-    sine = generate_sine(sample_step, n_samples, amp, sine_freq=freq)
+    sine = generators.generate_sine(sample_step, n_samples, amp, sine_freq=freq)
     expected_sine_am = ContinuousDataEven(np.ones(sine.n_samples) * amp, sample_step)
-    sine_am = am_demodulation_hilbert(sine)
+    sine_am = demodulation.am_demodulation_hilbert(sine)
     """
     plot_quick(sine)
     plot_quick(sine_am)
@@ -73,8 +87,8 @@ def test_am_demodulation_convolution():
     freq_1 = 0.15 * uerg.Hz
     freq_2 = 0.40 * uerg.Hz
     amp = uerg.mamp
-    sine_1 = generate_sine(sample_step, n_samples, amp, sine_freq=freq_1)
-    sine_2 = generate_sine(sample_step, n_samples, amp, freq_2)
+    sine_1 = generators.generate_sine(sample_step, n_samples, amp, sine_freq=freq_1)
+    sine_2 = generators.generate_sine(sample_step, n_samples, amp, freq_2)
     sig = sine_1 + sine_2
     """
     #copied from test_am_demodulation_filter
@@ -88,9 +102,9 @@ def test_am_demodulation_convolution():
     """
     dt = 1.0 / freq_1 * 3
     period = 100 * uerg.sec
-    sig = generate_square_freq_modulated(sample_step, n_samples, amp, freq_1, period)
-    expected_sig_am = generate_square(sample_step, n_samples, amp, period)
-    sig_am = am_demodulation_convolution(sig, dt)
+    sig = generators.generate_square_freq_modulated(sample_step, n_samples, amp, freq_1, period)
+    expected_sig_am = generators.generate_square(sample_step, n_samples, amp, period)
+    sig_am = generators.am_demodulation_convolution(sig, dt)
     fig, junk = plot_quick(sig)
     plot(expected_sig_am, fig)
     plot(sig_am, fig)
@@ -122,9 +136,9 @@ def test_am_demodulation_filter():
     
     dt = 1.0 / freq_1 * 3
     period = 100 * uerg.sec
-    sig = generate_square_freq_modulated(sample_step, n_samples, amp, freq_1, period)
-    expected_sig_am = generate_square(sample_step, n_samples, amp, period)
-    sig_am = am_demodulation_filter(sig, dt, 256)
+    sig = generators.generate_square_freq_modulated(sample_step, n_samples, amp, freq_1, period)
+    expected_sig_am = generators.generate_square(sample_step, n_samples, amp, period)
+    sig_am = demodulation.am_demodulation_filter(sig, dt, 256)
     fig, junk = plot_quick(sig)
     plot(expected_sig_am, fig)
     plot(sig_am, fig)

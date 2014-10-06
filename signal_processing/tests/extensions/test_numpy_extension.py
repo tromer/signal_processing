@@ -1,3 +1,8 @@
+import numpy as np
+
+from signal_processing.extensions import numpy_extension
+from signal_processing.extensions.numpy_extension import close_power_of_2, is_power_of_2
+
 def test_is_power_of_2():
     assert is_power_of_2(2)
     assert is_power_of_2(32)
@@ -18,14 +23,14 @@ def test_close_power_of_2():
 def test_normalize():
     vec = np.array([1, 1])
     vec_n_1 = vec / 2.0
-    assert np.allclose(normalize(vec, ord=1), vec_n_1)
+    assert np.allclose(numpy_extension.normalize(vec, ord=1), vec_n_1)
     vec_n_2 = vec / np.sqrt(2)
-    assert np.allclose(normalize(vec), vec_n_2)
+    assert np.allclose(numpy_extension.normalize(vec), vec_n_2)
     
 
 def test_deviation_from_reference():
     a = np.arange(10)
-    assert np.allclose(deviation_from_reference(a, np.mean(a)), np.std(a))
+    assert np.allclose(numpy_extension.deviation_from_reference(a, np.mean(a)), np.std(a))
     
 test_close_power_of_2()
 test_normalize()

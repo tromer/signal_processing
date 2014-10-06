@@ -1,3 +1,11 @@
+import numpy as np
+from signal_processing import uerg
+from signal_processing.segment import Segment
+from signal_processing.segments import Segments
+
+from signal_processing import segments
+
+
 def test_segments():
     starts = np.array([0, 2, 4, 10]) * uerg.sec
     ends = np.array([1, 3, 5, 10.5]) * uerg.sec
@@ -103,10 +111,10 @@ test_to_segments_list()
 def test_filter_short_segments():
     starts = np.array([0, 2, 4, 10]) * uerg.meter
     ends = np.array([1, 3, 5, 10.5]) * uerg.meter
-    segments = Segments(starts, ends)
+    segments_0 = Segments(starts, ends)
     min_duration = 0.75 * uerg.meter
     only_long_segments_expected = Segments(np.array([0, 2, 4]) * uerg.meter, np.array([1, 3, 5]) * uerg.meter)
-    only_long_segments = filter_short_segments(segments, min_duration)
+    only_long_segments = segments.filter_short_segments(segments_0, min_duration)
     assert only_long_segments.is_close(only_long_segments_expected)
     
     
@@ -117,7 +125,7 @@ def test_switch_segments_and_gaps():
     ends = np.array([1, 3, 5, 10.5])
     segments = Segments(starts, ends)
     expected_gaps = Segments(np.array([1, 3, 5]), np.array([2, 4, 10]))
-    gaps = switch_segments_and_gaps(segments)
+    gaps = segments.switch_segments_and_gaps(segments)
     assert gaps.is_close(expected_gaps)
     """
     starts = np.array([0, 2, 4, 10]) * uerg.meter
@@ -141,7 +149,7 @@ def test_adjoin_segments_max_distance():
     segments = Segments(starts, ends)
     max_distance = 2 * uerg.meter
     adjoined_segments_expected = Segments(np.array([0, 10]) * uerg.meter, np.array([5, 11]) * uerg.meter)
-    adjoined_segments = adjoin_segments_max_distance(segments, max_distance)
+    adjoined_segments = segments.adjoin_segments_max_distance(segments, max_distance)
     assert adjoined_segments.is_close(adjoined_segments_expected)
     
     
@@ -155,18 +163,18 @@ def test_adjoin_segments_considering_durations():
     
     ratio = 1.2
     adjoined_segments_expected = Segments(np.array([0, 10]) * uerg.meter, np.array([5, 11]) * uerg.meter)
-    adjoined_segments = adjoin_segments_considering_durations(segments, ratio)
+    adjoined_segments = segments.adjoin_segments_considering_durations(segments, ratio)
     assert adjoined_segments.is_close(adjoined_segments_expected)
     
     ratio = 0.8
     adjoined_segments_expected = segments
-    adjoined_segments = adjoin_segments_considering_durations(segments, ratio)
+    adjoined_segments = segments.adjoin_segments_considering_durations(segments, ratio)
     assert adjoined_segments.is_close(adjoined_segments_expected)
     
     ratio = 1.2
     max_dist = 0.8 * uerg.meter
     adjoined_segments_expected = segments
-    adjoined_segments = adjoin_segments_considering_durations(segments, ratio, max_dist)
+    adjoined_segments = segments.adjoin_segments_considering_durations(segments, ratio, max_dist)
     assert adjoined_segments.is_close(adjoined_segments_expected)
 
 def test_adjoin_segments_considering_durations_mode_min():
@@ -176,7 +184,7 @@ def test_adjoin_segments_considering_durations_mode_min():
 
     ratio = 1.2
     adjoined_segments_expected = segments
-    adjoined_segments = adjoin_segments_considering_durations(segments, ratio, mode='min')
+    adjoined_segments = segments.adjoin_segments_considering_durations(segments, ratio, mode='min')
     assert adjoined_segments.is_close(adjoined_segments_expected)
     
     starts = np.array([0, 1]) * uerg.meter
@@ -185,7 +193,7 @@ def test_adjoin_segments_considering_durations_mode_min():
 
     ratio = 1.2
     adjoined_segments_expected = segments
-    adjoined_segments = adjoin_segments_considering_durations(segments, ratio, mode='min')
+    adjoined_segments = segments.adjoin_segments_considering_durations(segments, ratio, mode='min')
     assert adjoined_segments.is_close(adjoined_segments_expected)
 
     starts = np.array([0, 2]) * uerg.meter
@@ -194,7 +202,7 @@ def test_adjoin_segments_considering_durations_mode_min():
 
     ratio = 1.2
     adjoined_segments_expected = Segments(np.array([0,]) * uerg.meter, np.array([3,]) * uerg.meter)
-    adjoined_segments = adjoin_segments_considering_durations(segments, ratio, mode='min')
+    adjoined_segments = segments.adjoin_segments_considering_durations(segments, ratio, mode='min')
     assert adjoined_segments.is_close(adjoined_segments_expected)
 
     
@@ -205,12 +213,12 @@ test_adjoin_segments_considering_durations_mode_min()
 def test_from_segments_list():
     s_list = [Segment([0, 1], uerg.m), Segment([2, 3], uerg.m)]
     expected_segments = Segments(np.array([0, 2]) * uerg.m, np.array([1, 3]) * uerg.m)
-    segments = from_segments_list(s_list)
+    segments = Segments.from_segments_list(s_list)
     assert segments.is_close(expected_segments)
     
     s_list = [Segment([0, 3], uerg.m), Segment([1, 2], uerg.m)]
     expected_segments = Segments(np.array([0, ]) * uerg.m, np.array([3,]) * uerg.m)
-    segments = from_segments_list(s_list)
+    segments = Segments.from_segments_list(s_list)
     assert segments.is_close(expected_segments)    
     
 #test_from_segments_list()
@@ -218,14 +226,14 @@ def test_concatenate():
     s_1 = Segments(np.array([1, 3]) * uerg.meter, np.array([2, 4]) * uerg.meter)
     s_2 = Segments(np.array([5, 7]) * uerg.meter, np.array([6, 8]) * uerg.meter)
     s_3 = Segments(np.array([1, 3, 5, 7]) * uerg.meter, np.array([2, 4, 6, 8]) * uerg.meter)
-    assert s_3.is_close(concatenate([s_1, s_2]))
+    assert s_3.is_close(segments.concatenate([s_1, s_2]))
     
 test_concatenate()
 
 def test_concatecate_single_segments():
     s = Segments(uerg.meter * np.array([1, 3]), uerg.meter * np.array([2,4]))
     seg_list = [s[0], s[1]]
-    s_2 = concatenate_single_segments(seg_list)
+    s_2 = segments.concatenate_single_segments(seg_list)
     assert s.is_close(s_2)
     
 test_concatecate_single_segments()
