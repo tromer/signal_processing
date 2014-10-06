@@ -5,17 +5,10 @@ Created on Wed Aug 27 19:14:13 2014
 @author: noam
 """
 
-import warnings
-#%%
-
 from .extensions import pint_extension
 import numpy as np
 from segment import Segment
-from signal_processing import uerg
 
-#%%
-import matplotlib.pyplot as plt
-#%%
 class Segments(object):
     """
     Note: see also the object ContinuousData. they go hand in hand together, refer to different aspects of the same subjects
@@ -103,29 +96,7 @@ class Segments(object):
         """
         return Segments(pint_extension.array([segment.start,]), pint_extension.array([segment.end,]))
     
-    @classmethod
-    def from_segments_list(cls, segments_list):
-        """
-        assumes 
-        XXXXXXXX XXX
-        """
-        raise NotImplementedError
-        sorted_by_start = sorted(segments_list, key=lambda s : s.start)
-        starts = pint_extension.array(map(lambda s : s.start, sorted_by_start))
-        ends = pint_extension.array(map(lambda s : s.end, sorted_by_start))
-        segments_maybe_overlap = Segments(starts, ends)
-        segments = adjoin_segments_max_distance(segments_maybe_overlap, max_distance=0 * pint_extension.get_units(segments_maybe_overlap.starts))
-        return segments
-         
-    @classmethod
-    def XXX_concatenate_single_segments(segs_list):
-        """
-        similar to from_single_segments
-        remove one of the constructors!
-        have to be one after another
-        """
-        as_segments = map(from_single_segment, segs_list)
-        return concatenate(as_segments)
+
         
     def __len__(self):
         # maybe should be the length in time?

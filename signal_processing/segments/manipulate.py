@@ -15,7 +15,30 @@ def concatenate(segments_list):
     all_starts = map(lambda segments : segments.starts, segments_list)
     all_ends = map(lambda segments : segments.ends, segments_list)
     return Segments(pint_extension.concatenate(all_starts), pint_extension.concatenate(all_ends))
-    
+
+
+def from_segments_list(cls, segments_list):
+    """
+    assumes 
+    XXXXXXXX XXX
+    """
+    raise NotImplementedError
+    sorted_by_start = sorted(segments_list, key=lambda s : s.start)
+    starts = pint_extension.array(map(lambda s : s.start, sorted_by_start))
+    ends = pint_extension.array(map(lambda s : s.end, sorted_by_start))
+    segments_maybe_overlap = Segments(starts, ends)
+    segments = adjoin_segments_max_distance(segments_maybe_overlap, max_distance=0 * pint_extension.get_units(segments_maybe_overlap.starts))
+    return segments
+     
+
+def XXX_concatenate_single_segments(segs_list):
+    """
+    similar to from_single_segments
+    remove one of the constructors!
+    have to be one after another
+    """
+    as_segments = map(from_single_segment, segs_list)
+    return concatenate(as_segments)    
 
 def switch_segments_and_gaps(segments, absolute_start=None, absolute_end=None):
     """
