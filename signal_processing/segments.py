@@ -307,7 +307,7 @@ def adjoin_segments_max_distance(segments, max_distance):
     then xoring with a shift to find ends and starts, then trim the edges
     """
 #%%
-def adjoin_segments_considering_durations(segments, segment_gap_ratio, absolute_max_dist=None, mode='mean'):
+def adjoin_segments_considering_durations(segments_, segment_gap_ratio, absolute_max_dist=None, mode='mean'):
     """
     to determine whether to adjoin two nearby segments, we consider their durations and the gap duration.
     we calculate a reference_duration for each gap, for comparison
@@ -344,7 +344,7 @@ def adjoin_segments_considering_durations(segments, segment_gap_ratio, absolute_
     if hasattr(segment_gap_ratio, 'dimensionality'):
         assert segment_gap_ratio.dimensionality == uerg.dimensionless.dimensionality
     
-    durations = segments.durations
+    durations = segments_.durations
     
     if mode == 'mean':
         reference_duration_for_each_gap = 0.5 * (durations[:-1] + durations[1:])
@@ -357,15 +357,15 @@ def adjoin_segments_considering_durations(segments, segment_gap_ratio, absolute_
     max_distance_due_to_duration = reference_duration_for_each_gap * segment_gap_ratio
     
     if absolute_max_dist != None:
-        assert absolute_max_dist.dimensionality == segments.starts.dimensionality
+        assert absolute_max_dist.dimensionality == segments_.starts.dimensionality
         max_distance = pint_extension.minimum(max_distance_due_to_duration, absolute_max_dist)
     else:
         max_distance = max_distance_due_to_duration
     
-    adjoined_segments = adjoin_segments_max_distance(segments, max_distance)
+    adjoined_segments = adjoin_segments_max_distance(segments_, max_distance)
     return adjoined_segments
     
-def adjoin_segments(segments, delta=0, ratio=0, max_dist=None, n=1):
+def adjoin_segments(segments_, delta=0, ratio=0, max_dist=None, n=1):
     """
     parameters:
     ----------------
@@ -374,9 +374,9 @@ def adjoin_segments(segments, delta=0, ratio=0, max_dist=None, n=1):
     """
     warnings.warn("adjoin_segments is not tested")
     if delta != 0: 
-        assert delta.dimensionality == segments.starts.dimensionality
+        assert delta.dimensionality == segments_.starts.dimensionality
     if max_dist != None:
-        assert max_dist.dimensionality == segments.starts.dimensionality
+        assert max_dist.dimensionality == segments_.starts.dimensionality
     
 
     adjoined_segments = segments
@@ -390,7 +390,7 @@ def adjoin_segments(segments, delta=0, ratio=0, max_dist=None, n=1):
     
 #%%
     
-def mark_starts_ends(segments, fig, color_start='r', color_end='g'):
+def mark_starts_ends(segments_, fig, color_start='r', color_end='g'):
     """
     get a figure and plot on it vertical lines according to
     starts and ends
@@ -403,8 +403,8 @@ def mark_starts_ends(segments, fig, color_start='r', color_end='g'):
     warnings.warn("mark_starts_ends not tested, careful with units")
     plt.figure(fig.number)
     y_min, y_max = plt.ylim()
-    starts_lines = plt.vlines(segments.starts, y_min, y_max, colors=color_start, label='starts')
-    ends_lines = plt.vlines(segments.ends, y_min, y_max, colors=color_end, label='ends')
+    starts_lines = plt.vlines(segments_.starts, y_min, y_max, colors=color_start, label='starts')
+    ends_lines = plt.vlines(segments_.ends, y_min, y_max, colors=color_end, label='ends')
     plt.legend(loc='best')
     return starts_lines, ends_lines
     
