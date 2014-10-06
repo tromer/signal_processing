@@ -13,6 +13,7 @@ Data types - the interface for signal processing
 ----------------------------------------------------
 the package introduces a few data types to represent different datas
 easily and efficiently:
+
 1. ContinuousData - every continuous data, like signals.
 2. Segments - a quantisation / clustering / finding areas of interest
 within signals
