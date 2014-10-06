@@ -92,7 +92,31 @@ class Segments(object):
         self._ends = ends
         # global_start, global_end?
         # pointer to internal data?
-        
+
+    @classmethod
+    def from_single_segment(cls, segment):
+        """
+        returns:
+        -------------
+        segments : Segments
+            containing only one segment
+        """
+        return Segments(pint_extension.array([segment.start,]), pint_extension.array([segment.end,]))
+    
+    @classmethod
+    def from_segments_list(cls, segments_list):
+        """
+        assumes 
+        XXXXXXXX XXX
+        """
+        raise NotImplementedError
+        sorted_by_start = sorted(segments_list, key=lambda s : s.start)
+        starts = pint_extension.array(map(lambda s : s.start, sorted_by_start))
+        ends = pint_extension.array(map(lambda s : s.end, sorted_by_start))
+        segments_maybe_overlap = Segments(starts, ends)
+        segments = adjoin_segments_max_distance(segments_maybe_overlap, max_distance=0 * pint_extension.get_units(segments_maybe_overlap.starts))
+        return segments
+            
     def __len__(self):
         # maybe should be the length in time?
         return len(self.starts)
@@ -413,19 +437,7 @@ def plot_quick(segments):
     raise NotImplementedError
 
 
-def from_segments_list(segments_list):
-    """
-    assumes 
-    XXXXXXXX XXX
-    """
-    raise NotImplementedError
-    sorted_by_start = sorted(segments_list, key=lambda s : s.start)
-    starts = pint_extension.array(map(lambda s : s.start, sorted_by_start))
-    ends = pint_extension.array(map(lambda s : s.end, sorted_by_start))
-    segments_maybe_overlap = Segments(starts, ends)
-    segments = adjoin_segments_max_distance(segments_maybe_overlap, max_distance=0 * pint_extension.get_units(segments_maybe_overlap.starts))
-    return segments
-    
+   
    
     
     
@@ -461,15 +473,7 @@ def concatenate(segments_list):
     return Segments(pint_extension.concatenate(all_starts), pint_extension.concatenate(all_ends))
     
 
-def from_single_segment(segment):
-    """
-    returns:
-    -------------
-    segments : Segments
-        containing only one segment
-    """
-    return Segments(pint_extension.array([segment.start,]), pint_extension.array([segment.end,]))
-        
+       
     
 
 
