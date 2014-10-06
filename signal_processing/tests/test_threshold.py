@@ -17,6 +17,5 @@ def test_threshold_crosses():
     assert segments.is_close(segments_expected)
     
 
-test_threshold_crosses()
 
 

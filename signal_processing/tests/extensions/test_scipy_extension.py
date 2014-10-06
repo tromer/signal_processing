@@ -9,4 +9,3 @@ def test_smart_convolve():
     assert np.allclose(np.convolve(v, m), scipy_extension.smart_convolve(v,m))
     assert np.allclose(sp.signal.fftconvolve(v, m), scipy_extension.smart_convolve(v,m))
     
-test_smart_convolve()

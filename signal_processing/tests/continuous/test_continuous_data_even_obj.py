@@ -137,17 +137,3 @@ def test_get_chunks():
     
     
 
-test_ContinuousDataEven()
-test_down_sample()
-test_gain()
-test_is_same_domain_samples()
-test__extract_values_from_other_for_continuous_data_arithmetic()
-test___add__()
-test___sub__()
-test___mul__()
-test___div__()
-test_abs()
-test_is_power_of_2_samples()
-test_trim_to_power_of_2_XXX()
-test_get_chunks()
-#

@@ -80,7 +80,7 @@ def test_am_demodulation_hilbert():
     assert sig_am[check_range].is_close_l_1(expected_sig_am[check_range], values_rtol=0.2, values_atol=0.2 * amp)
     """
  
-def test_am_demodulation_convolution():
+def XXX_test_am_demodulation_convolution():
     check_range = Segment(np.array([2, 30]) * uerg.ksec)
     sample_step = 1.0 * uerg.sec
     n_samples = 2 ** 15
@@ -112,7 +112,7 @@ def test_am_demodulation_convolution():
     # the big tolerance is due to gibs effect
     assert sig_am[check_range].is_close_l_1(expected_sig_am[check_range], values_rtol=0.2, values_atol=0.2 * amp)
 
-def test_am_demodulation_filter():
+def XXX_test_am_demodulation_filter():
     check_range = Segment(np.array([2, 30]) * uerg.ksec)
     sample_step = 1.0 * uerg.sec
     n_samples = 2 ** 15
@@ -145,11 +145,4 @@ def test_am_demodulation_filter():
     plot_quick(sig_am - expected_sig_am, fig)
     # the big tolerance is due to gibs effect
     assert sig_am[check_range].is_close_l_1(expected_sig_am[check_range], values_rtol=0.2, values_atol=0.2 * amp)
-  
-test_pm_demodulation()
-test_fm_demodulation()
-test_am_demodulation_hilbert()
-#test_am_demodulation_convolution()
-#test_am_demodulation_filter()
-
 

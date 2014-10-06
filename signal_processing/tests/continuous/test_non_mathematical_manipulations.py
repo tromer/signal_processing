@@ -16,6 +16,5 @@ def test_concatenate():
     sig_2 = concatenate(chunks)
     assert sig_1.is_close(sig_2)
     
-test_concatenate()
 
 

@@ -37,7 +37,5 @@ def test_write_wav():
     assert sig.is_close(sig_read)
     f_temp.close()    
     
-test_read_wav()
-test_write_wav()
 
 

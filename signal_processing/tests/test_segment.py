@@ -39,5 +39,3 @@ def test_from_center():
     assert segment_1.is_close(segment_3)
     assert not segment_1.is_close(segment_4)
     
-test_Segment()
-test_from_center()

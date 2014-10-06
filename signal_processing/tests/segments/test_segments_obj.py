@@ -101,14 +101,6 @@ def test_to_segments_list():
     for i in range(len(l)):
         assert l[i].is_close(expected_l[i])
     
-test_segments()
-test_is_each_in_range()
-test_filter_by_range()
-test_is_single_segment()
-test_to_single_segment()
-test_is_empty()
-test_to_segments_list()
-
 
 
 def test_from_single_segment():
@@ -117,4 +109,3 @@ def test_from_single_segment():
     segments = Segments.from_single_segment(s)
     assert segments.is_close(expected_segments)
 
-test_from_single_segment()

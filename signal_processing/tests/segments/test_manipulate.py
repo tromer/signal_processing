@@ -29,7 +29,6 @@ def test_switch_segments_and_gaps():
     print expected_gaps.ends
     assert gaps.is_close(expected_gaps)
     """
-test_switch_segments_and_gaps()
 
 
 def test_concatenate():
@@ -38,7 +37,6 @@ def test_concatenate():
     s_3 = Segments(np.array([1, 3, 5, 7]) * uerg.meter, np.array([2, 4, 6, 8]) * uerg.meter)
     assert s_3.is_close(manipulate.concatenate([s_1, s_2]))
     
-test_concatenate()
 
 
 def test_from_segments_list():
@@ -59,7 +57,6 @@ def test_concatecate_single_segments():
     s_2 = manipulate.concatenate_single_segments(seg_list)
     assert s.is_close(s_2)
     
-test_concatecate_single_segments()
 
 
 
@@ -73,5 +70,4 @@ def test_filter_short_segments():
     assert only_long_segments.is_close(only_long_segments_expected)
     
     
-test_filter_short_segments()
 

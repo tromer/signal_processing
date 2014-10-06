@@ -37,5 +37,4 @@ def test_ContinuousData():
     for i in range(len(sig_list)):
         assert sig_list[i].is_close(expected_sig_list[i])
     
-test_ContinuousData()
 

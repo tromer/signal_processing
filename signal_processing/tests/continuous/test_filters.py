@@ -14,7 +14,7 @@ from signal_processing.continuous import filters
 from signal_processing.continuous.plots import plot_quick
 
 
-def test_band_pass_filter():
+def visual_test_band_pass_filter():
     sample_step = uerg.sec
     np.random.seed(13)
     white_noise = ContinuousDataEven((np.random.rand(2048) - 0.5)* uerg.mamp, sample_step)
@@ -24,16 +24,3 @@ def test_band_pass_filter():
     white_noise_filterred_spec = fft(white_noise_filterred)
     plot_quick(white_noise_spec, is_abs=True)
     plot_quick(white_noise_filterred_spec, is_abs=True)
-    
-    
-    
-    
-# test_band_pass_filter()
-    
-    
-#%%
-
-
-
-    
-

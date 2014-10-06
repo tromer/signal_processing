@@ -15,6 +15,5 @@ def test_data_to_continuous_histogram():
     hist_continuous = histograms.data_to_continuous_histogram(a, bins=10, range_=range_)
     assert hist_continuous.is_close(expected_hist_continuous)
     
-test_data_to_continuous_histogram()
 
 

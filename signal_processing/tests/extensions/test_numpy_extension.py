@@ -32,9 +32,5 @@ def test_deviation_from_reference():
     a = np.arange(10)
     assert np.allclose(numpy_extension.deviation_from_reference(a, np.mean(a)), np.std(a))
     
-test_close_power_of_2()
-test_normalize()
-test_is_power_of_2()
-test_deviation_from_reference()
 
 

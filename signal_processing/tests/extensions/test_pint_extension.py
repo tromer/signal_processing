@@ -17,7 +17,6 @@ def test_allclose():
     #TODO: check that using a different unit for atol raises exception.
     #TODO: add assertions. this is a very fondemental function.
     
-test_allclose()
 
 
 def test_get_units():
@@ -26,13 +25,10 @@ def test_get_units():
     vec = np.arange(1, 5) * uerg.meter
     assert pint_extension.allclose(pint_extension.get_units(vec), uerg.meter)
     
-test_get_units()
 
 def test_units_list_to_ndarray():
     l = [1 * uerg.meter, 2 * uerg.meter, 100 * uerg.cmeter]
     assert pint_extension.allclose(pint_extension.units_list_to_ndarray(l), np.array([1, 2, 1]) * uerg.meter)
-    
-test_units_list_to_ndarray()
     
 
 def test_histogram():
@@ -44,7 +40,6 @@ def test_histogram():
     assert np.allclose(hist, expected_hist)
     assert pint_extension.allclose(edges, expected_edges)
     
-test_histogram()
 
 def test_rescale_all():
     l = [1 * uerg.meter, 2 * uerg.meter, 100 * uerg.cmeter]
@@ -85,11 +80,5 @@ def test_median():
     expected_median = 4.5 * uerg.m
     assert pint_extension.allclose(med, expected_median)
 
-test_rescale_all()
-test_strip_units()
-test_concatenate()
-test_array()
-
-test_median()
 
 

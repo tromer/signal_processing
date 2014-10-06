@@ -18,7 +18,6 @@ def test_adjoin_segments_max_distance():
     assert adjoined_segments.is_close(adjoined_segments_expected)
     
     
-test_adjoin_segments_max_distance()
 #%%
 def test_adjoin_segments_considering_durations():
     # copied from test_adjoin_segments_max_distance
@@ -71,7 +70,5 @@ def test_adjoin_segments_considering_durations_mode_min():
     assert adjoined_segments.is_close(adjoined_segments_expected)
 
     
-test_adjoin_segments_considering_durations()
-test_adjoin_segments_considering_durations_mode_min()
 
 

@@ -55,10 +55,7 @@ def test_clip():
     expected_clipped = ContinuousDataEven(np.clip(v, 3 * uerg.mamp, 6 * uerg.mamp), uerg.sec)
     assert clipped.is_close(expected_clipped)
     
-test_diff()
-#visual_test_correlate()
-test_correlate_find_new_location()
-test_clip()
+
 
 def test_determine_fft_len():
     assert math.determine_fft_len(14, 'accurate') == 14
@@ -66,7 +63,6 @@ def test_determine_fft_len():
     assert math.determine_fft_len(7, 'trim') == 4
     assert math.determine_fft_len(5, 'zero-pad') == 8
     
-test_determine_fft_len()
  
 def test_fft():
     sig = ContinuousDataEven(np.arange(32) * uerg.amp, 1.0 * uerg.sec)
@@ -87,8 +83,6 @@ def test_fft():
     assert spec_fast.is_close(expected_spec_fast)
     
     
-test_fft()
-#%%
 
 def test_hilbert():
     # copied from test_pm_demodulation
@@ -109,4 +103,3 @@ def test_hilbert():
     """
     assert sine_hilbert.is_close(expected_sine_hilbert)
  
-test_hilbert()    

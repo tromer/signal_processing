@@ -41,9 +41,5 @@ def test_generate_square_freq_modulated():
     assert modulated.is_close(envelope * sine)
 
     
-test_generate_sine()
-test_generate_square()
-test_generate_square_freq_modulated()
-#%%
 
 
