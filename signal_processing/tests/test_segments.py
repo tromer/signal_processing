@@ -238,4 +238,10 @@ def test_concatecate_single_segments():
     
 test_concatecate_single_segments()
 
+def test_from_single_segment():
+    s = Segment([2, 3], uerg.meter)
+    expected_segments = Segments(np.array([2,]) * uerg.meter, np.array([3,]))
+    segments = from_single_segment(s)
+    assert segments.is_close(expected_segments)
 
+test_from_single_segment()

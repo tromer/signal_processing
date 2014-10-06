@@ -471,13 +471,7 @@ def from_single_segment(segment):
     return Segments(pint_extension.array([segment.start,]), pint_extension.array([segment.end,]))
         
     
-def test_from_single_segment():
-    s = Segment([2, 3], uerg.meter)
-    expected_segments = Segments(np.array([2,]) * uerg.meter, np.array([3,]))
-    segments = from_single_segment(s)
-    assert segments.is_close(expected_segments)
 
-test_from_single_segment()
 
 
 def concatenate_single_segments(segs_list):
