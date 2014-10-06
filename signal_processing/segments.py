@@ -86,6 +86,7 @@ class Segments(object):
         if not ((ends[1:] - ends[:-1]) > 0).magnitude.all():
             warnings.warn("the segments are not strictly one after another")
         """
+        assert len(starts) == len(ends)
         
         self._starts = starts
         self._ends = ends
