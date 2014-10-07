@@ -36,9 +36,8 @@ Main issues before first release
 ---------------------------------
 1. refactoring issues:
 
-   1. name - first_sample, last_sample > sample_start, sample_end
-   2. separate tests
-   3.  separate big files to classes, sub modules (generators, fft, demodulations, plot, io...)
+   1. name - first_sample, last_sample > sample_start, sample_end.
+   2. shorten the name of some functions in the sub-modules (adjoin, filter. threshold etc.) since they are in a module, they can have a less indicative name
 
     * use a refactoring tool. vim rope?
 2. testing:
