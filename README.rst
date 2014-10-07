@@ -57,6 +57,7 @@ Main issues before first release
    * design issus
    * not tested
    * rename
+   * refactor
 
 #. tag a commit as release 0.1
 #. improve use of exceptions. design the package exceptions, and use pint exceptions for units errors
