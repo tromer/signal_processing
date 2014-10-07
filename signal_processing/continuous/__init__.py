@@ -9,3 +9,7 @@ import io
 import filters
 import demodulation
 import misc
+
+from plots import plot
+from io import read_wav
+from math import fft
