@@ -1,6 +1,5 @@
 
 import warnings
-import numpy as np
 import matplotlib.pyplot as plt
 from signal_processing import uerg
 
@@ -18,7 +17,7 @@ def plot_quick(contin, is_abs=False, fmt="-"):
     return plot(contin, fig=None, is_abs=is_abs, fmt=fmt)
 #%%
     
-def plot(contin, fig=None, subplot=None, share_x=None, is_abs=False, fmt="-", ):
+def plot(contin, fig=None, subplot=None, share_x=None, fmt="-", ):
     """
     add a plot of ContinuousData instance, to an existing figure
     TODO: allow passing every parameter the plt.plot accepts. i.e - making ot a complete
@@ -32,7 +31,6 @@ def plot(contin, fig=None, subplot=None, share_x=None, is_abs=False, fmt="-", ):
     contin
     fig - a plt.plot figure object
     subplot - list indicating subplot like [3,1,1] - of 3 lines, and 1 col, subplot 1 (on top)
-    is_abs: whether to use np.abs() on the values. mostly for plotting power spectrums
     fmt - format, like plt.plot fmt
     """
     # assert contin type?
@@ -50,8 +48,6 @@ def plot(contin, fig=None, subplot=None, share_x=None, is_abs=False, fmt="-", ):
     
     x = contin.domain_samples
     y = contin.values
-    if is_abs:
-        y = np.abs(y)
     
     line = plt.plot(x, y, fmt)[0]
     plt.xlabel(ARBITRARY_UNITS_STR) 
