@@ -176,7 +176,7 @@ class ContinuousData(object):
         # maybe it should be an extra param. seying which one to use
         # maybe should be an external function, not a method
 
-    def plot(self, fig=None):
+    def plot(self, fig=None, label=None):
         """
         basic plot
         a wrap around continuous.plots.plot

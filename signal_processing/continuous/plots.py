@@ -17,7 +17,7 @@ def plot_quick(contin, is_abs=False, fmt="-"):
     return plot(contin, fig=None, is_abs=is_abs, fmt=fmt)
 #%%
     
-def plot(contin, fig=None, subplot=None, share_x=None, fmt="-", ):
+def plot(contin, fig=None, subplot=None, share_x=None, label=None, fmt="-", ):
     """
     add a plot of ContinuousData instance, to an existing figure
     TODO: allow passing every parameter the plt.plot accepts. i.e - making ot a complete
@@ -38,6 +38,7 @@ def plot(contin, fig=None, subplot=None, share_x=None, fmt="-", ):
     warnings.warn("plot is not tested")
     warnings.warn("plot dosn't rescale the last signal according to axes")
     
+    # choose right figure
     if fig == None:
         fig = plt.figure()
     else:
@@ -46,20 +47,26 @@ def plot(contin, fig=None, subplot=None, share_x=None, fmt="-", ):
     if subplot != None:
         plt.subplot(*subplot, sharex=share_x)
     
+    # choose parameters for plot
     x = contin.domain_samples
     y = contin.values
     
-    line = plt.plot(x, y, fmt)[0]
-    plt.xlabel(ARBITRARY_UNITS_STR) 
-    plt.ylabel(ARBITRARY_UNITS_STR)
+    x_label_units = ARBITRARY_UNITS_STR
+    y_label_units = ARBITRARY_UNITS_STR
+    
     if type(x) == uerg.Quantity:
         if not x.unitless:
-            plt.xlabel(str(x.dimensionality) + " [" + str(x.units) + "]")
-            
+            x_label_units = str(x.dimensionality) + " [" + str(x.units) + "]"
     if type(y) == uerg.Quantity:
         if not y.unitless:
-            plt.ylabel(str(y.dimensionality) + " [" + str(y.units) + "]")
+            y_label_units = str(y.dimensionality) + " [" + str(y.units) + "]"
             
+    # TODO add units to the label
+    line = plt.plot(x, y, fmt=fmt, label=label)[0]
+    plt.xlabel(ARBITRARY_UNITS_STR) 
+    plt.ylabel(ARBITRARY_UNITS_STR)
+    plt.legend(loc='best')
+
     return fig, line 
     #raise NotImplementedError
         # return fig, axes??
