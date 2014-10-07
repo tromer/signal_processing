@@ -29,6 +29,7 @@ from signal_processing.extensions import numpy_extension, scipy_extension, pint_
 from signal_processing.extensions import pint_extension
 from signal_processing.segment import Segment
 from signal_processing.segments.segments_obj import Segments
+from signal_processing.continuous.plots import plot
 
 #%%
 
@@ -174,6 +175,13 @@ class ContinuousData(object):
         # maybe there is an issue regarding using DFT or IDTF, depending the domain
         # maybe it should be an extra param. seying which one to use
         # maybe should be an external function, not a method
+
+    def plot(self, fig=None):
+        """
+        basic plot
+        a wrap around continuous.plots.plot
+        """
+        return plot(self, fig)
         
     def tofile(self, f):
         """
