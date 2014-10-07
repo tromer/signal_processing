@@ -150,6 +150,11 @@ def determine_fft_len(n_samples, mode='accurate'):
         'trim' - smaller then n
         'zero-pad' - bigger then n
         'closer' - either trim or zero pad, depends which is closer (logarithmic scale)
+        
+    refactor
+    -----------------
+    this function should be out of any midule related to signals. it's purly mathematical.
+    shuold be moved to numpy_extension
     """
     modes_dict = {'trim': 'smaller', 'zero-pad' : 'bigger', 'fast' : 'closer'}
     if mode == 'accurate':
@@ -159,6 +164,35 @@ def determine_fft_len(n_samples, mode='accurate'):
         
     return n_fft
         
+def determine_spectrum_parameters_and_units(contin, n_fft):
+    """
+    parameters
+    -------------------------
+    contin : ContinuousDataEven
+    
+    n_fft : int
+        len of fft
+        
+    returns
+    --------------
+    freq_step : uerg.Quantity
+        the correct frequency step of the spectrum
+        
+    first_freq : uerg.Quantity
+        the first frequency. it's determined here to be (-1) * nyquist rate
+        thus the spectrum is around 0 (as is should!)
+        
+    spectrum_amplitude : uerg.Quantity
+        the factor that multiplies the mathematical spectrum.
+        it's the multiplication of the units of the values of the signal, and of the sample step itself
+        (remember the definition of fft: F(freq) = integral(sig * exp(- 2 * pi * j * freq * t) * dt))
+    """
+    warnings.warn("not tested")
+    freq_step = 1.0 * contin.sample_rate / n_fft
+    first_freq = - 0.5 * contin.sample_rate
+    spectrum_amplitude = pint_extension.get_units(contin.values) * contin.sample_step
+    
+    return freq_step, first_freq, spectrum_amplitude    
    
 #%%
 def fft(contin, n=None, mode='accurate'):
@@ -179,7 +213,10 @@ def fft(contin, n=None, mode='accurate'):
         'zero-pad' - bigger then n
         'closer' - either trim or zero pad, depends which is closer (logarithmic scale)    
     
-    returns: a ContinuousDataEven object that represents the spectrum
+    returns
+    ---------
+    spectrum : ContinuousDataEven    
+        a ContinuousDataEven object that represents the spectrum
     the frequencies are considerred from -0.5 nyq frequency to 0.5 nyq frequency
     """
     # shoult insert a way to enforce "fast", poer of 2 stuff
@@ -189,13 +226,13 @@ def fft(contin, n=None, mode='accurate'):
     if not n:
         n = determine_fft_len(n_sig, mode)        
             
-    freq_step = 1.0 * contin.sample_rate / n
-    first_freq = - 0.5 * contin.sample_rate
+    freq_step, first_freq, spectrum_amp = determine_spectrum_parameters_and_units(contin, n)
     
-    spectrum = np.fft.fftshift(np.fft.fft(contin.values.magnitude, n))
-    spectrum = spectrum * pint_extension.get_units(contin.values) * contin.sample_step
+    spectrum_values_no_units = np.fft.fftshift(np.fft.fft(contin.values.magnitude, n))
+    spectrum_values_with_units = spectrum_values_no_units * spectrum_amp
     
-    return ContinuousDataEven(spectrum, freq_step, first_freq)
+    spectrum = ContinuousDataEven(spectrum_values_with_units, freq_step, first_freq)
+    return spectrum
     
 def hilbert(sig, mode='fast'):
     """
