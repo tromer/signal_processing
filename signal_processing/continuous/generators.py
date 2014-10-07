@@ -32,8 +32,11 @@ def generate_sine(sample_step, n_samples, amplitude, sine_freq, phase_at_0=0, fi
     return sine
     
    
-def generate_white_noise():
-    raise NotImplementedError
+def white_noise(sample_step, n_samples, amplitude, mean=0):
+    warnings.warn("not tested")
+    random_values = (np.random.rand(n_samples) - 0.5 + mean) * amplitude
+    white_noise = ContinuousDataEven(random_values, sample_step)
+    return white_noise
     
 def generate_square(sample_step, n_samples, amplitude, period, duty=0.5, phase_at_0=0, first_sample=0):
     """
