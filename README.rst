@@ -62,4 +62,10 @@ Main issues before first release
 #. tag a commit as release 0.1
 #. improve use of exceptions. design the package exceptions, and use pint exceptions for units errors
 
+Design principles
+---------------------
+1. The API of the ContinuousData object have several distinguished layers and they have to be repected.
 
+   a. the layer that accesses the internals. and returns the values, and sample times of the signal.
+   b. mathematical operations, or mildly complex operations such as addition, absolute value etc. this methods to no use the internals, but instead use the first layer.
+   c. there are some operations that are very common such doing fft to your signal, or plotting it to gain some intuition. They are methods, instead of external functions, because they are used all the time. However, they are percieved as a this connection to what actually does the logic (numpy.fft, or plt.plot). They must not contain any logic of there own. If they need any logic, it should be implemented as a second layer method.
