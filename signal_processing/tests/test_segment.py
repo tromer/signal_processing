@@ -9,6 +9,8 @@ def test_Segment():
     assert pint_extension.allclose(segment_1.start, 3 * uerg.meter)
     assert pint_extension.allclose(segment_1.end, 5 * uerg.meter)
     assert pint_extension.allclose(segment_1.edges, np.array([3,5]) * uerg.meter)
+    assert str(segment_1) == str(segment_1.edges)
+
     assert pint_extension.allclose(segment_1.center, 4 *uerg.meter)
     assert pint_extension.allclose(segment_1.width, 2 * uerg.meter)
     assert pint_extension.allclose(segment_1.width_half, 1 * uerg.meter)

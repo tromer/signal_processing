@@ -42,6 +42,10 @@ class Segment(object):
             edges = np.array(edges) * unit
                 
         self._edges = edges #should take care of case where it's a toople. mind units!
+
+    def __str__(self):
+        self_str = str(self.edges)
+        return self_str
         
     @classmethod
     def from_center(cls, center, deviation, unit=None, mode='half_width'):
@@ -66,24 +70,24 @@ class Segment(object):
         edges = [center - half_width, center + half_width]
         return cls(edges, unit)
         
+    @property
+    def edges(self):
+        return self._edges
         
         
     @property
     def start(self):
-        return self._edges[0]
+        return self.edges[0]
         
     @property
     def end(self):
-        return self._edges[1]
+        return self.edges[1]
         
     @property
     def center(self):
         return 0.5 * (self.start + self.end)
         
-    @property
-    def edges(self):
-        return self._edges
-        
+       
     @property
     def width(self):
         return self.end - self.start
