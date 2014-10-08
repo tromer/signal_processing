@@ -10,9 +10,7 @@ import numpy as np
 
 from signal_processing import uerg, Q_
 
-#%%
-#from . import ureg, Q_
-
+# basic functions, compare, rescale, and so
 def allclose(a, b, rtol=1e-5, atol=None):
     """
     it's an np.allclose version for vectors with units (of pint module)
@@ -35,8 +33,6 @@ def allclose(a, b, rtol=1e-5, atol=None):
     else:
         atol_ = atol.to_base_units()
         return np.allclose(a_.magnitude, b_.magnitude, rtol, atol_.magnitude)
-
-#%%
 
 def get_units(x):
     """
@@ -63,7 +59,6 @@ def get_units(x):
     """
     return Q_(1.0, x.units)
         
-#%%
 def units_list_to_ndarray(l):
     """
     takes a list / tuple of numbers with units, rescale them, and converts to
@@ -83,54 +78,6 @@ def units_list_to_ndarray(l):
         l_magnitude.append(x.to(unit).magnitude)
         
     return np.array(l_magnitude) * unit
-    
-#%%
-   
-def histogram(a, bins=10, range_=None, weights=None, density=None):
-    """
-    histogram for vectors with quantities.
-    it's basically a wrap around np.histogram
-    
-    obviously a, range_ should have the same units, and also bins if it's not the 
-    number of bins
-    """
-    # maybe should accept also Range object?
-    if not type(a) == uerg.Quantity:
-        raise NotImplementedError
-        #return np.histogram(a, bins, range_, weights, density)
-    else:
-        base_units = get_units(a)
-        a = a.magnitude
-        if not type(bins) == int:
-            bins = bins.to(base_units)
-            bins = bins.magnitude
-        
-        if range_ != None:
-            range_ = range_.to(base_units)
-            range_ = range_.magnitude
-            
-        hist, edges = np.histogram(a, bins, range_, weights, density)
-        return hist, edges * base_units
-
-        
-
-def minimum(a, b):
-    warnings.warn("not tested")
-    unit = get_units(a)
-    a = a.magnitude
-    b = b.to(unit).magnitude
-    return unit * np.minimum(a, b)
-    
-def maximum(a, b):
-    warnings.warn("not tested")
-    # copied from pint_extension.minimum
-    unit = get_units(a)
-    a = a.magnitude
-    b = b.to(unit).magnitude
-    return unit * np.maximum(a, b)
-    
-
-#%%
 
 def rescale_all(l, unit=None):
     """
@@ -158,9 +105,6 @@ def rescale_all(l, unit=None):
             
     scaled = map(lambda v : v.to(unit), l)
     return scaled
-    
-   
-
 
 def strip_units(l, unit=None):
     """
@@ -186,6 +130,15 @@ def strip_units(l, unit=None):
 
     return mag, unit
 
+
+def array(vec):
+    """
+    vec or list with units -> array with units
+    """
+    mag, unit = strip_units(vec)
+    return unit * np.array(mag)
+
+# non mathematical manipulations
 def concatenate(vec_list):
     """
     returns:
@@ -195,24 +148,7 @@ def concatenate(vec_list):
     mag, unit = strip_units(vec_list)
     return unit * np.concatenate(mag)
     
-
-
-def array(vec):
-    """
-    vec or list with units -> array with units
-    """
-    mag, unit = strip_units(vec)
-    return unit * np.array(mag)
-    
-   
-def median(vec):
-    return get_units(vec) * np.median(vec.magnitude)
-    
-
-
-
-
-# some functions that are connected to plotting
+# some functions that are connected to plotting and presentations
 """
 TODO: making pint work well with matplotlib
 Herlpers: matplotlib.units?
@@ -293,5 +229,59 @@ def prepare_data_and_labels_for_plot(x, y, x_description='', curv_description=''
     curv_label = curv_description + get_units_beautiful_str(y_unit)
 
     return x_bare, y_bare, x_label, curv_label
+
+
+# mathematical calcualations and manipulations
+def histogram(a, bins=10, range_=None, weights=None, density=None):
+    """
+    histogram for vectors with quantities.
+    it's basically a wrap around np.histogram
+    
+    obviously a, range_ should have the same units, and also bins if it's not the 
+    number of bins
+    """
+    # maybe should accept also Range object?
+    if not type(a) == uerg.Quantity:
+        raise NotImplementedError
+        #return np.histogram(a, bins, range_, weights, density)
+    else:
+        base_units = get_units(a)
+        a = a.magnitude
+        if not type(bins) == int:
+            bins = bins.to(base_units)
+            bins = bins.magnitude
+        
+        if range_ != None:
+            range_ = range_.to(base_units)
+            range_ = range_.magnitude
+            
+        hist, edges = np.histogram(a, bins, range_, weights, density)
+        return hist, edges * base_units
+
+        
+
+def minimum(a, b):
+    warnings.warn("not tested")
+    unit = get_units(a)
+    a = a.magnitude
+    b = b.to(unit).magnitude
+    return unit * np.minimum(a, b)
+    
+def maximum(a, b):
+    warnings.warn("not tested")
+    # copied from pint_extension.minimum
+    unit = get_units(a)
+    a = a.magnitude
+    b = b.to(unit).magnitude
+    return unit * np.maximum(a, b)
+    
+   
+def median(vec):
+    return get_units(vec) * np.median(vec.magnitude)
+    
+def fft(vec):
+    raise NotImplementedError
+
+
 
 
