@@ -27,8 +27,6 @@ from signal_processing.segments import Segments
 from signal_processing.extensions import numpy_extension, scipy_extension, pint_extension
 """
 
-import warnings
-
 from signal_processing.extensions import pint_extension
 from signal_processing.extensions import plt_extension
 from signal_processing.segment import Segment
@@ -76,17 +74,42 @@ class ContinuousData(object):
     FFT sould take the sample rate into account, and so on.
     When you encounter an operation that is not implemented for ContinuousData,
     the correct thing to do is to wrap the numpy or scipy operation.
+
+    design issues
+    --------------------
     
-    TODO: maybe I want to implement a domain_samples object. it would have
+    1. this object is immutable, appart from changing the string describing
+    the domain and values.
+    2. in many cases, functions that except ContinuousData extract the values, do some mathematical operation, and construct a new object with the same domain.\n
+    when constructing them they accept self.domain_samples.\n
+    however, this becomes harder later: in ContinuousDataEven, the domain samples are evenly sampled, and thus need two variables for representation: sample_step and n_samples.\n
+    as I add a domain_description property, it becomes uglier to move all these parameters from instance to constructor.\n
+    A possible solution is defining a DomainSamples object, with sub-class DomainSamplesEven. \n
+    a ContinuousData will hold one of those, and this object would be the interface to the domain.\n
+    This would save code, and also enable writing the similar functions that accept both ContinuousData and ContinuousDataEven (in their interface).
+    3. this solution has one aspect which I don't like: breaking the symetry between domain_samples and values. in a way they are really not symetrical:\n
+    in every program there would be many instances sharing the same domain, but usually non sharing values.\n
+    also, evenly samples domains are common, but evenly samples values are just linear data, and uncommon.\n
+    What I don't like is breaking symetry in the sytax. It would be like:\n
+    sig.domain.samples, sig.domain.description as opposed to:\n
+    sig.values, sig.values_description.\n
+    4. In order to restore symetry, we could also work with a Values object.\n
+    the problem is that sig.values call is very very common in the functions of the package, and it would be pity to lenghen it to sig.values.samples
+
+
+    TODO
+    ----------
+    
+    1. maybe I want to implement a domain_samples object. it would have
     a subclass of even samples
     
-    TODO: maybe it's smart to implement a similar object with few channels.
+    2. maybe it's smart to implement a similar object with few channels.
     It may be useful in some implementation and performance issues,
     since the channels would be a 2D np.ndarray, and channel-wise
     operations like fft would be applied along axis, and be
     efficient.
     
-    TODO: maybe add a self.base attribute, like in np.ndarrays
+    3. maybe add a self.base attribute, like in np.ndarrays
     
     """
     def __init__(self, values, domain_samples):
@@ -115,6 +138,12 @@ class ContinuousData(object):
     @property     
     def last_sample(self):
         return self.domain_samples[-1]
+
+    @property
+    def domain_range(self):
+        warnings.warn("not tested")
+        range_ = Segment(self.first_sample, self.last_sample)
+        return range_
 
     @property
     def domain_unit(self):
@@ -156,6 +185,11 @@ class ContinuousData(object):
     def describe(self, domain, values):
         self.domain_description = domain
         self.values_description = values
+
+    def __str__(self):
+        warnings.warn("not tested")
+        line_1 = "domain: " + self.domain_description + str(self.domain_range)
+        line_2 = "values: " + self.values_description
         
     def is_same_domain_samples(self, other):
         raise NotImplementedError
