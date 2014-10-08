@@ -27,9 +27,9 @@ from signal_processing.segments import Segments
 from signal_processing.extensions import numpy_extension, scipy_extension, pint_extension
 """
 from signal_processing.extensions import pint_extension
+from signal_processing.extensions import plt_extension
 from signal_processing.segment import Segment
 from signal_processing.segments.segments_obj import Segments
-from signal_processing.continuous.plots import plot
 
 #%%
 
@@ -176,12 +176,13 @@ class ContinuousData(object):
         # maybe it should be an extra param. seying which one to use
         # maybe should be an external function, not a method
 
-    def plot(self, fig=None, label=None):
+    def plot(self, fig=None, label=None, manual_x_label=None, is_curv_label_with_units=True):
         """
         basic plot
-        a wrap around continuous.plots.plot
         """
-        return plot(self, fig)
+        x_bare, y_bare, x_label, curv_label = pint_extension.prepare_labels_for_plot(self.domain_samples, self.values, label, manual_x_label. is_curv_label_with_units)
+
+        return plt_extension.plot_with_labels(x_bare, y_bare, x_label, curv_label, fig)
         
     def tofile(self, f):
         """

@@ -170,6 +170,11 @@ def strip_units(vec_list, unit=None):
     
     unit : the unit
     """
+    # case it's an array
+    if type(vec_list) == uerg.Quantity:
+        warnings.warn("strip units of array not tested")
+        return vec_list.magnitude, get_units(vec_list)
+
     scaled = rescale_all(vec_list, unit)
     unit = get_units(scaled[0])
     mag = map(lambda(v) : v.magnitude, scaled)
@@ -197,8 +202,56 @@ def array(vec):
 def median(vec):
     return get_units(vec) * np.median(vec.magnitude)
     
+
+
+
+
+# some functions that are connected to plotting
 """
 TODO: making pint work well with matplotlib
 Herlpers: matplotlib.units?
 http://matplotlib.org/examples/units/basic_units.html
 """
+
+def label_axis(unit, manual_label=None):
+    """
+
+    """
+    warnings.warn("not tested")
+    if manual_label == None:
+
+
+def prepare_labels_for_plot(x, y, label, manual_x_label=None, is_curv_label_with_units=True):
+    """
+    parameters
+    -------------
+    x : uerg.Quantity
+
+    y : uerg.Quantity
+
+    manual_x_label : 
+        if not None, ignores x units and put some other label
+
+    is_curv_label_with_units : bool
+        whether should add units to the curv label. default True
+
+    """
+    warnings.warn("not tested")
+    x_bare, x_unit = pint_extension.strip_units(x)
+    y_bare, y_unit = pint_extension.strip_units(y)
+
+    if manual_x_label == None:
+        x_label = label_axis(x_unit, manual_x_label)
+    else:
+        x_label = manual_x_label
+
+    if is_curv_label_with_units:
+        curv_label = label_curv(y_unit)
+        if label != None:
+            curv_label = label + " " + curv_label
+    else:
+        curv_label = label
+
+    return x_bare, y_bare, x_label, curv_label
+
+
