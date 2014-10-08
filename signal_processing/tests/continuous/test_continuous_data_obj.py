@@ -21,17 +21,17 @@ def test_ContinuousData():
     assert sig.last_sample == 9 * uerg.sec
     assert sig.domain_range.is_close(Segment([0,9], uerg.sec))
     assert sig.domain_unit == uerg.sec
-    assert sig.values.unit == uerg.volt
+    assert sig.values_unit == uerg.volt
 
     assert sig.domain_description == pint_extension.get_dimensionality_str(uerg.sec)
     assert sig.values_description == pint_extension.get_dimensionality_str(uerg.volt)
     sig.domain_description = "domain"
     assert sig.domain_description == "domain"
-    sig.values_description == "values"
+    sig.values_description = "values"
     assert sig.values_description == "values"
     sig.describe("domain_2", "values_2")
     assert sig.domain_description == "domain_2"
-    assert sig.values_description = "values_2"
+    assert sig.values_description == "values_2"
 
     expected_sig_str = "domain: " + "domain_2" + str(sig.domain_range) + "\n" + "values: " + "values_2"
 

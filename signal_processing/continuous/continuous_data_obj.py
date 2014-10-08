@@ -141,7 +141,7 @@ class ContinuousData(object):
 
     @property
     def domain_range(self):
-        range_ = Segment(self.first_sample, self.last_sample)
+        range_ = Segment([self.first_sample, self.last_sample])
         return range_
 
     @property
@@ -155,7 +155,7 @@ class ContinuousData(object):
 
     @property
     def domain_description(self):
-        if _domain_description == None:
+        if self._domain_description == None:
             return pint_extension.get_dimensionality_str(self.domain_unit)
         else:
             return self._domain_description
@@ -167,7 +167,7 @@ class ContinuousData(object):
     @property
     def values_description(self):
         # TODO : copied from domain_description
-        if _values_description == None:
+        if self._values_description == None:
             return pint_extension.get_dimensionality_str(self.values_unit)
         else:
             return self._values_description
