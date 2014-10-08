@@ -117,6 +117,25 @@ def test_trim_to_power_of_2_XXX():
     sig_trim = sig.trim_to_power_of_2_XXX()
     assert sig_trim.is_close(expected_sig_trim)
 
+def test_fft():
+    sig = ContinuousDataEven(np.arange(32) * uerg.amp, 1.0 * uerg.sec)
+    expected_freqs = np.fft.fftshift(np.fft.fftfreq(32)) / uerg.sec
+    expected_freqs_vals = np.fft.fftshift(np.fft.fft(np.arange(32))) * uerg.amp * uerg.sec
+    expected_spec = ContinuousData(expected_freqs_vals, expected_freqs)
+    spec = sig.fft()
+    
+    assert spec.is_close(expected_spec)
+    
+    #mostly a copy of the other test
+    sig = ContinuousDataEven(np.arange(31) * uerg.amp, 1.0 * uerg.sec)
+    expected_freqs_fast = np.fft.fftshift(np.fft.fftfreq(32)) / uerg.sec
+    expected_freqs_vals_fast = np.fft.fftshift(np.fft.fft(np.arange(31), 32)) * uerg.amp * uerg.sec
+    expected_spec_fast = ContinuousData(expected_freqs_vals_fast, expected_freqs_fast)
+    spec_fast = sig.fft(mode='fast')
+    
+    assert spec_fast.is_close(expected_spec_fast)
+
+
 
 def test_get_chunks():
     N = 32
