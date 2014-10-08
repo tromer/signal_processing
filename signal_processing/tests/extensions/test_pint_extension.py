@@ -75,7 +75,7 @@ def test_concatenate():
     assert pint_extension.allclose(concat, expected_concat)
 
 # some functions that are connected to plotting and presentations
-def test_get_dimensionality_str(unit):
+def test_get_dimensionality_str():
     u_1 = uerg.m
     expected_str_1 = str((uerg.m).dimensionality)
     str_1 = pint_extension.get_dimensionality_str(u_1)
@@ -87,19 +87,19 @@ def test_get_dimensionality_str(unit):
     assert str_2 == expected_str_2
     
 
-def test_get_units_beautiful_str(unit):
+def test_get_units_beautiful_str():
     u_1 = uerg.dimensionless
     expected_str_1 = "[AU]"
     str_1 = pint_extension.get_units_beautiful_str(u_1)
     assert str_1 == expected_str_1
 
     u_2 = uerg.m
-    expected_str_2 = "[" + str(u_2) + "]"
+    expected_str_2 = "[" + str(u_2.units) + "]"
     str_2 = pint_extension.get_units_beautiful_str(u_2)
     assert str_2 == expected_str_2
 
 
-def test_prepare_data_and_labels_for_plot(x, y, x_description='', curv_description=''):
+def test_prepare_data_and_labels_for_plot():
     x = np.arange(10) * uerg.s
     y = np.arange(10) * uerg.m
     x_str = "look: x"
@@ -107,7 +107,7 @@ def test_prepare_data_and_labels_for_plot(x, y, x_description='', curv_descripti
     
     x_bare, y_bare, x_label, curv_label = \
             pint_extension.prepare_data_and_labels_for_plot(\
-            x, y, x_str, y_str)
+            x, y, x_str, curv_str)
 
     expected_x_bare, expected_y_bare = np.arange(10), np.arange(10)
     expected_x_label = x_str + " " + pint_extension.get_units_beautiful_str(uerg.s)
@@ -115,6 +115,7 @@ def test_prepare_data_and_labels_for_plot(x, y, x_description='', curv_descripti
     
     assert np.allclose(x_bare, expected_x_bare)
     assert np.allclose(y_bare, expected_y_bare)
+    print x_label, expected_x_label
     assert x_label == expected_x_label
     assert curv_label == expected_curv_label
 
