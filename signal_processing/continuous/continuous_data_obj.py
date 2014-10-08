@@ -26,6 +26,9 @@ from signal_processing import segments
 from signal_processing.segments import Segments
 from signal_processing.extensions import numpy_extension, scipy_extension, pint_extension
 """
+
+import warnings
+
 from signal_processing.extensions import pint_extension
 from signal_processing.extensions import plt_extension
 from signal_processing.segment import Segment
@@ -90,6 +93,8 @@ class ContinuousData(object):
         assert len(values) == len(domain_samples)
         self._domain_samples = domain_samples
         self._values = values
+        self._domain_description = None
+        self._values_description = None
         
     @property
     def domain_samples(self):
@@ -110,6 +115,47 @@ class ContinuousData(object):
     @property     
     def last_sample(self):
         return self.domain_samples[-1]
+
+    @property
+    def domain_unit(self):
+        warnings.warn("not tested")
+        return pint_extension.get_units(self.domain_samples)
+
+    @property
+    def values_unit(self):
+        warnings.warn("not tested")
+        return pint_extension.get_units(self.values)
+
+
+    @property
+    def domain_description(self):
+        warnings.warn("not tested")
+        if _domain_description == None:
+            return pint_extension.get_dimensionality_str(self.domain_unit)
+        else:
+            return self._domain_description
+
+    @domain_description.setter
+    def domain_description(self, value):
+        self._domain_description = value
+
+    @property
+    def values_description(self):
+        warnings.warn("not tested")
+        # TODO : copied from domain_description
+        if _values_description == None:
+            return pint_extension.get_dimensionality_str(self.values_unit)
+        else:
+            return self._values_description
+
+    @values_description.setter
+    def values_description(self, value):
+        self._values_description = value
+
+
+    def describe(self, domain, values):
+        self.domain_description = domain
+        self.values_description = values
         
     def is_same_domain_samples(self, other):
         raise NotImplementedError
