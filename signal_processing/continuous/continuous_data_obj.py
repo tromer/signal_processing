@@ -222,11 +222,11 @@ class ContinuousData(object):
         # maybe it should be an extra param. seying which one to use
         # maybe should be an external function, not a method
 
-    def plot(self, fig=None, label=None, manual_x_label=None, is_curv_label_with_units=True):
+    def plot(self, fig=None):
         """
         basic plot
         """
-        x_bare, y_bare, x_label, curv_label = pint_extension.prepare_labels_for_plot(self.domain_samples, self.values, label, manual_x_label. is_curv_label_with_units)
+        x_bare, y_bare, x_label, curv_label = pint_extension.prepare_labels_for_plot(self.domain_unit, self.values_unit, self.domain_description, self.values_description)
 
         return plt_extension.plot_with_labels(x_bare, y_bare, x_label, curv_label, fig)
         
