@@ -17,7 +17,7 @@ def plot_quick(contin, is_abs=False, fmt="-"):
     return plot(contin, fig=None, is_abs=is_abs, fmt=fmt)
 #%%
     
-def plot_with_labels(x, y, x_label, curv_label, fig=None, subplot=None, share_x=None,  fmt="-", ):
+def plot_with_labels(x, y, x_label, curv_label, fig=None, subplot=None, share_x=None):
     """
     Note
     -----------
@@ -35,7 +35,9 @@ def plot_with_labels(x, y, x_label, curv_label, fig=None, subplot=None, share_x=
     contin
     fig - a plt.plot figure object
     subplot - list indicating subplot like [3,1,1] - of 3 lines, and 1 col, subplot 1 (on top)
-    fmt - format, like plt.plot fmt
+    x_label : str
+    
+    curv_label : str
     """
     # assert contin type?
     # TODO: add support for legend
@@ -52,7 +54,7 @@ def plot_with_labels(x, y, x_label, curv_label, fig=None, subplot=None, share_x=
         plt.subplot(*subplot, sharex=share_x)
             
     # TODO add units to the label
-    line = plt.plot(x, y, fmt=fmt, label=curv_label)[0]
+    line = plt.plot(x, y, label=curv_label)[0]
     plt.xlabel(x_label) 
     plt.legend(loc='best')
 
