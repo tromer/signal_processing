@@ -226,7 +226,7 @@ class ContinuousData(object):
         """
         basic plot
         """
-        x_bare, y_bare, x_label, curv_label = pint_extension.prepare_labels_for_plot(self.domain_unit, self.values_unit, self.domain_description, self.values_description)
+        x_bare, y_bare, x_label, curv_label = pint_extension.prepare_data_and_labels_for_plot(self.domain_samples, self.values, self.domain_description, self.values_description)
 
         return plt_extension.plot_with_labels(x_bare, y_bare, x_label, curv_label, fig)
         

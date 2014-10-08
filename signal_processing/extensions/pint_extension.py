@@ -162,7 +162,7 @@ def rescale_all(l, unit=None):
    
 
 
-def strip_units(vec_list, unit=None):
+def strip_units(l, unit=None):
     """
     returns:
     -----------
@@ -170,14 +170,20 @@ def strip_units(vec_list, unit=None):
     
     unit : the unit
     """
-    # case it's an array
-    if type(vec_list) == uerg.Quantity:
-        warnings.warn("strip units of array not tested")
-        return vec_list.magnitude, get_units(vec_list)
+    if type(l) == np.ndarray:
+        warnings.warn("not tested")
+        mag, unit =  l, uerg.dimensionless
 
-    scaled = rescale_all(vec_list, unit)
-    unit = get_units(scaled[0])
-    mag = map(lambda(v) : v.magnitude, scaled)
+   # case it's an array
+    elif type(l) == uerg.Quantity:
+        warnings.warn("strip units of array not tested")
+        mag, unit =  l.magnitude, get_units(l)
+
+    else:
+        scaled = rescale_all(l, unit)
+        unit = get_units(scaled[0])
+        mag = map(lambda(v) : v.magnitude, scaled)
+
     return mag, unit
 
 def concatenate(vec_list):
@@ -212,33 +218,54 @@ TODO: making pint work well with matplotlib
 Herlpers: matplotlib.units?
 http://matplotlib.org/examples/units/basic_units.html
 """
-def xxx():
-    # choose parameters for plot
-    x = contin.domain_samples
-    y = contin.values
-    
-    x_label_units = ARBITRARY_UNITS_STR
-    y_label_units = ARBITRARY_UNITS_STR
-    
-    if type(x) == uerg.Quantity:
-        if not x.unitless:
-            x_label_units = str(x.dimensionality) + " [" + str(x.units) + "]"
-    if type(y) == uerg.Quantity:
-        if not y.unitless:
-            y_label_units = str(y.dimensionality) + " [" + str(y.units) + "]"
 
-ARBITRARY_UNITS_STR = "[AU]"
-
-def label_axis(unit, manual_label=None):
+def get_dimensionality_str(unit):
     """
+    mostly to present 1/time as frequency
+
+    parameters
+    -------------
+    unit : uerg.Quantity
+
+    returns
+    ----------
+    dim_str : str
+    """
+    warnings.warn("not tested")
+    dim_str = str(unit.dimensionality)
+    if dim_str == str((uerg.Hz).dimensionality):
+        dim_str = "[frequency]"
+
+    return dim_str
+
+
+   
+def get_units_beautiful_str(unit):
+    """
+    presents the units nicely with brackets
+    if dimensionless, returns [AU]
+
+    parameters
+    -------------
+    unit : uerg.Quantity
+
+    returns
+    ------------
+    units_str : str
 
     """
     warnings.warn("not tested")
-    if manual_label == None:
-        axis_label = str(unit)
+    
+    ARBITRARY_UNITS_STR = "[AU]"
+    if unit.unitless:
+        units_str = ARBITRARY_UNITS_STR
+    else:
+        units_str = " [" + str(x_units) + "]"
+
+    return units_str
 
 
-def prepare_labels_for_plot(x, y, label, manual_x_label=None, is_curv_label_with_units=True):
+def prepare_data_and_labels_for_plot(x, y, x_description='', curv_description=''):
     """
     parameters
     -------------
@@ -246,28 +273,24 @@ def prepare_labels_for_plot(x, y, label, manual_x_label=None, is_curv_label_with
 
     y : uerg.Quantity
 
-    manual_x_label : 
-        if not None, ignores x units and put some other label
+    x_description : str
+        defualt ''
 
-    is_curv_label_with_units : bool
-        whether should add units to the curv label. default True
+    curv_description : str
+        default ''
 
+    refactor
+    ------------
+    maybe if x_description, curv_description are not given, the function
+    should put their dimensionalities as descriptions
     """
     warnings.warn("not tested")
     x_bare, x_unit = pint_extension.strip_units(x)
     y_bare, y_unit = pint_extension.strip_units(y)
 
-    if manual_x_label == None:
-        x_label = label_axis(x_unit, manual_x_label)
-    else:
-        x_label = manual_x_label
-
-    if is_curv_label_with_units:
-        curv_label = label_curv(y_unit)
-        if label != None:
-            curv_label = label + " " + curv_label
-    else:
-        curv_label = label
+    x_label = x_description + get_units_beautiful_str(x_unit)
+    # TODO copied last line
+    curv_label = curv_description + get_units_beautiful_str(y_unit)
 
     return x_bare, y_bare, x_label, curv_label
 
