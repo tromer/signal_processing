@@ -192,7 +192,46 @@ class ContinuousDataEven(ContinuousData):
         trimmed = ContinuousDataEven(self.values[:new_n], self.sample_step, self.first_sample)
         assert trimmed.n_samples == new_n
         return trimmed
+
+    def _spectrum_parameters(self, n_fft):
+        """
+        parameters
+        -------------------------
+        contin : ContinuousDataEven
         
+        n_fft : int
+            len of fft
+            
+        returns
+        --------------
+        freq_step : uerg.Quantity
+            the correct frequency step of the spectrum
+            
+        first_freq : uerg.Quantity
+            the first frequency. it's determined here to be (-1) * nyquist rate
+            thus the spectrum is around 0 (as is should!)
+            
+        spectrum_amplitude : uerg.Quantity
+            the factor that multiplies the mathematical spectrum.
+            it's the multiplication of the units of the values of the signal, and of the sample step itself
+            (remember the definition of fft: F(freq) = integral(sig * exp(- 2 * pi * j * freq * t) * dt))
+        """
+        warnings.warn("not tested")
+        freq_step = 1.0 * self.sample_rate / n_fft
+        first_freq = - 0.5 * self.sample_rate
+        spectrum_sample_step_factor =  self.sample_step
+        
+        return freq_step, first_freq, spectrum_sample_step_factor
+    
+            
+    def fft(self, n_fft=None, mode='accurate'):
+        n_fft = numpy_extension.determine_fft_len(self.n_samples, n_fft, mode)
+        freq_step, first_freq, spectrum_sample_step_factor = \
+                self._spectrum_parameters(n_fft)
+        spectrum_values = pint_extension.fft(self, n_fft) * spectrum_sample_step_factor 
+        spectrum = ContinuousDataEven(spectrum_values_with_units, freq_step, first_freq)
+        return spectrum
+
     def get_chunks(self, domain_duration, is_power_of_2_samples=True, is_overlap=False, mode_last_chunk='throw'):
         """
         get small chunks of the signal
