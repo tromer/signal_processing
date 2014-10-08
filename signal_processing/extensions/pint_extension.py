@@ -277,9 +277,31 @@ def maximum(a, b):
 def median(vec):
     return get_units(vec) * np.median(vec.magnitude)
     
-def fft(vec):
-    raise NotImplementedError
 
-
-
-
+def fft(vec, n_fft=None, mode='accurate'):
+    """
+    fft of a ContinuousData instance.
+    implemented only for ContinuousDataEven
+    a wrap arround np.fft.fft
+    
+    parameters:
+    ----------------
+    n : int
+        number of samples for fft
+    
+    mode : str
+        copied from determine_fft_len
+        'accurate' like n
+        'trim' - smaller then n
+        'zero-pad' - bigger then n
+        'closer' - either trim or zero pad, depends which is closer (logarithmic scale)    
+    
+    returns
+    ---------
+    """
+    n_fft = numpy_extension.determine_fft_len(len(vec), n_fft, mode)
+    
+    spectrum_values_no_units = np.fft.fftshift(np.fft.fft(vec.magnitude, n_fft))
+    spectrum_values_with_units = spectrum_values_no_units * get_units(vec)
+    
+    return spectrum_values_with_units
