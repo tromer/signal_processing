@@ -278,7 +278,7 @@ def median(vec):
     return get_units(vec) * np.median(vec.magnitude)
     
 
-def fft(vec, n_fft=None, mode='accurate'):
+def fft(vec, mode='accurate', n_fft=None):
     """
     fft of a ContinuousData instance.
     implemented only for ContinuousDataEven
