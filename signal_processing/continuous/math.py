@@ -137,63 +137,8 @@ def clip(sig, values_range):
 
 
 
-def determine_fft_len(n_samples, mode='accurate'):
-    """
-    helper function to determine the number of samples for a fft
-    if mode is not 'accurate', it's a power of 2
-    
-    parameters:
-    --------------
-    n_samples : int
-    mode : str
-        'accurate' like n
-        'trim' - smaller then n
-        'zero-pad' - bigger then n
-        'closer' - either trim or zero pad, depends which is closer (logarithmic scale)
-        
-    refactor
-    -----------------
-    this function should be out of any midule related to signals. it's purly mathematical.
-    shuold be moved to numpy_extension
-    """
-    modes_dict = {'trim': 'smaller', 'zero-pad' : 'bigger', 'fast' : 'closer'}
-    if mode == 'accurate':
-        n_fft = n_samples
-    else:
-        n_fft = numpy_extension.close_power_of_2(n_samples, modes_dict[mode])
-        
-    return n_fft
-        
-def determine_spectrum_parameters_and_units(contin, n_fft):
-    """
-    parameters
-    -------------------------
-    contin : ContinuousDataEven
-    
-    n_fft : int
-        len of fft
-        
-    returns
-    --------------
-    freq_step : uerg.Quantity
-        the correct frequency step of the spectrum
-        
-    first_freq : uerg.Quantity
-        the first frequency. it's determined here to be (-1) * nyquist rate
-        thus the spectrum is around 0 (as is should!)
-        
-    spectrum_amplitude : uerg.Quantity
-        the factor that multiplies the mathematical spectrum.
-        it's the multiplication of the units of the values of the signal, and of the sample step itself
-        (remember the definition of fft: F(freq) = integral(sig * exp(- 2 * pi * j * freq * t) * dt))
-    """
-    warnings.warn("not tested")
-    freq_step = 1.0 * contin.sample_rate / n_fft
-    first_freq = - 0.5 * contin.sample_rate
-    spectrum_amplitude = pint_extension.get_units(contin.values) * contin.sample_step
-    
-    return freq_step, first_freq, spectrum_amplitude    
-   
+       
+  
 #%%
 def fft(contin, n=None, mode='accurate'):
     """
