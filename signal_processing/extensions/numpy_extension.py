@@ -46,6 +46,33 @@ def close_power_of_2(n, mode='smaller'):
     else:
         return int(2 ** the_power)
     
+def determine_fft_len(n_samples, n_fft=None, mode='accurate'):
+    """
+    helper function to determine the number of samples for a fft
+    if mode is not 'accurate', it's a power of 2
+    
+    parameters:
+    --------------
+    n_samples : int
+    mode : str
+        'accurate' like n
+        'trim' - smaller then n
+        'zero-pad' - bigger then n
+        'closer' - either trim or zero pad, depends which is closer (logarithmic scale)
+        
+    refactor
+    -----------------
+    this function should be out of any midule related to signals. it's purly mathematical.
+    shuold be moved to numpy_extension
+    """
+    modes_dict = {'trim': 'smaller', 'zero-pad' : 'bigger', 'fast' : 'closer'}
+    if n_fft == None:
+        if mode == 'accurate':
+            n_fft = n_samples
+        else:
+            n_fft = numpy_extension.close_power_of_2(n_samples, modes_dict[mode])
+            
+    return n_fft
    
 #%%
 def normalize(vec, ord=None, axis=None):
