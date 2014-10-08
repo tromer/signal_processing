@@ -224,7 +224,7 @@ class ContinuousDataEven(ContinuousData):
         return freq_step, first_freq, spectrum_sample_step_factor
     
             
-    def fft(self, n_fft=None, mode='accurate'):
+    def fft(self, mode='accurate', n_fft=None):
         n_fft = numpy_extension.determine_fft_len(self.n_samples, n_fft, mode)
         freq_step, first_freq, spectrum_sample_step_factor = \
                 self._spectrum_parameters(n_fft)
