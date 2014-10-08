@@ -69,3 +69,9 @@ Design principles
    a. the layer that accesses the internals. and returns the values, and sample times of the signal.
    b. mathematical operations, or mildly complex operations such as addition, absolute value etc. this methods to no use the internals, but instead use the first layer.
    c. there are some operations that are very common such doing fft to your signal, or plotting it to gain some intuition. They are methods, instead of external functions, because they are used all the time. However, they are percieved as a this connection to what actually does the logic (numpy.fft, or plt.plot). They must not contain any logic of there own. If they need any logic, it should be implemented as a second layer method.
+
+2. This package handles only signal_processing.\n
+   in some cases it needs a service that logically lies in the responsability of some other package (numpy, scipy, pint, matplotlib).\n
+   in this cases the service (function in most cases) is put on the coresponding file in the extensions/ sub-package. \n
+   the core sub-package: signal_processing, uses this services, but should never implement them on it's own, as it's not it's reponsability.\n
+   Ideally, in the future all this extension files would be incorporated to the cpresponding modules.
