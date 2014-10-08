@@ -3,7 +3,6 @@ import warnings
 import matplotlib.pyplot as plt
 from signal_processing import uerg
 
-ARBITRARY_UNITS_STR = "[AU]"
 
 def plot_quick(contin, is_abs=False, fmt="-"):
     """
@@ -11,14 +10,19 @@ def plot_quick(contin, is_abs=False, fmt="-"):
     is_abs - whether to plot the abs of the y values. for spectrums.
     Maybe - there sould be an input of lambda functions. to preprocess x,y
     """
+    raise NotImplementedError
     warnings.warn("plot_quick is not tested")
     #TODO: test this function!
     # creat the figure here
     return plot(contin, fig=None, is_abs=is_abs, fmt=fmt)
 #%%
     
-def plot(contin, fig=None, subplot=None, share_x=None, label=None, fmt="-", ):
+def plot_with_labels(x, y, x_label, curv_label, fig=None, subplot=None, share_x=None,  fmt="-", ):
     """
+    Note
+    -----------
+    a refactoring happened here. documentation may me old
+
     add a plot of ContinuousData instance, to an existing figure
     TODO: allow passing every parameter the plt.plot accepts. i.e - making ot a complete
     wrapper around plt.plot
@@ -37,8 +41,8 @@ def plot(contin, fig=None, subplot=None, share_x=None, label=None, fmt="-", ):
     # TODO: add support for legend
     warnings.warn("plot is not tested")
     warnings.warn("plot dosn't rescale the last signal according to axes")
-    
-    # choose right figure
+   
+    # choose the appropriate figure and subplot
     if fig == None:
         fig = plt.figure()
     else:
@@ -46,25 +50,10 @@ def plot(contin, fig=None, subplot=None, share_x=None, label=None, fmt="-", ):
         
     if subplot != None:
         plt.subplot(*subplot, sharex=share_x)
-    
-    # choose parameters for plot
-    x = contin.domain_samples
-    y = contin.values
-    
-    x_label_units = ARBITRARY_UNITS_STR
-    y_label_units = ARBITRARY_UNITS_STR
-    
-    if type(x) == uerg.Quantity:
-        if not x.unitless:
-            x_label_units = str(x.dimensionality) + " [" + str(x.units) + "]"
-    if type(y) == uerg.Quantity:
-        if not y.unitless:
-            y_label_units = str(y.dimensionality) + " [" + str(y.units) + "]"
             
     # TODO add units to the label
-    line = plt.plot(x, y, fmt=fmt, label=label)[0]
-    plt.xlabel(ARBITRARY_UNITS_STR) 
-    plt.ylabel(ARBITRARY_UNITS_STR)
+    line = plt.plot(x, y, fmt=fmt, label=curv_label)[0]
+    plt.xlabel(x_label) 
     plt.legend(loc='best')
 
     return fig, line 
@@ -86,6 +75,7 @@ def plot_under(contin_list, fig=None, is_abs=False, fmt="-"):
     
     TODO: maybe add parameter of subplot or something
     """
+    raise NotImplementedError
     warnings.warn("not tested well for units, nots tested")
     if fig != None:
         raise NotImplementedError

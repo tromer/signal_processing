@@ -212,6 +212,22 @@ TODO: making pint work well with matplotlib
 Herlpers: matplotlib.units?
 http://matplotlib.org/examples/units/basic_units.html
 """
+def xxx():
+    # choose parameters for plot
+    x = contin.domain_samples
+    y = contin.values
+    
+    x_label_units = ARBITRARY_UNITS_STR
+    y_label_units = ARBITRARY_UNITS_STR
+    
+    if type(x) == uerg.Quantity:
+        if not x.unitless:
+            x_label_units = str(x.dimensionality) + " [" + str(x.units) + "]"
+    if type(y) == uerg.Quantity:
+        if not y.unitless:
+            y_label_units = str(y.dimensionality) + " [" + str(y.units) + "]"
+
+ARBITRARY_UNITS_STR = "[AU]"
 
 def label_axis(unit, manual_label=None):
     """
@@ -219,6 +235,7 @@ def label_axis(unit, manual_label=None):
     """
     warnings.warn("not tested")
     if manual_label == None:
+        axis_label = str(unit)
 
 
 def prepare_labels_for_plot(x, y, label, manual_x_label=None, is_curv_label_with_units=True):
