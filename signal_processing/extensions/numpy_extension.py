@@ -46,7 +46,7 @@ def close_power_of_2(n, mode='smaller'):
     else:
         return int(2 ** the_power)
     
-def determine_fft_len(n_samples, n_fft=None, mode='accurate'):
+def determine_n_fft(n_samples, mode='accurate', n_fft=None):
     """
     helper function to determine the number of samples for a fft
     if mode is not 'accurate', it's a power of 2
