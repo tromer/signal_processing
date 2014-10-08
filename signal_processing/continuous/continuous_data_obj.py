@@ -141,24 +141,20 @@ class ContinuousData(object):
 
     @property
     def domain_range(self):
-        warnings.warn("not tested")
         range_ = Segment(self.first_sample, self.last_sample)
         return range_
 
     @property
     def domain_unit(self):
-        warnings.warn("not tested")
         return pint_extension.get_units(self.domain_samples)
 
     @property
     def values_unit(self):
-        warnings.warn("not tested")
         return pint_extension.get_units(self.values)
 
 
     @property
     def domain_description(self):
-        warnings.warn("not tested")
         if _domain_description == None:
             return pint_extension.get_dimensionality_str(self.domain_unit)
         else:
@@ -170,7 +166,6 @@ class ContinuousData(object):
 
     @property
     def values_description(self):
-        warnings.warn("not tested")
         # TODO : copied from domain_description
         if _values_description == None:
             return pint_extension.get_dimensionality_str(self.values_unit)
@@ -187,9 +182,11 @@ class ContinuousData(object):
         self.values_description = values
 
     def __str__(self):
-        warnings.warn("not tested")
         line_1 = "domain: " + self.domain_description + str(self.domain_range)
         line_2 = "values: " + self.values_description
+
+        self_str = "\n".join([line_1, line_2])
+        return self_str
         
     def is_same_domain_samples(self, other):
         raise NotImplementedError
