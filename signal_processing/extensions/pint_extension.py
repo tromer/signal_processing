@@ -115,12 +115,10 @@ def strip_units(l, unit=None):
     unit : the unit
     """
     if type(l) == np.ndarray:
-        warnings.warn("not tested")
         mag, unit =  l, uerg.dimensionless
 
    # case it's an array
     elif type(l) == uerg.Quantity:
-        warnings.warn("strip units of array not tested")
         mag, unit =  l.magnitude, get_units(l)
 
     else:
@@ -167,7 +165,6 @@ def get_dimensionality_str(unit):
     ----------
     dim_str : str
     """
-    warnings.warn("not tested")
     dim_str = str(unit.dimensionality)
     if dim_str == str((uerg.Hz).dimensionality):
         dim_str = "[frequency]"
@@ -196,7 +193,7 @@ def get_units_beautiful_str(unit):
     if unit.unitless:
         units_str = ARBITRARY_UNITS_STR
     else:
-        units_str = " [" + str(x_units) + "]"
+        units_str = "".join(["[", str(x_units), "]"])
 
     return units_str
 
@@ -219,14 +216,15 @@ def prepare_data_and_labels_for_plot(x, y, x_description='', curv_description=''
     ------------
     maybe if x_description, curv_description are not given, the function
     should put their dimensionalities as descriptions
+
+    maybe create the same function for single axis, let this function use it two times, (for each axis)
     """
-    warnings.warn("not tested")
     x_bare, x_unit = pint_extension.strip_units(x)
     y_bare, y_unit = pint_extension.strip_units(y)
 
-    x_label = x_description + get_units_beautiful_str(x_unit)
+    x_label = x_description + " " + get_units_beautiful_str(x_unit)
     # TODO copied last line
-    curv_label = curv_description + get_units_beautiful_str(y_unit)
+    curv_label = curv_description + " " + get_units_beautiful_str(y_unit)
 
     return x_bare, y_bare, x_label, curv_label
 
