@@ -138,4 +138,23 @@ def test_median():
     assert pint_extension.allclose(med, expected_median)
 
 
+def test_fft():
+    v = np.arange(32) * uerg.mamp
+    spec = pint_extension.fft(v)
+    expected_spec = uerg.mamp * np.fft.fftshift(np.fft.fft(v))
+    assert pint_extension.allclose(spec, expected_spec)
+
+    v = np.arange(20) * uerg.mamp
+    spec = pint_extension.fft(v)
+    expected_spec = uerg.mamp * np.fft.fftshift(np.fft.fft(v))
+    assert pint_extension.allclose(spec, expected_spec)
+
+    spec = pint_extension.fft(v, mode='zero_pad')
+    expected_spec = uerg.mamp * np.fft.fftshift(np.fft.fft(v, 32))
+    assert pint_extension.allclose(spec, expected_spec)
+
+    spec = pint_extension.fft(v, mode='trim')
+    expected_spec = uerg.mamp * np.fft.fftshift(np.fft.fft(v, 16))
+    assert pint_extension.allclose(spec, expected_spec)
+
 

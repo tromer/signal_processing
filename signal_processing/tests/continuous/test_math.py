@@ -57,13 +57,9 @@ def test_clip():
     
 
 
-def test_determine_fft_len():
-    assert math.determine_fft_len(14, 'accurate') == 14
-    assert math.determine_fft_len(14, 'fast') == 16
-    assert math.determine_fft_len(7, 'trim') == 4
-    assert math.determine_fft_len(5, 'zero-pad') == 8
-    
- 
+   
+""" 
+fft is going to be out of math module
 def test_fft():
     sig = ContinuousDataEven(np.arange(32) * uerg.amp, 1.0 * uerg.sec)
     expected_freqs = np.fft.fftshift(np.fft.fftfreq(32)) / uerg.sec
@@ -81,7 +77,7 @@ def test_fft():
     spec_fast = math.fft(sig, mode='fast')
     
     assert spec_fast.is_close(expected_spec_fast)
-    
+"""
     
 
 def test_hilbert():

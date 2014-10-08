@@ -19,6 +19,13 @@ def test_close_power_of_2():
     assert np.allclose(close_power_of_2(inputs, 'bigger'), expeced_outputs_bigger)
     assert np.allclose(close_power_of_2(inputs, 'closer'), expeced_outputs_closer)
     assert close_power_of_2(30) == 16
+
+def test_determine_n_fft():
+    assert numpy_extension.determine_n_fft(14, 'accurate') == 14
+    assert numpy_extension.determine_n_fft(14, 'fast') == 16
+    assert numpy_extension.determine_n_fft(7, 'trim') == 4
+    assert numpy_extension.determine_n_fft(5, 'zero-pad') == 8
+    assert numpy_extension.determine_n_fft(10, n_fft=6) == 6
  
 def test_normalize():
     vec = np.array([1, 1])
