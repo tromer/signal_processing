@@ -12,7 +12,6 @@ from signal_processing.continuous.continuous_data_even_obj import ContinuousData
 from signal_processing.segment import Segment
 
 
-from signal_processing.continuous.plots import plot_quick
 
 from signal_processing.continuous import math
 
@@ -29,13 +28,14 @@ def test_diff():
 
 def visual_test_correlate():
     v = np.concatenate([np.arange(10), np.arange(10)[::-1]])
-    sig_stable = ContinuousDataEven(v * uerg.mamp, uerg.sec, 10 * uerg.sec)
-    sig_sliding = ContinuousDataEven(v * uerg.mamp, uerg.sec, 20 * uerg.sec)
+    sig_stable = ContinuousDataEven(v * uerg.mamp, uerg.sec, 10 * uerg.sec,"stable")
+    sig_sliding = ContinuousDataEven(v * uerg.mamp, uerg.sec, 20 * uerg.sec, "sliding")
     sig_c = math.correlate(sig_stable, sig_sliding, mode='full')
-    plot_quick(sig_stable, "o")
-    plot_quick(sig_sliding, "o")
-    plot_quick(sig_c, "o")
- 
+    sig_c.values_description = 'correlation'
+    fig = sig_c.plot()
+    sig_stable.plot(fig)
+    sig_sliding.plot(fig)
+
 def test_correlate_find_new_location():
     v = np.concatenate([np.arange(10), np.arange(10)[::-1]])
     sig_stable = ContinuousDataEven(v * uerg.mamp, uerg.sec, 10 * uerg.sec)
@@ -91,11 +91,5 @@ def test_hilbert():
     # expected_sine_hilbert = ContinuousDataEven((-1) * 1j *np.exp(1j * phase) * uerg.mamp, sample_step)
     expected_sine_hilbert = ContinuousDataEven(sp.signal.hilbert(np.sin(phase)) * uerg.mamp, sample_step)
     sine_hilbert = math.hilbert(sine)
-    """
-    plot_quick(sine)
-    plot_quick(fft(sine), is_abs=True)
-    plot_quick(fft(sine_hilbert), is_abs=True)
-    plot_quick(fft(expected_sine_hilbert), is_abs=True)
-    """
     assert sine_hilbert.is_close(expected_sine_hilbert)
  
