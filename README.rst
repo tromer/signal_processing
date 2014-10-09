@@ -58,8 +58,10 @@ Main issues before first release
    * not tested
    * rename
    * refactor
+   * old old old
 
 #. tag a commit as release 0.1
+#. find how to let some functions share documentation of parameters with same behaviour. very important when I wrap functions
 #. improve use of exceptions. design the package exceptions, and use pint exceptions for units errors
 
 Design principles
