@@ -139,45 +139,6 @@ def clip(sig, values_range):
 
        
 #%%
-def fft(contin, n=None, mode='accurate'):
-    """
-    fft of a ContinuousData instance.
-    implemented only for ContinuousDataEven
-    a wrap arround np.fft.fft
-    
-    parameters:
-    ----------------
-    n : int
-        number of samples for fft
-    
-    mode : str
-        copied from determine_fft_len
-        'accurate' like n
-        'trim' - smaller then n
-        'zero-pad' - bigger then n
-        'closer' - either trim or zero pad, depends which is closer (logarithmic scale)    
-    
-    returns
-    ---------
-    spectrum : ContinuousDataEven    
-        a ContinuousDataEven object that represents the spectrum
-    the frequencies are considerred from -0.5 nyq frequency to 0.5 nyq frequency
-    """
-    # shoult insert a way to enforce "fast", poer of 2 stuff
-    n_sig = len(contin.values)
-    # maybe the process deciding the fft len should be encapsulated
-    
-    if not n:
-        n = determine_fft_len(n_sig, mode)        
-            
-    freq_step, first_freq, spectrum_amp = determine_spectrum_parameters_and_units(contin, n)
-    
-    spectrum_values_no_units = np.fft.fftshift(np.fft.fft(contin.values.magnitude, n))
-    spectrum_values_with_units = spectrum_values_no_units * spectrum_amp
-    
-    spectrum = ContinuousDataEven(spectrum_values_with_units, freq_step, first_freq)
-    return spectrum
-
 
 def hilbert(sig, mode='accurate', n_fft=None):
     """
