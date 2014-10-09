@@ -196,6 +196,13 @@ def get_units_beautiful_str(unit):
     ARBITRARY_UNITS_STR = "[AU]"
     if unit.unitless:
         units_str = ARBITRARY_UNITS_STR
+    # here comes an ugly solution to printing "Hz" instead of 1 / second
+    elif unit.units == (1.0 / uerg.sec).units:
+        units_str = "[Hz]"
+    elif unit.units == (1.0 / uerg.msec).units:
+        units_str = "[kHz]"
+    elif unit.units == (1.0 / uerg.usec).units:
+        units_str = "[MHz]"
     else:
         units_str = "".join(["[", str(unit.units), "]"])
 
