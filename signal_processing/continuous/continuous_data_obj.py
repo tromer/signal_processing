@@ -112,12 +112,12 @@ class ContinuousData(object):
     3. maybe add a self.base attribute, like in np.ndarrays
     
     """
-    def __init__(self, values, domain_samples):
+    def __init__(self, values, domain_samples, values_des=None, domain_des=None):
         assert len(values) == len(domain_samples)
         self._domain_samples = domain_samples
         self._values = values
-        self._domain_description = None
-        self._values_description = None
+        self._domain_description = domain_des
+        self._values_description = values_des
         
     @property
     def domain_samples(self):
@@ -256,10 +256,14 @@ class ContinuousData(object):
     def plot(self, fig=None):
         """
         basic plot
+
+        returns
+        ----------
+        the fig only, for plotting other signals on top
         """
         x_bare, y_bare, x_label, curv_label = pint_extension.prepare_data_and_labels_for_plot(self.domain_samples, self.values, self.domain_description, self.values_description)
 
-        return plt_extension.plot_with_labels(x_bare, y_bare, x_label, curv_label, fig)
+        return plt_extension.plot_with_labels(x_bare, y_bare, x_label, curv_label, fig)[0]
         
     def tofile(self, f):
         """

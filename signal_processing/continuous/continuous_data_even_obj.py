@@ -15,13 +15,17 @@ class ContinuousDataEven(ContinuousData):
     read the ContinuousData documentation.
     the domain samples are evenly spaced
     """
-    def __init__(self, values, sample_step, first_sample=0):
+    def __init__(self, values, sample_step, first_sample=0, values_des=None, domain_des=None):
         self._values = values
         self._sample_step = sample_step
         if not first_sample:
             self._first_sample = 0 * sample_step
         else:
             self._first_sample = first_sample
+
+        # copied from ContinuousData
+        self._domain_description = domain_des
+        self._values_description = values_des
         
         
     @property
