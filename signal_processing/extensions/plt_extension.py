@@ -63,6 +63,18 @@ def plot_with_labels(x, y, x_label, curv_label, fig=None, subplot=None, share_x=
         # return fig, axes??
 
 
+def plot_few(*args):
+    """
+    plots few objects on the same figure
+    
+    """
+    fig =  args[0].plot()
+    for obj in args[1:]:
+        obj.plot(fig)
+
+    return fig
+
+
 def plot_under(contin_list, fig=None, is_abs=False, fmt="-"):
     """
     plot a few signals one above the other
