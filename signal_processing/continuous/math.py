@@ -138,7 +138,6 @@ def clip(sig, values_range):
 
 
        
-  
 #%%
 def fft(contin, n=None, mode='accurate'):
     """
@@ -178,16 +177,15 @@ def fft(contin, n=None, mode='accurate'):
     
     spectrum = ContinuousDataEven(spectrum_values_with_units, freq_step, first_freq)
     return spectrum
-    
-def hilbert(sig, mode='fast'):
+
+
+def hilbert(sig, mode='accurate', n_fft=None):
     """
     returns the analytic signal
     a wrap around sp.signal.hilbert
     """
-    n_fft = determine_fft_len(sig.n_samples, mode)
-    analytic_sig_values = sp.signal.hilbert(sig.values.magnitude, n_fft) * pint_extension.get_units(sig.values)
-    new_sample_step = 1.0 * sig.sample_step * sig.n_samples / n_fft
-    analytic_signal = ContinuousDataEven(analytic_sig_values, new_sample_step, sig.first_sample)
+    analytic_sig_values = pint_extension.hilbert(sig.values, mode, n_fft=n_fft)
+    analytic_signal = ContinuousDataEven(analytic_sig_values, sig.sample_step, sig.first_sample)
     return analytic_signal
     
 

@@ -7,8 +7,12 @@ Created on Wed Aug 27 17:25:50 2014
 import warnings
 
 import numpy as np
+import scipy as sp
+from scipy import signal
 
 from signal_processing import uerg, Q_
+
+from signal_processing.extensions import numpy_extension
 
 # basic functions, compare, rescale, and so
 def allclose(a, b, rtol=1e-5, atol=None):
@@ -286,7 +290,7 @@ def fft(vec, mode='accurate', n_fft=None):
     parameters:
     ----------------
    mode : str
-        copied from determine_fft_len
+        copied from determine_n_fft
         'accurate' like n
         'trim' - smaller then n
         'zero-pad' - bigger then n
@@ -300,9 +304,19 @@ def fft(vec, mode='accurate', n_fft=None):
     ---------
     vector after fft and np.fft.fftshift
     """
-    n_fft = numpy_extension.determine_fft_len(len(vec), n_fft, mode)
+    n_fft = numpy_extension.determine_n_fft(len(vec), mode, n_fft)
     
     spectrum_values_no_units = np.fft.fftshift(np.fft.fft(vec.magnitude, n_fft))
     spectrum_values_with_units = spectrum_values_no_units * get_units(vec)
     
     return spectrum_values_with_units
+
+def hilbert(vec, mode='accurate', n_fft=None):
+    """
+
+    """
+    warnings.warn("not tested")
+    n_fft = numpy_extension.determine_n_fft(len(vec), mode, n_fft)
+    analytic_vec = sp.signal.hilbert(vec.magnitude, n_fft) * get_units(vec)
+    return analytic_vec
+ 
