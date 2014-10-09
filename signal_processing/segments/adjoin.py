@@ -100,6 +100,10 @@ def adjoin_segments(segments_, delta=0, ratio=0, max_dist=None, n=1):
     ----------------
     n : int
         number of iterations
+
+    TODO:
+    ---------
+    add parameter to allow maximal / ultimate adjoining. adjoin again and again until it cannot adjoin anymore
     """
     warnings.warn("adjoin_segments is not tested")
     if delta != 0: 
