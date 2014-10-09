@@ -225,6 +225,34 @@ class ContinuousDataEven(ContinuousData):
     
             
     def fft(self, mode='accurate', n_fft=None):
+        """
+        fft of a ContinuousDataEven.
+        takes the samples step into account.
+        a *thin* wrap arround pint_extension.fft
+        uses ContinuousDataEven._spectrum_parameters for determining all
+        the spectrum frequency parameters
+        
+        parameters:
+        ----------------
+        
+        mode : str
+            if n_fft is None (default) then n_fft is determined according to a mode bevaviour
+            copied from determine_fft_len
+            'accurate' like n
+            'trim' - smaller then n
+            'zero-pad' - bigger then n
+            'closer' - either trim or zero pad, depends which is closer (logarithmic scale)    
+        
+        n_fft : int
+            number of samples for fft
+
+        returns
+        ---------
+        spectrum : ContinuousDataEven    
+            a ContinuousDataEven object that represents the spectrum
+        the frequencies are considerred from -0.5 nyq frequency to 0.5 nyq frequency
+    
+        """
         n_fft = numpy_extension.determine_fft_len(self.n_samples, n_fft, mode)
         freq_step, first_freq, spectrum_sample_step_factor = \
                 self._spectrum_parameters(n_fft)

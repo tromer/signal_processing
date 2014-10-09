@@ -59,12 +59,11 @@ def determine_n_fft(n_samples, mode='accurate', n_fft=None):
         'trim' - smaller then n
         'zero-pad' - bigger then n
         'closer' - either trim or zero pad, depends which is closer (logarithmic scale)
+
+    n_fft : int
+        if not none, it overides the decision
         
-    refactor
-    -----------------
-    this function should be out of any midule related to signals. it's purly mathematical.
-    shuold be moved to numpy_extension
-    """
+   """
     modes_dict = {'trim': 'smaller', 'zero-pad' : 'bigger', 'fast' : 'closer'}
     if n_fft == None:
         if mode == 'accurate':

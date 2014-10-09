@@ -280,24 +280,25 @@ def median(vec):
 
 def fft(vec, mode='accurate', n_fft=None):
     """
-    fft of a ContinuousData instance.
-    implemented only for ContinuousDataEven
+    fft for a vector with units
     a wrap arround np.fft.fft
     
     parameters:
     ----------------
-    n : int
-        number of samples for fft
-    
-    mode : str
+   mode : str
         copied from determine_fft_len
         'accurate' like n
         'trim' - smaller then n
         'zero-pad' - bigger then n
         'closer' - either trim or zero pad, depends which is closer (logarithmic scale)    
+
+    n_fft : int
+        number of samples for fft
+    
     
     returns
     ---------
+    vector after fft and np.fft.fftshift
     """
     n_fft = numpy_extension.determine_fft_len(len(vec), n_fft, mode)
     
