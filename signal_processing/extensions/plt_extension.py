@@ -95,6 +95,17 @@ def mark_vertical_lines(x_lines, fig, label=None):
     plt.legend(loc='best')
     return v_lines
 
+def mark_horizontal_lines(y_lines, fig, label=None):
+    """
+    
+    """
+    warnings.warn("bad behaviour of units, just strips them, not tested")
+    plt.figure(fig.number)
+    x_min, x_max = plt.xlim()
+    h_lines = plt.hlines(y_lines, x_min, x_max, label=label)
+    plt.legend(loc='best')
+    return h_lines
+ 
 def plot_under(contin_list, fig=None, is_abs=False, fmt="-"):
     """
     plot a few signals one above the other

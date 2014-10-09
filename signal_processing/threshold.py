@@ -8,7 +8,6 @@ Created on Thu Aug 21 18:31:11 2014
 import warnings
 
 import numpy as np
-import matplotlib.pyplot as plt
 
 from signal_processing.segments.segments_obj import Segments
 from signal_processing.segments import adjoin
@@ -106,18 +105,8 @@ def threshold_aggregate_filter_short(sig, threshold, max_dist, duration_ratio, a
 
 #%%
 
-def mark_threshold(fig, threshold, colors="y", label="threshold"):
-    """
-    
-    """
-    warnings.warn("bad behaviour of units, just strips them, not tested")
-    plt.figure(fig.number)
-    x_min, x_max = plt.xlim()
-    threshlines = plt.hlines(threshold.magnitude, x_min, x_max, colors=colors, label=label)
-    plt.legend(loc='best')
-    return threshlines
-    
-def auto_threshold(sig, mode, factor):
+   
+def estimate_noise_level(sig, mode, factor):
     """
     a auto threshold of values of signal
     
@@ -140,7 +129,7 @@ def auto_threshold(sig, mode, factor):
     then sqrt
     """
     # TODO: rename it to estimate_noise_level
-    warnings.warn("auto_threshold not tested")
+    warnings.warn("not tested")
     vals = sig.values
     if mode == 'mean':
         center = np.mean(vals)
