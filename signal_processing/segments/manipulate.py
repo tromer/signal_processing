@@ -27,11 +27,22 @@ def concatenate(segments_list):
     return Segments(pint_extension.concatenate(all_starts), pint_extension.concatenate(all_ends))
 
 
-def from_segments_list(cls, segments_list):
+   
+
+def concatenate_single_segments(segs_list):
     """
-    assumes 
-    XXXXXXXX XXX
+    similar to from_single_segments
+    remove one of the constructors!
+    have to be one after another
+
+    TODO:
+    ----------
+    in order to make it work, use a recursive adjoin, there is the right function for it in the adjoin file. only by max distance of zero, again and again.
+    Note, that the constructor of Segments is going to have a gaurdian that the locations are strictly increasing. to bypass it (because in the process of the function it would be necessary) or make a flag that allows to skip the gaurdian, or make a "temporary" subclass
     """
+    #as_segments = map(Segments.from_single_segment, segs_list)
+    #return concatenate(as_segments)    
+
     raise NotImplementedError
     sorted_by_start = sorted(segments_list, key=lambda s : s.start)
     starts = pint_extension.array(map(lambda s : s.start, sorted_by_start))
@@ -39,16 +50,7 @@ def from_segments_list(cls, segments_list):
     segments_maybe_overlap = Segments(starts, ends)
     segments = adjoin.adjoin_segments_max_distance(segments_maybe_overlap, max_distance=0 * pint_extension.get_units(segments_maybe_overlap.starts))
     return segments
-     
-
-def XXX_concatenate_single_segments(segs_list):
-    """
-    similar to from_single_segments
-    remove one of the constructors!
-    have to be one after another
-    """
-    as_segments = map(Segments.from_single_segment, segs_list)
-    return concatenate(as_segments)    
+ 
 
 def switch_segments_and_gaps(segments, absolute_start=None, absolute_end=None):
     """
