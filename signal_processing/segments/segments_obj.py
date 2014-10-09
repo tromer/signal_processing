@@ -6,6 +6,7 @@ Created on Wed Aug 27 19:14:13 2014
 """
 
 from signal_processing.extensions import pint_extension
+from signal_processing.extensions.plt_extension import mark_vertical_lines
 import numpy as np
 from signal_processing.segment import Segment
 
@@ -244,9 +245,22 @@ class Segments(object):
         read doc of fromfile
         """
         raise NotImplementedError
-    
-#%%
-   
+
+    def mark_edges(self, fig):
+        """
+        mark the edges of the segments on a fig
+        get a figure and plot on it vertical lines according to
+        starts and ends
+        
+        returns:
+        -----------
+        lines_start
+        lines_end
+ 
+        """
+        start_lines = mark_vertical_lines(self.starts, fig, label="starts")
+        ends_lines = mark_vertical_lines(self.ends, fig, label="ends")
+        return start_lines, ends_lines
 
 def fromfile(f):
     """

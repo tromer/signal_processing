@@ -75,6 +75,26 @@ def plot_few(*args):
     return fig
 
 
+def mark_vertical_lines(x_lines, fig, label=None):
+    """
+    get a figure and plot on it vertical lines according to
+    starts and ends
+    
+    returns:
+    -----------
+    lines_start
+    lines_end
+    """
+    # this is the signature of the oroginal function, that this function
+    # was refactored from.
+    # def mark_starts_ends(segments_, fig, color_start='r', color_end='g'):
+    warnings.warn("not tested, careful with units")
+    plt.figure(fig.number)
+    y_min, y_max = plt.ylim()
+    v_lines = plt.vlines(x_lines, y_min, y_max, label=label)
+    plt.legend(loc='best')
+    return v_lines
+
 def plot_under(contin_list, fig=None, is_abs=False, fmt="-"):
     """
     plot a few signals one above the other
