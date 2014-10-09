@@ -10,8 +10,9 @@ from signal_processing.continuous.filters import band_pass_filter
 from signal_processing import uerg
 from signal_processing.extensions import pint_extension
 from signal_processing.extensions import numpy_extension
-    
-#TODO: there are some problematic issues with fft / hilbert /demodulations with not 2 ** n samples signals.
+
+# TODO: there are some problematic issues with fft / hilbert /demodulations with not 2 ** n samples signals.
+
 
 def pm_demodulation(sig, mode='fast'):
     """
@@ -19,7 +20,7 @@ def pm_demodulation(sig, mode='fast'):
     the pm demodulation at the edges is not accurate.
     TODO: map how much of the edges is a problem
     TODO: maybe it should return only the time without the edges.
-    TODO: how to improve the pm demodulation at the edges?    
+    TODO: how to improve the pm demodulation at the edges?
     TODO: maybe should add a "n_fft" parameter
     TODO: maybe it's better to allow calculation of phase with separation to windows?
     """
@@ -31,8 +32,8 @@ def pm_demodulation(sig, mode='fast'):
     phase_wrapped = np.angle(analytic_sig.values.magnitude)
     phase = np.unwrap(phase_wrapped) * uerg.dimensionless
     return ContinuousDataEven(phase, analytic_sig.sample_step, analytic_sig.first_sample)
-    
-       
+
+
 def fm_demodulation(sig, mode='fast'):
     """
     fm demodulation
@@ -54,13 +55,12 @@ def am_demodulation_hilbert(sig, mode='fast'):
     return sig_am
     
    
-    
 def am_demodulation_convolution(sig, t_smooth):
     """
     params:
     t_smooth is the width in domain units, that you want to smooth together
     """
-    warnings.warn("not tested well")
+    warnings.warn("not tested")
     n_samples_smooth = np.ceil(t_smooth * sig.sample_rate)
     mask_am = numpy_extension.normalize(np.ones(n_samples_smooth), ord=1)
     values_am = np.convolve(np.abs(sig.values.magnitude), mask_am, mode="same") * pint_extension.get_units(sig.values)
@@ -68,10 +68,7 @@ def am_demodulation_convolution(sig, t_smooth):
 
     
 def am_demodulation_filter(sig, dt_smooth, mask_len):
-    warnings.warn("not tested well")
+    warnings.warn("not tested")
     top_freq = 1.0 / dt_smooth
     band = Segment([1e-12 * pint_extension.get_units(top_freq), top_freq])
-    return band_pass_filter(sig.abs(), band, mask_len = mask_len)
-    
-
-
+    return band_pass_filter(sig.abs(), band, mask_len=mask_len)

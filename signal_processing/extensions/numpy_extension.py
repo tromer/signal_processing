@@ -69,7 +69,7 @@ def determine_n_fft(n_samples, mode='accurate', n_fft=None):
         if mode == 'accurate':
             n_fft = n_samples
         else:
-            n_fft = numpy_extension.close_power_of_2(n_samples, modes_dict[mode])
+            n_fft = close_power_of_2(n_samples, modes_dict[mode])
             
     return n_fft
    

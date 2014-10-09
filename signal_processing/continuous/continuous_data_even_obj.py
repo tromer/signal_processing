@@ -10,6 +10,7 @@ from signal_processing.segments.segments_obj import Segments
 
 from signal_processing import uerg
 
+
 class ContinuousDataEven(ContinuousData):
     """
     read the ContinuousData documentation.
@@ -26,8 +27,8 @@ class ContinuousDataEven(ContinuousData):
         # copied from ContinuousData
         self._domain_description = domain_des
         self._values_description = values_des
-        
-        
+
+
     @property
     def sample_step(self):
         return self._sample_step
@@ -90,7 +91,7 @@ class ContinuousDataEven(ContinuousData):
             raise KeyError("wrong key. key for ContinuousData is Segment or Segments of the same domain")
         
 
-        if type(key) in [Segment,]:
+        if type(key) in [Segment, ]:
             domain_range = key
             bottom_index = np.ceil(1.0 * domain_range.start / self.sample_step)
             top_index = np.floor(domain_range.end / self.sample_step)
@@ -257,11 +258,11 @@ class ContinuousDataEven(ContinuousData):
         the frequencies are considerred from -0.5 nyq frequency to 0.5 nyq frequency
     
         """
-        n_fft = numpy_extension.determine_fft_len(self.n_samples, n_fft, mode)
+        n_fft = numpy_extension.determine_n_fft(self.n_samples, mode, n_fft)
         freq_step, first_freq, spectrum_sample_step_factor = \
                 self._spectrum_parameters(n_fft)
-        spectrum_values = pint_extension.fft(self, n_fft) * spectrum_sample_step_factor 
-        spectrum = ContinuousDataEven(spectrum_values_with_units, freq_step, first_freq, self.values_description + "specturm")
+        spectrum_values = pint_extension.fft(self.values, n_fft = n_fft) * spectrum_sample_step_factor 
+        spectrum = ContinuousDataEven(spectrum_values, freq_step, first_freq, self.values_description + "specturm")
         return spectrum
 
     def get_chunks(self, domain_duration, is_power_of_2_samples=True, is_overlap=False, mode_last_chunk='throw'):

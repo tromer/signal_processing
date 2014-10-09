@@ -1,22 +1,12 @@
 import warnings
 
 import scipy as sp
-from scipy import signal
 
 from continuous_data_even_obj import ContinuousDataEven
 
 from signal_processing.extensions import pint_extension
 from signal_processing.extensions import scipy_extension
-    
-"""
-def freq_filter(contin, freq_ranges, ?, ?, ?):
-    raise NotImplementedError
-    
-     
-    @uerg.wraps(None, (None, uerg.Hz, uerg.Hz, None, None, None, uerg.Hz))    
-    def firwin_pint(numtaps, cutoff, width, window, pass_zero, scale, nyq):
-        return sp.signal.firwin(numtaps, cutoff, width, window, pass_zero, scale, nyq)
-"""
+
 
 def band_pass_filter(sig, freq_range, mask_len):
     """
@@ -31,7 +21,7 @@ def band_pass_filter(sig, freq_range, mask_len):
     XXX this function is not stable with downsampling for this reason
     """
     warnings.warn('not tested')
-    #TODO: test well
+    # TODO: test well
     freq_range.edges.ito(sig.sample_rate.units)
     print freq_range.edges
     print sig.sample_rate
@@ -41,5 +31,3 @@ def band_pass_filter(sig, freq_range, mask_len):
     filterred_values = scipy_extension.smart_convolve(sig.values.magnitude, mask_1, mode="same") * pint_extension.get_units(sig.values)
     filterred = ContinuousDataEven(filterred_values, sig.sample_step, sig.first_sample)
     return filterred
-    
-
