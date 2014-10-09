@@ -39,24 +39,24 @@ def test_concatenate():
     
 
 
-def test_from_segments_list():
-    s_list = [Segment([0, 1], uerg.m), Segment([2, 3], uerg.m)]
-    expected_segments = Segments(np.array([0, 2]) * uerg.m, np.array([1, 3]) * uerg.m)
-    segments = Segments.from_segments_list(s_list)
-    assert segments.is_close(expected_segments)
+   
+#def test_concatecate_single_segments():
+    #s = Segments(uerg.meter * np.array([1, 3]), uerg.meter * np.array([2,4]))
+    #seg_list = [s[0], s[1]]
+    #s_2 = manipulate.concatenate_single_segments(seg_list)
+    #assert s.is_close(s_2)
+
+    ## other test
     
-    s_list = [Segment([0, 3], uerg.m), Segment([1, 2], uerg.m)]
-    expected_segments = Segments(np.array([0, ]) * uerg.m, np.array([3,]) * uerg.m)
-    segments = Segments.from_segments_list(s_list)
-    assert segments.is_close(expected_segments)    
+    #s_list = [Segment([0, 1], uerg.m), Segment([2, 3], uerg.m)]
+    #expected_segments = Segments(np.array([0, 2]) * uerg.m, np.array([1, 3]) * uerg.m)
+    #segments = manipulate.concatenate_single_segments(s_list)
+    #assert segments.is_close(expected_segments)
     
-#test_from_segments_list()
-def test_concatecate_single_segments():
-    s = Segments(uerg.meter * np.array([1, 3]), uerg.meter * np.array([2,4]))
-    seg_list = [s[0], s[1]]
-    s_2 = manipulate.concatenate_single_segments(seg_list)
-    assert s.is_close(s_2)
-    
+    #s_list = [Segment([0, 3], uerg.m), Segment([1, 2], uerg.m)]
+    #expected_segments = Segments(np.array([0, ]) * uerg.m, np.array([3,]) * uerg.m)
+    #segments = Segments.from_segments_list(s_list)
+    #assert segments.is_close(expected_segments)    
 
 
 
