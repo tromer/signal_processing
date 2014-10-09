@@ -170,9 +170,11 @@ def get_dimensionality_str(unit):
     dim_str : str
     """
     dim_str = str(unit.dimensionality)
+
     if dim_str == str((uerg.Hz).dimensionality):
         dim_str = "[frequency]"
-
+    elif dim_str == str((uerg.volt).dimensionality):
+        dim_str = "[voltage]"
     return dim_str
 
 
