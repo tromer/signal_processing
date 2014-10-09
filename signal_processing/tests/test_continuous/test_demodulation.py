@@ -56,7 +56,7 @@ def test_am_hilbert():
     amp = uerg.mamp
     sine = generators.generate_sine(sample_step, n_samples, amp, sine_freq=freq)
     expected_sine_am = ContinuousDataEven(np.ones(sine.n_samples) * amp, sample_step)
-    sine_am = demodulation.am_demodulation_hilbert(sine)
+    sine_am = demodulation.am_hilbert(sine)
     plot_few(sine, sine_am, expected_sine_am)
 
     assert sine_am[check_range].is_close(expected_sine_am[check_range], values_rtol=0.01)

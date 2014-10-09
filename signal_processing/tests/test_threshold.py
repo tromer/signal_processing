@@ -13,7 +13,7 @@ def test_crosses():
     starts_expected = np.array([0, 6])
     ends_expected = np.array([3, 8])
     segments_expected = Segments(starts_expected, ends_expected)
-    segments = threshold.threshold_crosses(sig, threshold_0)
+    segments = threshold.crosses(sig, threshold_0)
     assert segments.is_close(segments_expected)
     
 
