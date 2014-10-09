@@ -1,3 +1,6 @@
+#XXX
+#XXX
+#this example uses old interface
 import signal_processing as sigpro
 rom sigpro.global_ureg import ureg, Q_
 
