@@ -51,11 +51,12 @@ def generate_square(sample_step, n_samples, amplitude, period, duty=0.5, phase_a
         warnings.warn("the sample step is larger then 'up time' or 'down time', you can miss some wave-fronts")
     t = np.arange(n_samples) * sample_step + first_sample
     phase = 2 * np.pi * 1.0 / period * t + phase_at_0
-    square = ContinuousDataEven(amplitude * 0.5 * (1 + sp.signal.square(phase)), sample_step, first_sample)
+    square_values = 0.5 * (1 + sp.signal.square(phase, duty))
+    square = ContinuousDataEven(amplitude * square_values, sample_step, first_sample)
     return square
     
    
-def generate_square_freq_modulated(sample_step, n_samples, amplitude, sine_freq, period, duty=0.5, sine_phase_at_0=0, square_phase_at_t_0=0, first_sample=0):
+def square_freq_modulated(sample_step, n_samples, amplitude, sine_freq, period, duty=0.5, sine_phase_at_0=0, square_phase_at_t_0=0, first_sample=0):
     """
     returns:
     ContinuousDataEven which is a square wave modulated by sine. it's coherentic,

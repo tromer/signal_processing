@@ -29,7 +29,7 @@ def test_generate_square():
     assert square.is_close(expected_square)
     #plot_quick(square)
  
-def test_generate_square_freq_modulated():
+def generate_square_freq_modulated():
     sample_step = 1 * uerg.sec
     n_samples = 2 ** 12
     sine_freq = 0.15 * uerg.Hz
