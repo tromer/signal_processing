@@ -149,7 +149,7 @@ def test_fft():
     expected_spec = uerg.mamp * np.fft.fftshift(np.fft.fft(v))
     assert pint_extension.allclose(spec, expected_spec)
 
-    spec = pint_extension.fft(v, mode='zero_pad')
+    spec = pint_extension.fft(v, mode='zero-pad')
     expected_spec = uerg.mamp * np.fft.fftshift(np.fft.fft(v, 32))
     assert pint_extension.allclose(spec, expected_spec)
 
