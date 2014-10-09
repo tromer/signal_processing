@@ -25,6 +25,12 @@ various processes to manipulate ContinuousData and Segments:
 frequency filtering, adjoining segments together, filtering by some properties.
 automatic parameters finding for various processes (thresholds)
 
+How to proceed
+-------------------
+
+1. look at the code examples.
+2. read the documentation of ContinuousData and Segments. it explains the they way this package percieves signals.
+
 naming conventions
 ---------------------------------
 0. As a rule of thumb, scipy and numpy naming conventions are preferable.
@@ -39,6 +45,7 @@ Main issues before first release
    1. name - first_sample, last_sample > domain_start, domain_end.
    2. shorten the name of some functions in the sub-modules (adjoin, filter. threshold etc.) since they are in a module, they can have a less indicative name
    3. change cotinuous/plots.py to continuous/visualisation.py and fix imports
+   4. in tests and examples, use continuos/generators.py instead if creating a signal manualy
 
     * use a refactoring tool. vim rope?
 2. testing:
