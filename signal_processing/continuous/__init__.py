@@ -10,3 +10,5 @@ import demodulation
 import misc
 
 from io import read_wav
+
+from signal_processing.extensions.plt_extension import plot_few
