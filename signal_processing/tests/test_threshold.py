@@ -7,7 +7,7 @@ from signal_processing import uerg
 
 from signal_processing import threshold
 
-def test_threshold_crosses():
+def test_crosses():
     sig = ContinuousDataEven(np.array([3, 3, 3, 0, 0, 0, 3, 3, 0]) * uerg.mamp, uerg.sec)
     threshold_0 = 2 * uerg.mamp
     starts_expected = np.array([0, 6])

@@ -24,7 +24,7 @@ from .extensions import numpy_extension
 
 IS_DEBUG = False
 #%%
-def threshold_crosses(sig, threshold, is_above=True):
+def crosses(sig, threshold, is_above=True):
     """
     returns segments instance, where a given signal values are above
     a certain threshold.
