@@ -165,7 +165,7 @@ class ContinuousDataEven(ContinuousData):
         return ContinuousDataEven(self.values / values, self.sample_step, self.first_sample)            
     
     def abs(self):
-        return ContinuousDataEven(np.abs(self.values), self.sample_step, self.first_sample)
+        return ContinuousDataEven(np.abs(self.values), self.sample_step, self.first_sample, "abs(" + self.values_description + ")")
         
         
     def gain(self, factor):
@@ -262,7 +262,7 @@ class ContinuousDataEven(ContinuousData):
         freq_step, first_freq, spectrum_sample_step_factor = \
                 self._spectrum_parameters(n_fft)
         spectrum_values = pint_extension.fft(self.values, n_fft = n_fft) * spectrum_sample_step_factor 
-        spectrum = ContinuousDataEven(spectrum_values, freq_step, first_freq, self.values_description + "specturm")
+        spectrum = ContinuousDataEven(spectrum_values, freq_step, first_freq, self.values_description + " specturm")
         return spectrum
 
     def get_chunks(self, domain_duration, is_power_of_2_samples=True, is_overlap=False, mode_last_chunk='throw'):
@@ -297,6 +297,10 @@ class ContinuousDataEven(ContinuousData):
             since the chunks do not share the domain samples. (different time)
         maybe should enable passing Segment, or Segments to specify where to chunk
         cope with case the signal is too short compared to chunk asked
+
+        refactor
+        -----------
+        this is a huge function, I have to cut it
         
         """
         n_samples_chunk = np.ceil(domain_duration / self.sample_step)
