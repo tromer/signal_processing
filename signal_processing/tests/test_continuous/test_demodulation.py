@@ -48,7 +48,7 @@ def test_fm_demodulation():
     freq_sig = demodulation.fm_demodulation(sine)
     assert freq_sig[check_range].is_close(expected_freq_sig[check_range], values_rtol=0.01)
  
-def test_am_demodulation_hilbert():
+def test_am_hilbert():
     check_range = Segment(np.array([2, 30]) * uerg.ksec)
     sample_step = 1.0 * uerg.sec
     n_samples = 2 ** 15

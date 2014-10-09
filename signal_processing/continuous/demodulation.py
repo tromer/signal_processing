@@ -45,7 +45,7 @@ def fm_demodulation(sig, mode='fast'):
     return freq
     
    
-def am_demodulation_hilbert(sig, mode='fast'):
+def am_hilbert(sig, mode='fast'):
     #worning copied from pm_demodulation
     if sig.n_samples < 2 ** 10:
         warnings.warn("this pm-modulation technique doesn't work well on short signals, the mistakes on the edges are big")
