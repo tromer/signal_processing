@@ -1,4 +1,3 @@
-from signal_processing import Segment
 from signal_processing import continuous as cont
 from signal_processing.extensions.plt_extension import mark_horizontal_lines
 from signal_processing import threshold
