@@ -9,9 +9,6 @@ freq_range = Segment([0.3, 0.4], uerg.Hz)
 white_noise_filterred = cont.filters.band_pass_filter(white_noise, freq_range, mask_len=32)
 white_noise_filterred.values_description = "filterred"
 
-fig_time = white_noise.plot()
-white_noise_filterred.plot(fig_time)
-
-fig_spectrum = white_noise.fft().abs().plot()
-white_noise_filterred.fft().abs().plot(fig_spectrum)
+cont.plot_few(white_noise, white_noise_filterred)
+cont.plot_few(white_noise.fft().abs(), white_noise_filterred.fft().abs())
 
