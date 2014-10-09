@@ -75,7 +75,7 @@ def plot_few(*args):
     return fig
 
 
-def mark_vertical_lines(x_lines, fig, label=None):
+def mark_vertical_lines(x_lines, fig, color='k', label=None):
     """
     get a figure and plot on it vertical lines according to
     starts and ends
@@ -91,7 +91,7 @@ def mark_vertical_lines(x_lines, fig, label=None):
     warnings.warn("not tested, careful with units")
     plt.figure(fig.number)
     y_min, y_max = plt.ylim()
-    v_lines = plt.vlines(x_lines, y_min, y_max, label=label)
+    v_lines = plt.vlines(x_lines, y_min, y_max, colors=color, label=label)
     plt.legend(loc='best')
     return v_lines
 
