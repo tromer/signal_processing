@@ -258,8 +258,8 @@ class Segments(object):
         lines_end
  
         """
-        start_lines = mark_vertical_lines(self.starts, fig, label="starts")
-        ends_lines = mark_vertical_lines(self.ends, fig, label="ends")
+        start_lines = mark_vertical_lines(self.starts, fig, color='g', label="starts")
+        ends_lines = mark_vertical_lines(self.ends, fig, color='r', label="ends")
         return start_lines, ends_lines
 
 def fromfile(f):
