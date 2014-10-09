@@ -261,7 +261,7 @@ class ContinuousDataEven(ContinuousData):
         freq_step, first_freq, spectrum_sample_step_factor = \
                 self._spectrum_parameters(n_fft)
         spectrum_values = pint_extension.fft(self, n_fft) * spectrum_sample_step_factor 
-        spectrum = ContinuousDataEven(spectrum_values_with_units, freq_step, first_freq)
+        spectrum = ContinuousDataEven(spectrum_values_with_units, freq_step, first_freq, self.values_description + "specturm")
         return spectrum
 
     def get_chunks(self, domain_duration, is_power_of_2_samples=True, is_overlap=False, mode_last_chunk='throw'):
