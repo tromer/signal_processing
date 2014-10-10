@@ -309,6 +309,12 @@ class ContinuousDataEven(ContinuousData):
         spectrum = ContinuousDataEven(spectrum_values, freq_step, first_freq, self.values_description + " specturm")
         return spectrum
 
+    def modulate(self, kind, **kwargs):
+        raise NotImplementedError
+
+    def demodulate(self, kind, **kwargs):
+        raise NotImplementedError
+
     def get_chunks(self, domain_duration, is_power_of_2_samples=True, is_overlap=False, mode_last_chunk='throw'):
         """
         get small chunks of the signal
