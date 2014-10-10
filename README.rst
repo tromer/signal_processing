@@ -66,6 +66,7 @@ Main issues before first release
    * not tested
    * rename
    * refactor
+   * encapsulate
    * old old old
 
 #. tag a commit as release 0.1
