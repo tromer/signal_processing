@@ -43,10 +43,10 @@ def diff(contin, n=1):
         new_vals[:-1] = np.diff(contin.values.magnitude, 1)
         new_vals[-1] = new_vals[-2]
         new_vals = new_vals * pint_extension.get_units(contin.values) * contin.sample_rate ** n
-        
-    return ContinuousDataEven(new_vals, contin.sample_step, contin.first_sample)
-    
 
+        diffed = contin.new_values(new_vals)
+        return diffed
+        
 def correlate(sig_stable, sig_sliding, mode='valid'):
     """
     a correlation between 2 signals. we try to relocate the sliding sig, to fit the location of the stable sig
@@ -71,7 +71,7 @@ def correlate(sig_stable, sig_sliding, mode='valid'):
         raise NotImplementedError("implemented only for same sample step signals")
         
     if sig_stable.n_samples < sig_sliding.n_samples:
-        warnings.warn("note that sig_stable has less points then sig_sliding, why is thay?")
+        warnings.warn("note that sig_stable has less points then sig_sliding, why is that?")
     
     # values        
     a = sig_stable.values.magnitude
@@ -132,7 +132,8 @@ def clip(sig, values_range):
         raise NotImplementedError
     
     clipped_vals = np.clip(sig.values, values_range.start, values_range.end)
-    clipped = ContinuousDataEven(clipped_vals, sig.sample_step, sig.first_sample)
+
+    clipped = sig.new_values(clipped_vals)
     return clipped
     
 
@@ -161,7 +162,8 @@ def am_demodulation_convolution(sig, t_smooth):
     n_samples_smooth = np.ceil(t_smooth * sig.sample_rate)
     mask_am = numpy_extension.normalize(np.ones(n_samples_smooth), ord=1)
     values_am = np.convolve(np.abs(sig.values.magnitude), mask_am, mode="same") * pint_extension.get_units(sig.values)
-    return ContinuousDataEven(values_am, sig.sample_step, sig.first_sample)
+    smoothed = sig.new_values(values_am)
+    return smoothed
 
     
 def am_demodulation_filter(sig, dt_smooth, mask_len):
