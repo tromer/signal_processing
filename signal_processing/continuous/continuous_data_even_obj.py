@@ -113,7 +113,7 @@ class ContinuousDataEven(ContinuousData):
         """ TODO: mayebe some cashing would be helpful? """
         return np.arange(len(self.values)) * self.sample_step + self.first_sample
 
-    def new_values(self, new_vals):
+    def new_values(self, new_vals, is_same_n_samples=True, new_first_sample=None):
         """
         parameters:
         ---------------
@@ -125,9 +125,14 @@ class ContinuousDataEven(ContinuousData):
         new_sig : ContinuousDataEven
 
         """
-        if len(new_vals) != self.n_samples:
+        if is_same_n_samples and len(new_vals) != self.n_samples:
             raise ValueError("the number of new values must be like the number of values of the old signal")
-        new_sig = ContinuousDataEven(new_vals, self.sample_step, self.first_sample)
+        if new_first_sample == None:
+            first_sample = self.first_sample
+        else:
+            first_sample = new_first_sample
+        
+        new_sig = ContinuousDataEven(new_vals, self.sample_step, first_sample)
         return new_sig
 
         
