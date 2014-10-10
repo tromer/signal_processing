@@ -28,6 +28,41 @@ class ContinuousDataEven(ContinuousData):
         self._domain_description = domain_des
         self._values_description = values_des
 
+    @classmethod
+    def generate(cls, **kwargs):
+        """
+        generate signal of certain type
+        
+        parameters:
+        ---------------
+        waveform : str
+            'sine'
+            'square'
+        
+        amplitude : uerg.Quantity
+
+        sample_step : uerg.Quantity
+
+        first_sample : uerg.Quantity
+
+        freq : uerg.Quantity
+
+        period : uerg.Quantity
+            instead of freq
+
+        duty : float
+            for square
+
+        returns
+        ---------
+        sig : ContinuousDataEven
+        """
+        # phase = ? or use dict of caller functions
+        # amplitude default 1 * dimensionless. try to escape multiplication by 1
+        raise NotImplementedError
+
+
+        
 
     @property
     def sample_step(self):
@@ -77,6 +112,15 @@ class ContinuousDataEven(ContinuousData):
         #print self.values
         """ TODO: mayebe some cashing would be helpful? """
         return np.arange(len(self.values)) * self.sample_step + self.first_sample
+
+    def new_values(self, vals):
+        """
+
+        """
+        raise NotImplementedError
+        new_sig = ContinuousDataEven(new_vals, self.sample_step, self.first_sample)
+        return new_sig
+
         
     def __getitem__(self, key):
         """
