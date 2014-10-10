@@ -2,11 +2,9 @@ import warnings
 import numpy as np
 
 
-from continuous_data_even_obj import ContinuousDataEven
 from signal_processing.continuous.math import hilbert
 from signal_processing.continuous.math import diff
 from signal_processing import uerg
-from signal_processing.extensions import pint_extension
 
 # TODO: there are some problematic issues with fft / hilbert /demodulations with not 2 ** n samples signals.
 
@@ -48,8 +46,7 @@ def am(sig, mode='fast'):
     if sig.n_samples < 2 ** 10:
         warnings.warn("this pm-modulation technique doesn't work well on short signals, the mistakes on the edges are big")
     analytic_sig = hilbert(sig, mode)
-    envelope = np.abs(analytic_sig.values.magnitude) * pint_extension.get_units(analytic_sig.values)
-    sig_am = ContinuousDataEven(envelope, analytic_sig.sample_step, analytic_sig.first_sample)
+    sig_am = analytic_sig.abs()
     return sig_am
     
 
