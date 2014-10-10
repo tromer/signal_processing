@@ -12,6 +12,19 @@ some constructors of interesting signals
 
 """
 
+"""
+desing issues
+--------------
+1. use modulate to create square sine modulated
+2. many functions here accept amplitude parameter. maybe I want it to default to 1 * dimensionless. maybe I even want to take care of the amplitude out of the generator
+
+
+
+refactor
+-----------
+this entire module should be squized to ContinuousDataEven.generate function
+"""
+
 def generate_const(sample_step, n_samples, value):
     raise NotImplementedError
 
@@ -51,6 +64,8 @@ def generate_square(sample_step, n_samples, amplitude, period, duty=0.5, phase_a
         warnings.warn("the sample step is larger then 'up time' or 'down time', you can miss some wave-fronts")
     t = np.arange(n_samples) * sample_step + first_sample
     phase = 2 * np.pi * 1.0 / period * t + phase_at_0
+    # the sp,signal.square returns a shquare with value 1 and -1
+    # we return between 1 and 0
     square_values = 0.5 * (1 + sp.signal.square(phase, duty))
     square = ContinuousDataEven(amplitude * square_values, sample_step, first_sample)
     return square
