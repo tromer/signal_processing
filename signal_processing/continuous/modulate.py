@@ -1,7 +1,5 @@
 import numpy as np
 
-from continuous_data_even_obj import ContinuousDataEven
-import generators
 from signal_processing import uerg
 
 
@@ -17,8 +15,15 @@ def am(amp_t, f_carrier, phase_0_carrier=0):
     """
     if not (amp_t.values >= 0).all():
         raise ValueError("am amp_t which is not positive")
-    carrier = generators.generate_sine(amp_t.sample_step, amp_t.n_samples, uerg.dimensionless, f_carrier, phase_0_carrier)
-    am_modulated = amp_t * carrier
+
+    # implement function for this warning. look at the one now in generators
+    if not ___.is_in_nyquist(amt_t.sample_step, f_carrier):
+        warnings.warn("nyquist, weirf")
+    phase = 2 * np.pi * f_carrier * (amt_t.domain_samples) + phase_0_carrier
+    am_modulated_values = np.sin(phase) * amp_t
+    am_modulated = amp_t.new_values(am_modulated_values)
+#    carrier = generators.generate_sine(amp_t.sample_step, amp_t.n_samples, uerg.dimensionless, f_carrier, phase_0_carrier)
+    #am_modulated = amp_t * carrier
     return am_modulated
 
 
