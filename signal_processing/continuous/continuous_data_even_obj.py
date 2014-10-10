@@ -113,11 +113,20 @@ class ContinuousDataEven(ContinuousData):
         """ TODO: mayebe some cashing would be helpful? """
         return np.arange(len(self.values)) * self.sample_step + self.first_sample
 
-    def new_values(self, vals):
+    def new_values(self, new_vals):
         """
+        parameters:
+        ---------------
+        new_vals : uerg.Quantity
+            vectors of values of with the same amount of values as the samples
+
+        returns:
+        ---------
+        new_sig : ContinuousDataEven
 
         """
-        raise NotImplementedError
+        if len(new_vals) != self.n_samples:
+            raise ValueError("the number of new values must be like the number of values of the old signal")
         new_sig = ContinuousDataEven(new_vals, self.sample_step, self.first_sample)
         return new_sig
 
@@ -265,7 +274,6 @@ class ContinuousDataEven(ContinuousData):
             it's the multiplication of the units of the values of the signal, and of the sample step itself
             (remember the definition of fft: F(freq) = integral(sig * exp(- 2 * pi * j * freq * t) * dt))
         """
-        warnings.warn("not tested")
         freq_step = 1.0 * self.sample_rate / n_fft
         first_freq = - 0.5 * self.sample_rate
         spectrum_sample_step_factor =  self.sample_step

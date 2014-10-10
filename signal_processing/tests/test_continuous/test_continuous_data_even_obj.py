@@ -29,6 +29,14 @@ def test_ContinuousDataEven():
     sig_middle = sig[t_range]
     assert sig_middle.is_close(expected_sig_middle)
 
+def test_new_values():
+    sig = ContinuousDataEven(np.arange(10) * uerg.volt, uerg.sec)
+    new_vals = 2 * np.arange(10) * uerg.mamp
+    expected_new_sig = ContinuousDataEven(new_vals, uerg.sec)
+    new_sig = sig.new_values(new_vals)
+
+    assert new_sig.is_close(expected_new_sig)
+
 def test_down_sample():
     # copied from the test of fft
     sig = ContinuousDataEven(np.arange(32) * uerg.amp, 1.0 * uerg.sec)
@@ -116,6 +124,18 @@ def test_trim_to_power_of_2_XXX():
     expected_sig_trim = ContinuousDataEven(uerg.mamp * np.arange(8), 1 * uerg.sec)
     sig_trim = sig.trim_to_power_of_2_XXX()
     assert sig_trim.is_close(expected_sig_trim)
+
+def test__spectrum_parameters():
+    sig = ContinuousDataEven(np.arange(32) * uerg.amp, 1.0 * uerg.sec)
+    n_fft = 32
+    expected_freq_step = uerg.Hz * 1.0 / n_fft
+    expected_first_freq = -0.5 * uerg.Hz
+    expected_spectrum_sample_step_factor = uerg.sec
+    freq_step, first_freq, spectrum_sample_step_factor = sig._spectrum_parameters(n_fft)
+
+    assert pint_extension.allclose(freq_step, expected_freq_step)
+    assert pint_extension.allclose(first_freq, expected_first_freq)
+    assert pint_extension.allclose(spectrum_sample_step_factor, expected_spectrum_sample_step_factor)
 
 def test_fft():
     sig = ContinuousDataEven(np.arange(32) * uerg.amp, 1.0 * uerg.sec)
