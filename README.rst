@@ -46,6 +46,7 @@ Main issues before first release
    2. shorten the name of some functions in the sub-modules (adjoin, filter. threshold etc.) since they are in a module, they can have a less indicative name
    3. change cotinuous/plots.py to continuous/visualisation.py and fix imports
    4. in tests and examples, use continuos/generators.py instead if creating a signal manualy
+   5. use verbs instead of nouns as names of modules. generate, modulate, demodulate
 
     * use a refactoring tool. vim rope?
 2. testing:
