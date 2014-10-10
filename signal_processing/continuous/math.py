@@ -1,9 +1,6 @@
 import warnings
 import numpy as np
-import scipy as sp
-from scipy import signal
 
-from continuous_data_even_obj import ContinuousDataEven
 
 from signal_processing.extensions import pint_extension
 from signal_processing.extensions import numpy_extension
@@ -33,8 +30,8 @@ def diff(contin, n=1):
     desn't hurt signals of length 2 ** m, which are easier to fft
     maybe it's better to return a signal that have samples in the middle between each two samples of the original signal
     """
-    if type(contin) != ContinuousDataEven:
-        raise NotImplementedError
+#    if type(contin) != ContinuousDataEven:
+        #raise NotImplementedError
     
     new_vals = np.empty(len(contin.values))
     if n != 1:
@@ -64,8 +61,9 @@ def correlate(sig_stable, sig_sliding, mode='valid'):
     
     """
     warnings.warn("correlate is not tested")
-    if not type(sig_stable) in [ContinuousDataEven,] or not type(sig_sliding) in [ContinuousDataEven,]:
-        raise NotImplementedError("implemented only for ContinuousDataEven")
+# commented this assertion out because I want this module not to import ContunuousDataEven
+#    if not type(sig_stable) in [ContinuousDataEven,] or not type(sig_sliding) in [ContinuousDataEven,]:
+        #raise NotImplementedError("implemented only for ContinuousDataEven")
         
     if not pint_extension.allclose(sig_stable.sample_step, sig_sliding.sample_step):
         raise NotImplementedError("implemented only for same sample step signals")
@@ -87,7 +85,10 @@ def correlate(sig_stable, sig_sliding, mode='valid'):
     elif mode == 'valid':
         raise NotImplementedError("timing the correlation not implemented for valid mode")
     
-    sig_c = ContinuousDataEven(sig_c_values, sig_stable.sample_step, first_sample)
+    sig_c = sig_stable.new_values(sig_c_values, assert_same_n_samples=False, new_first_sample = first_sample)
+    # old old old
+    # sig_c = ContinuousDataEven(sig_c_values, sig_stable.sample_step, first_sample)
+
     return sig_c
     
    
@@ -128,8 +129,8 @@ def clip(sig, values_range):
     values_range : Segment
     
     """
-    if type(sig) != ContinuousDataEven:
-        raise NotImplementedError
+#    if type(sig) != ContinuousDataEven:
+        #raise NotImplementedError
     
     clipped_vals = np.clip(sig.values, values_range.start, values_range.end)
 
@@ -149,7 +150,7 @@ def hilbert(sig, mode='accurate', n_fft=None):
     a wrap around sp.signal.hilbert
     """
     analytic_sig_values = pint_extension.hilbert(sig.values, mode, n_fft=n_fft)
-    analytic_signal = ContinuousDataEven(analytic_sig_values, sig.sample_step, sig.first_sample)
+    analytic_signal = sig.new_values(analytic_sig_values, assert_same_n_samples=False)
     return analytic_signal
     
    
