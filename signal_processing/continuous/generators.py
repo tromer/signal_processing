@@ -81,5 +81,4 @@ def square_freq_modulated(sample_step, n_samples, amplitude, sine_freq, period, 
     sine = generate_sine(sample_step, n_samples, amplitude, sine_freq, sine_phase_at_0, first_sample)
     modulated = envelope * sine
     return modulated
-    
 
