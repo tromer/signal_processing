@@ -7,6 +7,7 @@ import generators
 import io
 import filters
 import demodulation
+import modulate
 import misc
 
 from io import read_wav
