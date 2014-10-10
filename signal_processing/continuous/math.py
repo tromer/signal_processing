@@ -8,6 +8,8 @@ from continuous_data_even_obj import ContinuousDataEven
 from signal_processing.extensions import pint_extension
 from signal_processing.extensions import numpy_extension
 
+from signal_processing.continuous.filters import band_pass_filter
+from signal_processing.segment import Segment
 """
 mathematical manipulations - except fouriers
 
@@ -149,4 +151,21 @@ def hilbert(sig, mode='accurate', n_fft=None):
     analytic_signal = ContinuousDataEven(analytic_sig_values, sig.sample_step, sig.first_sample)
     return analytic_signal
     
+   
+def am_demodulation_convolution(sig, t_smooth):
+    """
+    params:
+    t_smooth is the width in domain units, that you want to smooth together
+    """
+    warnings.warn("not tested")
+    n_samples_smooth = np.ceil(t_smooth * sig.sample_rate)
+    mask_am = numpy_extension.normalize(np.ones(n_samples_smooth), ord=1)
+    values_am = np.convolve(np.abs(sig.values.magnitude), mask_am, mode="same") * pint_extension.get_units(sig.values)
+    return ContinuousDataEven(values_am, sig.sample_step, sig.first_sample)
 
+    
+def am_demodulation_filter(sig, dt_smooth, mask_len):
+    warnings.warn("not tested")
+    top_freq = 1.0 / dt_smooth
+    band = Segment([1e-12 * pint_extension.get_units(top_freq), top_freq])
+    return band_pass_filter(sig.abs(), band, mask_len=mask_len)

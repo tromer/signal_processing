@@ -12,7 +12,7 @@ from signal_processing.segment import Segment
 from signal_processing.continuous import demodulation
 from signal_processing.continuous import generators
 
-def test_pm_demodulation():
+def test_pm():
     check_range = Segment(np.array([2, 30]) * uerg.ksec)
     sample_step = 1.0 * uerg.sec
     time = np.arange(2 ** 15) * sample_step
@@ -20,14 +20,14 @@ def test_pm_demodulation():
     phase = 2 * np.pi * freq * time
     sine = ContinuousDataEven(np.sin(phase) * uerg.mamp, sample_step)
     expected_phase_sig = ContinuousDataEven(phase, sample_step)
-    phase_sig = demodulation.pm_demodulation(sine)
+    phase_sig = demodulation.pm(sine)
     assert phase_sig[check_range].is_close(expected_phase_sig[check_range], values_rtol=0.01)
     
     time = np.arange(2 ** 15 - 100) * sample_step
     phase = 2 * np.pi * freq * time
     sine = ContinuousDataEven(np.sin(phase) * uerg.mamp, sample_step)
     expected_phase_sig = ContinuousDataEven(phase, sample_step)
-    phase_sig = demodulation.pm_demodulation(sine)
+    phase_sig = demodulation.pm(sine)
     assert phase_sig[check_range].is_close(expected_phase_sig[check_range], values_rtol=0.01)
     # weird, it acctually gives phase diff of 0.5 pi from what I expect
 
@@ -36,8 +36,8 @@ def test_pm_demodulation():
     #assert pint_extension.allclose(phase_sig.sample_step, expected_phase_sig.sample_step)
     #assert phase_sig[check_range].is_close(expected_phase_sig[check_range], values_rtol=0.01)
  
-def test_fm_demodulation():
-    # copied from test_pm_demodulation
+def test_fm():
+    # copied from test_pm
     check_range = Segment(np.array([2, 30]) * uerg.ksec)
     sample_step = 1.0 * uerg.sec
     time = np.arange(2 ** 15) * sample_step
@@ -45,10 +45,10 @@ def test_fm_demodulation():
     phase = 2 * np.pi * freq * time
     sine = ContinuousDataEven(np.sin(phase) * uerg.mamp, sample_step)
     expected_freq_sig = ContinuousDataEven(np.ones(2 ** 15) * freq, sample_step)
-    freq_sig = demodulation.fm_demodulation(sine)
+    freq_sig = demodulation.fm(sine)
     assert freq_sig[check_range].is_close(expected_freq_sig[check_range], values_rtol=0.01)
  
-def test_am_hilbert():
+def test_am():
     check_range = Segment(np.array([2, 30]) * uerg.ksec)
     sample_step = 1.0 * uerg.sec
     n_samples = 2 ** 15
@@ -56,7 +56,7 @@ def test_am_hilbert():
     amp = uerg.mamp
     sine = generators.generate_sine(sample_step, n_samples, amp, sine_freq=freq)
     expected_sine_am = ContinuousDataEven(np.ones(sine.n_samples) * amp, sample_step)
-    sine_am = demodulation.am_hilbert(sine)
+    sine_am = demodulation.am(sine)
     plot_few(sine, sine_am, expected_sine_am)
 
     assert sine_am[check_range].is_close(expected_sine_am[check_range], values_rtol=0.01)
