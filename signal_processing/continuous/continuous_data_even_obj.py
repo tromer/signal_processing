@@ -385,6 +385,8 @@ class ContinuousDataEven(ContinuousData):
 
     def modulate(self, kind, **kwargs):
         """
+        create a modulated signal. self is considerred as the data for the signal.
+
         parameters:
         -------------
         kind : str
@@ -404,12 +406,11 @@ class ContinuousDataEven(ContinuousData):
         -------------
         sig_modulated
         """
-        raise NotImplementedError
         modulator = getattr(modulate, kind)
         modulated_sig = modulator(self, **kwargs)
         return modulated_sig
 
-    def demodulate(self, kind, mode):
+    def demodulate(self, kind, mode='accurate'):
         """
         kind : str
             link to ContinuousDataEven.modulate
@@ -421,7 +422,6 @@ class ContinuousDataEven(ContinuousData):
         ----------
         sig_demodulated
         """
-        raise NotImplementedError
         demodulator = getattr(demodulation, kind)
         demodulated_sig = demodulator(self, mode)
         return modulated_sig
