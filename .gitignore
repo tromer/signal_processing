@@ -9,3 +9,5 @@
 
 # the /build directory, that appeared probably by setuptools
 /build
+
+.ropeproject/
