@@ -51,8 +51,8 @@ Main issues before first release
     * use a refactoring tool. vim rope?
 2. testing:
    
-   1. choose a testing package (probably nose or pytest)
-   2. seperate tests and create a testing script
+   1. so far using nose. maybe should use pytest?
+   2. use test classes.
    3. add tests
    4. grep all the "not tested" signs (there are warnings that some functions are not tested
 
@@ -70,9 +70,17 @@ Main issues before first release
    * old old old
    * link to
 
-#. tag a commit as release 0.1
-#. find how to let some functions share documentation of parameters with same behaviour. very important when I wrap functions
+#. arrange the imports according to a certain order even within the package, for example:
+   import warnings
+   import numpy as np
+   from signal_processing import uerg
+   from signal_processing import extension
+   from signal_processing import Segment
+   from signal_processing import continuous
+#. find how to let some functions share documentation of parameters with same behaviour. very important when I wrap functions. maybe links?
 #. improve use of exceptions. design the package exceptions, and use pint exceptions for units errors
+#. use sphinx to compile documentation.
+#. tag a commit as release 0.1
 
 Design principles
 ---------------------
