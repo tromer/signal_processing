@@ -173,6 +173,26 @@ def test_fft():
     assert spec_fast.is_close(expected_spec_fast)
 
 
+def test_modulate():
+    square = ContinuousDataEven.generate('square', uerg.sec, 2 ** 6, period = 20 * uerg.sec)
+    square_with_carrier = square.modulate('am', f_carrier = 0.15 * uerg.Hz)
+    expected_square_with_carrier = modulate.am(square, f_carrier = 0.15 * uerg.Hz)
+
+def test_demodulate():
+    sig = ContinuousDataEven.generate('sine', uerg.sec, 2 ** 6, freq=0.15 * uerg.Hz)
+
+    sig_am = sig.demodulate('am')
+    sig_fm = sig.demodulate('fm')
+    sig_pm = sig.demodulate('pm')
+
+    expected_sig_am = demodulation.am(sig)
+    expected_sig_fm = demodulation.fm(sig)
+    expected_sig_pm = demodulation.pm(sig)
+
+    assert sig_am.is_close(expected_sig_am)
+    assert sig_fm.is_close(expected_sig_fm)
+    assert sig_pm.is_close(expected_sig_pm)
+
 
 def test_get_chunks():
     N = 32
