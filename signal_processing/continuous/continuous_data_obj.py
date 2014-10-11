@@ -41,7 +41,7 @@ class ContinuousData(object):
     Note: see also the object Segments. they go hand in hand together, refer to different aspects of the same subjects
     this class represents any kind of continuous data (one dimensional).
     It includes a few kinds that first seem different from each other, has a lot in common.
-    
+
     examples:
     1. a "signal" - measurement of the electromagnetic field / voltage as a function of time.
     similar examples: sound (as a function of time), seismic measurments.
@@ -52,9 +52,9 @@ class ContinuousData(object):
     5. even a spectrum of a signal - the magnitude as a function of frequency.
     6. any connection between two continuous variables, such as a response curv of harmonic ocsillator:
     amplitude of the ocsillator as a function of the frequency of external force.
-    
+
     There are some differences beween these kinds of data. Maybe some of them would be implemented as a subclass
-    
+
     basic assumptions:
     1. the acctual data in the real world can be really continuous.
     here we of course use sample points. every sample point has exectly one corresponding value.
@@ -62,7 +62,7 @@ class ContinuousData(object):
     represents well also the times / places which we didn't measure.
     So, we assume that the data is not changing "too fast" compared to our resolution.
     In signal processing terms, we assume that we didn't under-sample.
-    
+
     Note:
     1. we *do not* assume even sampling distance. that would be included in a subclass.
     2. this class is intentioned to be used with units. it's real world measurements.
@@ -77,7 +77,7 @@ class ContinuousData(object):
 
     design issues
     --------------------
-    
+
     1. this object is immutable, appart from changing the string describing
     the domain and values.
     2. in many cases, functions that except ContinuousData extract the values, do some mathematical operation, and construct a new object with the same domain.\n
@@ -99,18 +99,18 @@ class ContinuousData(object):
 
     TODO
     ----------
-    
+
     1. maybe I want to implement a domain_samples object. it would have
     a subclass of even samples
-    
+
     2. maybe it's smart to implement a similar object with few channels.
     It may be useful in some implementation and performance issues,
     since the channels would be a 2D np.ndarray, and channel-wise
     operations like fft would be applied along axis, and be
     efficient.
-    
+
     3. maybe add a self.base attribute, like in np.ndarrays
-    
+
     """
     def __init__(self, values, domain_samples, values_des=None, domain_des=None):
         assert len(values) == len(domain_samples)
@@ -118,24 +118,24 @@ class ContinuousData(object):
         self._values = values
         self._domain_description = domain_des
         self._values_description = values_des
-        
+
     @property
     def domain_samples(self):
         return self._domain_samples
-        
+
     @property
     def values(self):
         return self._values
-        
+
     @property
     def n_samples(self):
         return len(self.values)
-        
+
     @property
     def first_sample(self):
         return self.domain_samples[0]
-    
-    @property     
+
+    @property
     def last_sample(self):
         return self.domain_samples[-1]
 
@@ -187,16 +187,16 @@ class ContinuousData(object):
 
         self_str = "\n".join([line_1, line_2])
         return self_str
-        
+
     def is_same_domain_samples(self, other):
         raise NotImplementedError
-        
-        
+
+
     def is_close(self, other, domain_rtol=1e-5, domain_atol=None, values_rtol=1e-5, values_atol=None):
         """ TODO: use is_same_domain_samples in this func """
         return pint_extension.allclose(self.domain_samples, other.domain_samples, domain_rtol, domain_atol) \
         and pint_extension.allclose(self.values, other.values, values_rtol, values_atol)
-        
+
     def is_close_l_1(self, other, param_1, param_2):
         """
         checks if 2 signals are close using l_1 norm
@@ -212,7 +212,7 @@ class ContinuousData(object):
         raise NotImplementedError
         return self.domain_samples.ptp()
     """
-    
+
     def __getitem__(self, key):
         """
         parameters:
@@ -220,33 +220,33 @@ class ContinuousData(object):
         domain_range : Segment
             the range, from the domain, of which we want the slice.
             for example: which time range?
-            
+
         TODO: since the domain samples should be sorted, maybe there
         is a more efficient implementation
         """
         if type(key) in [int, float]:
             raise KeyError("wrong key. key for ContinuousData is Segment or Segments of the same domain")
-        
+
         if type(key) in [Segment,]:
             domain_range = key
             is_each_in_range = domain_range.is_each_in(self.domain_samples)
             return ContinuousData(self.values[is_each_in_range], self.domain_samples[is_each_in_range])
-            
+
         elif type(key) in [Segments,]:
             return [self[domain_range] for domain_range in key]
-        
+
     def gain(self, factor):
         """
         multiplies the values by the factor
         """
         raise NotImplementedError
-        
+
     def __add__(self, other):
         raise NotImplementedError
-        
+
     def abs(self):
         raise NotImplementedError
-    
+
     def DFT(self):
         raise NotImplementedError
         # maybe there is an issue regarding using DFT or IDTF, depending the domain
@@ -264,7 +264,7 @@ class ContinuousData(object):
         x_bare, y_bare, x_label, curv_label = pint_extension.prepare_data_and_labels_for_plot(self.domain_samples, self.values, self.domain_description, self.values_description)
 
         return plt_extension.plot_with_labels(x_bare, y_bare, x_label, curv_label, fig)[0]
-        
+
     def tofile(self, f):
         """
         read the docs of fromfile
