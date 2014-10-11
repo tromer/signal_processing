@@ -13,14 +13,14 @@ def am(amp_t, f_carrier, phase_0_carrier=0):
 
     phase_0_carrier : float or radians?
     """
-    if not (amp_t.values >= 0).all():
+    if not (amp_t.values.magnitude >= 0).all():
         raise ValueError("am amp_t which is not positive")
 
     # implement function for this warning. look at the one now in generators
-    if not ___.is_in_nyquist(amt_t.sample_step, f_carrier):
-        warnings.warn("nyquist, weirf")
-    phase = 2 * np.pi * f_carrier * (amt_t.domain_samples) + phase_0_carrier
-    am_modulated_values = np.sin(phase) * amp_t
+    #if not ___.is_in_nyquist(amt_t.sample_step, f_carrier):
+    #    warnings.warn("nyquist, weirf")
+    phase = 2 * np.pi * f_carrier * (amp_t.domain_samples) + phase_0_carrier
+    am_modulated_values = amp_t.values * np.sin(phase)
     am_modulated = amp_t.new_values(am_modulated_values)
 #    carrier = generators.generate_sine(amp_t.sample_step, amp_t.n_samples, uerg.dimensionless, f_carrier, phase_0_carrier)
     #am_modulated = amp_t * carrier
