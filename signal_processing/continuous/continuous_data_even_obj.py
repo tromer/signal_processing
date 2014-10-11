@@ -24,6 +24,13 @@ class ContinuousDataEven(ContinuousData):
     """
     read the ContinuousData documentation.
     the domain samples are evenly spaced
+
+    design issue
+    -----------------------
+    some methods are applied to multiple options.
+    modulate, demodulate, and also generate.
+    they accept string as a parameter.
+    maybe they should accept enum to avoid typos (values errors)
     """
     def __init__(self, values, sample_step, first_sample=0, values_des=None, domain_des=None):
         self._values = values
@@ -38,7 +45,9 @@ class ContinuousDataEven(ContinuousData):
         self._values_description = values_des
 
     @classmethod
-    def generate(cls, waveform, sample_step, n_samples, amplitude=U_.dimensionless, first_sample=0, phase_at_0=0, **kwargs):
+    def generate(cls, waveform, sample_step, n_samples,
+                 amplitude=U_.dimensionless, first_sample=0,
+                 phase_at_0=0, **kwargs):
         """
         generate signal of certain type
 
@@ -81,6 +90,13 @@ class ContinuousDataEven(ContinuousData):
         returns
         ---------
         sig : ContinuousDataEven
+
+        design issue
+        ---------------------
+        maybe passing a string to determine the type of waveform is not optimal
+        other options is passing a function like np.sin, sp.signal.square,
+        utils.white_noise.
+        it's also optional to create a flag is_periodic
         """
 
         default_mean_value = {'white_noise' : 0, 'sine' : 0, 'square' : amplitude}
@@ -385,7 +401,10 @@ class ContinuousDataEven(ContinuousData):
 
     def modulate(self, kind, **kwargs):
         """
-        create a modulated signal. self is considerred as the data for the signal.
+        create a modulated signal. self is considerred as the data for the\
+            signal. This applies also to amplitude modulation (am).
+        in amplitude modulation self is the envelope (and therfore have to be\
+            non-negative)
 
         parameters:
         -------------
