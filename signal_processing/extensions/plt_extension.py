@@ -54,6 +54,8 @@ def plot_with_labels(x, y, x_label, curv_label, fig=None, subplot=None, share_x=
 
     # TODO add units to the label
     line = plt.plot(x, y, label=curv_label)[0]
+    expand_y_lim(fig)
+    expand_x_lim(fig)
     plt.xlabel(x_label)
     plt.legend(loc='best')
 
@@ -93,6 +95,22 @@ def mark_vertical_lines(x_lines, fig, color='k', label=None):
     v_lines = plt.vlines(x_lines, y_min, y_max, colors=color, label=label)
     plt.legend(loc='best')
     return v_lines
+
+def expand_y_lim(fig, ratio=0.2):
+    plt.figure(fig.number)
+    y_min, y_max = plt.ylim()
+    dy = y_max - y_min
+    y_min = y_min - 0.5 * ratio * dy
+    y_max = y_max + 0.5 * ratio * dy
+    plt.ylim(y_min, y_max)
+
+def expand_x_lim(fig, ratio=0.1):
+    plt.figure(fig.number)
+    x_min, x_max = plt.xlim()
+    dx = x_max - x_min
+    x_min = x_min - 0.5 * ratio * dx
+    x_max = x_max + 0.5 * ratio * dx
+    plt.xlim(x_min, x_max)
 
 def mark_horizontal_lines(y_lines, fig, label=None):
     """
