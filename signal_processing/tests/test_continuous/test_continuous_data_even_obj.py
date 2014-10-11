@@ -8,6 +8,7 @@ from signal_processing.extensions import pint_extension
 
 from signal_processing.continuous.continuous_data_obj import ContinuousData
 from signal_processing.continuous.continuous_data_even_obj import ContinuousDataEven
+from signal_processing.continuous import modulate, demodulation
 
 from signal_processing.segment import Segment
 
