@@ -1,5 +1,5 @@
-from signal_proceesing import uerg
-from signal_proceesing.continuous import generators, modulate
+from signal_processing import uerg
+from signal_processing.continuous import generators, modulate
 
 
 def test_am():
