@@ -424,7 +424,7 @@ class ContinuousDataEven(ContinuousData):
         """
         demodulator = getattr(demodulation, kind)
         demodulated_sig = demodulator(self, mode)
-        return modulated_sig
+        return demodulated_sig
 
 
     def get_chunks(self, domain_duration, is_power_of_2_samples=True, is_overlap=False, mode_last_chunk='throw'):
