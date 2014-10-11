@@ -49,6 +49,8 @@ Main issues before first release
    5. use verbs instead of nouns as names of modules. generate, modulate, demodulate
 
     * use a refactoring tool. vim rope?
+    * python-mode !
+       
 2. testing:
    
    1. so far using nose. maybe should use pytest?
@@ -70,6 +72,7 @@ Main issues before first release
    * old old old
    * link to
    * deprecated
+   * NotImpmentedError
 
 #. make sure to remove the use of old interface (like module generators)
 
