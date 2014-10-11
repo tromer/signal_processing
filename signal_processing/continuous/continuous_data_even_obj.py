@@ -380,10 +380,48 @@ class ContinuousDataEven(ContinuousData):
         return spectrum
 
     def modulate(self, kind, **kwargs):
-        raise NotImplementedError
+        """
+        parameters:
+        -------------
+        kind : str
+            'am'
+            'pm'
+            'fm'
 
-    def demodulate(self, kind, **kwargs):
+        kwargs
+        -----------
+        amp_carrier
+
+        f_carrier
+
+        phase_0_carrier
+
+        returns:
+        -------------
+        sig_modulated
+        """
         raise NotImplementedError
+        modulator = getattr(modulate, kind)
+        modulated_sig = modulator(self, **kwargs)
+        return modulated_sig
+
+    def demodulate(self, kind, mode):
+        """
+        kind : str
+            link to ContinuousDataEven.modulate
+
+        mode : str
+            link to numpy_extension. the preparator of fourier??
+
+        returns
+        ----------
+        sig_demodulated
+        """
+        raise NotImplementedError
+        demodulator = getattr(demodulate, kind)
+        demodulated_sig = demodulator(self, mode)
+        return modulated_sig
+
 
     def get_chunks(self, domain_duration, is_power_of_2_samples=True, is_overlap=False, mode_last_chunk='throw'):
         """
