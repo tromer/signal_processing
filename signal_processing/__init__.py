@@ -1,6 +1,6 @@
 from pint import UnitRegistry
-uerg = UnitRegistry()
-Q_ = uerg.Quantity
+U_ = UnitRegistry()
+Q_ = U_.Quantity
 
 from .extensions import numpy_extension, scipy_extension, pint_extension
 

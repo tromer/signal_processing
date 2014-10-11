@@ -5,7 +5,7 @@ from scipy import signal
 
 from continuous_data_even_obj import ContinuousDataEven
 
-from signal_processing import uerg
+from signal_processing import U_
 
 warnings.warn('generators module is deprecated')
 
@@ -34,7 +34,7 @@ def generate_sine(sample_step, n_samples, amplitude, sine_freq, phase_at_0=0, fi
     """
     returns:
     a ContinuousDataEven which is a sine
-    
+
     TODO: add DC parameter
     """
     if np.abs(phase_at_0) > 2 * np.pi:
@@ -45,19 +45,19 @@ def generate_sine(sample_step, n_samples, amplitude, sine_freq, phase_at_0=0, fi
     phase = 2 * np.pi * sine_freq * t + phase_at_0
     sine = ContinuousDataEven(amplitude * np.sin(phase), sample_step, first_sample)
     return sine
-    
-   
+
+
 def white_noise(sample_step, n_samples, amplitude, mean=0):
     warnings.warn("not tested")
     random_values = (np.random.rand(n_samples) - 0.5 + mean) * amplitude
     white_noise = ContinuousDataEven(random_values, sample_step)
     return white_noise
-    
+
 def generate_square(sample_step, n_samples, amplitude, period, duty=0.5, phase_at_0=0, first_sample=0):
     """
     returns:
     a ContinuousDataEven which is suqare wave with min at zero and max at amplitude
-    
+
     TODO: maybe add a parameter of base level.
     """
     if np.abs(phase_at_0) > 2 * np.pi:
@@ -71,15 +71,15 @@ def generate_square(sample_step, n_samples, amplitude, period, duty=0.5, phase_a
     square_values = 0.5 * (1 + sp.signal.square(phase, duty))
     square = ContinuousDataEven(amplitude * square_values, sample_step, first_sample)
     return square
-    
-   
+
+
 def square_freq_modulated(sample_step, n_samples, amplitude, sine_freq, period, duty=0.5, sine_phase_at_0=0, square_phase_at_t_0=0, first_sample=0):
     """
     returns:
     ContinuousDataEven which is a square wave modulated by sine. it's coherentic,
     means that all the "pulses" are taken from the same sine unstopped
     """
-    envelope = generate_square(sample_step, n_samples, 1 * uerg.dimensionless, period, duty, square_phase_at_t_0, first_sample)
+    envelope = generate_square(sample_step, n_samples, 1 * U_.dimensionless, period, duty, square_phase_at_t_0, first_sample)
     sine = generate_sine(sample_step, n_samples, amplitude, sine_freq, sine_phase_at_0, first_sample)
     modulated = envelope * sine
     return modulated

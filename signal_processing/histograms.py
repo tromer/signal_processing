@@ -5,14 +5,14 @@ from continuous.continuous_data_even_obj import ContinuousDataEven
 
 from .extensions import pint_extension
 
-from signal_processing import uerg
+from signal_processing import U_
 
 
 def data_to_continuous_histogram(a, bins=10, range_=None, weights=None, density=None):
     """
     returns a histogram of some data.
     it's a wrap aroud pint_extension.histogram
-    
+
     returns:
     -------------
     hist_continuous : ContinuousData
@@ -25,20 +25,20 @@ def data_to_continuous_histogram(a, bins=10, range_=None, weights=None, density=
         hist, edges = pint_extension.histogram(a, bins, range_, weights, density)
         bin_size = 1.0 *(edges[-1] - edges[0]) / bins
         first_bin = edges[0] + 0.5 * bin_size
-        hist = hist * uerg.dimensionless
+        hist = hist * U_.dimensionless
         hist_continuous = ContinuousDataEven(hist, bin_size, first_bin)
         return hist_continuous
-        
+
 #%%
 def signal_values_hist(contin, bins=100, range_=None, weights=None, density=None):
     """
     returns the histogram of the values of a ContinuousData
     a wrap around data_to_continuous_histogram
-    
+
     returns:
     -----------
     hist : ContinuousData
-    
+
     TODO: maybe this should be a method of ContinuousData
     """
     warnings.warn("signal_value_hist is not tested")

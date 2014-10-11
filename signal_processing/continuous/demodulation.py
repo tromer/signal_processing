@@ -4,7 +4,7 @@ import numpy as np
 
 from signal_processing.continuous.math import hilbert
 from signal_processing.continuous.math import diff
-from signal_processing import uerg
+from signal_processing import U_
 
 # TODO: there are some problematic issues with fft / hilbert /demodulations with not 2 ** n samples signals.
 
@@ -25,7 +25,7 @@ def pm(sig, mode='fast'):
         warnings.warn("this pm-modulation technique doesn't work well on short signals, the mistakes on the edges are big")
     analytic_sig = hilbert(sig, mode)
     phase_wrapped = np.angle(analytic_sig.values.magnitude)
-    phase = np.unwrap(phase_wrapped) * uerg.dimensionless
+    phase = np.unwrap(phase_wrapped) * U_.dimensionless
     phase_sig = analytic_sig.new_values(phase)
     return phase_sig
 
@@ -39,8 +39,8 @@ def fm(sig, mode='fast'):
     angular_freq = diff(sig_phase)
     freq = angular_freq.gain(1.0 / (2 * np.pi))
     return freq
-    
-   
+
+
 def am(sig, mode='fast'):
     #worning copied from pm
     if sig.n_samples < 2 ** 10:
@@ -48,5 +48,5 @@ def am(sig, mode='fast'):
     analytic_sig = hilbert(sig, mode)
     sig_am = analytic_sig.abs()
     return sig_am
-    
+
 

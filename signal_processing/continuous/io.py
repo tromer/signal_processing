@@ -10,9 +10,9 @@ from scipy.io import wavfile
 
 from continuous_data_even_obj import ContinuousDataEven
 
-from signal_processing import uerg
+from signal_processing import U_
 
-def read_wav(filename, domain_unit=uerg.sec, first_sample=0, value_unit=uerg.milliamp, expected_sample_rate_and_tolerance=None, channels=None):
+def read_wav(filename, domain_unit=U_.sec, first_sample=0, value_unit=U_.milliamp, expected_sample_rate_and_tolerance=None, channels=None):
     """
     read wav file to ContinuousDataEven.
     implemented only for one channal
@@ -76,14 +76,14 @@ def write_wav(contin, filename):
     example
     --------------
     s = continuous_data.read_wav("/home/noam/lab_project/Dropbox/Noam/Periodic recordings for Noam/fast-evo1-chassis-10100-C3000-N200_ettus.wav")
-    s_cut = s[Segment([5.720, 6.610], uerg.sec)]
+    s_cut = s[Segment([5.720, 6.610], U_.sec)]
     continuous_data.write_wav(s_cut, "/home/noam/lab_project/Dropbox/Noam/Periodic recordings for Noam/fast-evo1-chassis-10100-C3000-N200_ettus_cut.wav")
 
     """
-    if contin.domain_samples.dimensionality != uerg.sec.dimensionality:
+    if contin.domain_samples.dimensionality != U_.sec.dimensionality:
         raise NotImplementedError
     else:
-        sp.io.wavfile.write(filename, rate=contin.sample_rate.to(uerg.Hz).magnitude, data=contin.values.magnitude)
+        sp.io.wavfile.write(filename, rate=contin.sample_rate.to(U_.Hz).magnitude, data=contin.values.magnitude)
 
 
 def fromfile(f):

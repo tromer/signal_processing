@@ -7,7 +7,6 @@ Created on Sat Aug 30 01:29:39 2014
 
 
 """
-from global_uerg import uerg, Q_
 """
 """
 from . import uerg, Q_

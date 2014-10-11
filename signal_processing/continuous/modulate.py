@@ -1,6 +1,6 @@
 import numpy as np
 
-from signal_processing import uerg
+from signal_processing import U_
 
 
 def am(amp_t, f_carrier, phase_0_carrier=0):
@@ -9,7 +9,7 @@ def am(amp_t, f_carrier, phase_0_carrier=0):
     -------------------
     amp_t : ContinuousDataEven
 
-    f_carrier : uerg.Quantity
+    f_carrier : U_.Quantity
 
     phase_0_carrier : float or radians?
     """
@@ -22,7 +22,7 @@ def am(amp_t, f_carrier, phase_0_carrier=0):
     phase = 2 * np.pi * f_carrier * (amp_t.domain_samples) + phase_0_carrier
     am_modulated_values = amp_t.values * np.sin(phase)
     am_modulated = amp_t.new_values(am_modulated_values)
-#    carrier = generators.generate_sine(amp_t.sample_step, amp_t.n_samples, uerg.dimensionless, f_carrier, phase_0_carrier)
+#    carrier = generators.generate_sine(amp_t.sample_step, amp_t.n_samples, U_.dimensionless, f_carrier, phase_0_carrier)
     #am_modulated = amp_t * carrier
     return am_modulated
 
@@ -37,7 +37,7 @@ def pm(phase_t, amp_carrier):
 
     """
     raise NotImplementedError
-    if phase_t.values_unit != uerg.dimensionless:
+    if phase_t.values_unit != U_.dimensionless:
         raise ValueError("phase phase_t with units")
     pm_modulated_values = ContinuousDataEven(np.sin(phase_t.values), phase_t.sample_step, phase_t.first_sample) * amp_carrier
     return pm_modulated_values

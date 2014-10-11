@@ -16,7 +16,7 @@ from continuous_data_obj import ContinuousData
 
 from signal_processing.segments.segments_obj import Segments
 
-from signal_processing import uerg
+from signal_processing import U_
 from signal_processing.continuous import modulate, demodulation
 
 
@@ -38,7 +38,7 @@ class ContinuousDataEven(ContinuousData):
         self._values_description = values_des
 
     @classmethod
-    def generate(cls, waveform, sample_step, n_samples, amplitude=uerg.dimensionless, first_sample=0, phase_at_0=0, **kwargs):
+    def generate(cls, waveform, sample_step, n_samples, amplitude=U_.dimensionless, first_sample=0, phase_at_0=0, **kwargs):
         """
         generate signal of certain type
 
@@ -51,29 +51,29 @@ class ContinuousDataEven(ContinuousData):
             'sine'
             'square'
 
-        sample_step : uerg.Quantity
+        sample_step : U_.Quantity
 
         n_samples : int
 
-        amplitude : uerg.Quantity
+        amplitude : U_.Quantity
             all the values would be between -amplitude to +amplitude
 
-        first_sample : uerg.Quantity
+        first_sample : U_.Quantity
 
         phase_at_0 : float
             between -pi and pi, or between 0 and 2 * pi
 
         kwargs
         ------------
-        freq : uerg.Quantity
+        freq : U_.Quantity
 
-        period : uerg.Quantity
+        period : U_.Quantity
             instead of freq
 
         duty : float
             for square
 
-        mean : uerg.Quantity
+        mean : U_.Quantity
 
         TODO: Table of default values for each waveform
         -----------------------------------------------
@@ -178,7 +178,7 @@ class ContinuousDataEven(ContinuousData):
         """
         parameters:
         ---------------
-        new_vals : uerg.Quantity
+        new_vals : U_.Quantity
             vectors of values of with the same amount of values as the samples
 
         returns:
@@ -242,7 +242,7 @@ class ContinuousDataEven(ContinuousData):
         if type(other) in [float, int]:
             values = other
 
-        elif type(other) == uerg.Quantity:
+        elif type(other) == U_.Quantity:
             if type(other.magnitude) in [np.ndarray,]:
                 raise ValueError("add const value, or other ContinuousData with same domain samples")
             else:
@@ -328,14 +328,14 @@ class ContinuousDataEven(ContinuousData):
 
         returns
         --------------
-        freq_step : uerg.Quantity
+        freq_step : U_.Quantity
             the correct frequency step of the spectrum
 
-        first_freq : uerg.Quantity
+        first_freq : U_.Quantity
             the first frequency. it's determined here to be (-1) * nyquist rate
             thus the spectrum is around 0 (as is should!)
 
-        spectrum_amplitude : uerg.Quantity
+        spectrum_amplitude : U_.Quantity
             the factor that multiplies the mathematical spectrum.
             it's the multiplication of the units of the values of the signal, and of the sample step itself
             (remember the definition of fft: F(freq) = integral(sig * exp(- 2 * pi * j * freq * t) * dt))
@@ -433,7 +433,7 @@ class ContinuousDataEven(ContinuousData):
 
         parameters
         -----------------
-        domain_duration : uerg.Quantity
+        domain_duration : U_.Quantity
             the duration / len / width of the chunk
         is_power_of_2_samples : bool
             whether to return bigger chunks, with 2 ** m samples
