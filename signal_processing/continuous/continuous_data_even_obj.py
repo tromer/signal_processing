@@ -1,6 +1,11 @@
+from operator import xor
 import warnings
 
 import numpy as np
+import scipy as sp
+from scipy import signal
+
+
 from continuous_data_obj import ContinuousData
 
 from signal_processing.extensions import pint_extension
@@ -29,22 +34,33 @@ class ContinuousDataEven(ContinuousData):
         self._values_description = values_des
 
     @classmethod
-    def generate(cls, **kwargs):
+    def generate(cls, waveform, sample_step, n_samples, amplitude=uerg.dimensionless, first_sample=0, phase_at_0=0, **kwargs):
         """
         generate signal of certain type
         
         parameters:
         ---------------
         waveform : str
+            'white_noise'
+            'const'
+
             'sine'
             'square'
         
-        amplitude : uerg.Quantity
-
         sample_step : uerg.Quantity
+
+        n_samples : int
+
+        amplitude : uerg.Quantity
+            all the values would be between -amplitude to +amplitude
 
         first_sample : uerg.Quantity
 
+        phase_at_0 : float
+            between -pi and pi, or between 0 and 2 * pi
+
+        kwargs
+        ------------
         freq : uerg.Quantity
 
         period : uerg.Quantity
@@ -53,15 +69,56 @@ class ContinuousDataEven(ContinuousData):
         duty : float
             for square
 
+        mean : uerg.Quantity
+
+        TODO: Table of default values for each waveform
+        -----------------------------------------------
+
         returns
         ---------
         sig : ContinuousDataEven
         """
-        # phase = ? or use dict of caller functions
-        # amplitude default 1 * dimensionless. try to escape multiplication by 1
-        raise NotImplementedError
 
+        default_mean_value = {'white_noise' : 0, 'sine' : 0, 'square' : amplitude}
 
+        # case 1 : non periodic
+        if waveform == 'const':
+            raise NotImplementedError
+
+        elif waveform == 'white_noise':
+            warnings.warn('not tested')
+            vals = 2 * np.random.rand(n_samples) - 1
+        
+        # case 2 : periodic 
+        if not xor('freq' in kwargs, 'period' in kwargs):
+            raise ValueError("given both period and freq parameters")
+        if 'freq' in kwargs:
+            freq = kwargs['freq']
+        elif 'period' in kwargs:
+            freq = 1.0 / kwargs['period']
+
+        if np.abs(phase_at_0) > 2 * np.pi:
+            # encapsulate
+            warnings.warn("you are using phase_at_0 not from [-2 pi, 2 pi], weird")
+
+        t = np.arange(n_samples) * sample_step + first_sample
+        phase = 2 * np.pi * freq * t + phase_at_0
+
+        if waveform == 'sine':
+            # encapsulate
+            if freq > 0.5 * 1.0 / sample_step:
+                raise("trying to generate undersampled sine signal, abbort! consider the nyquist!")
+            vals = np.sin(phase)
+        
+        elif waveform == 'square':
+            duty = kwargs.get('duty', 0.5)
+            vals =  sp.signal.square(phase, duty)
+        
+        vals = vals * amplitude
+        mean = kwargs.get('mean', default_mean_value[waveform])
+        vals = vals + mean
+        sig = cls(vals, sample_step, first_sample)
+        return sig
         
 
     @property

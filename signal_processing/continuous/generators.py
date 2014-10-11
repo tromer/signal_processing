@@ -7,6 +7,8 @@ from continuous_data_even_obj import ContinuousDataEven
 
 from signal_processing import uerg
 
+raise warnings.wave('generators module is deprecated')
+
 """
 some constructors of interesting signals
 

@@ -1,4 +1,6 @@
 import numpy as np
+import scipy as sp
+from scipy import signal
 
 from signal_processing import uerg
 
@@ -28,6 +30,21 @@ def test_ContinuousDataEven():
     expected_sig_middle = ContinuousDataEven(values[expected_slice], sample_step, expected_slice[0] * sample_step)
     sig_middle = sig[t_range]
     assert sig_middle.is_close(expected_sig_middle)
+
+def test_generate():
+    sample_step = 1 * uerg.sec
+    n_samples = 128
+    sine_freq = 0.15 * uerg.Hz
+    amplitude = 1 * uerg.mamp
+    expected_sine = ContinuousDataEven(amplitude * np.sin(2 * np.pi * sine_freq * sample_step * np.arange(n_samples)), sample_step)
+    sine = ContinuousDataEven.generate('sine', sample_step, n_samples, amplitude, freq=sine_freq)
+    assert sine.is_close(expected_sine)
+
+    period = 10 * uerg.sec
+    expected_square = ContinuousDataEven(amplitude * (1 + sp.signal.square(2 * np.pi * 1.0 / period * sample_step * np.arange(n_samples))), sample_step)
+
+    square = ContinuousDataEven.generate('square', sample_step, n_samples, amplitude, period=period)
+    assert square.is_close(expected_square)
 
 def test_new_values():
     sig = ContinuousDataEven(np.arange(10) * uerg.volt, uerg.sec)
