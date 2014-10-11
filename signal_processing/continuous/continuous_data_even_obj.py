@@ -6,14 +6,18 @@ import scipy as sp
 from scipy import signal
 
 
-from continuous_data_obj import ContinuousData
-
 from signal_processing.extensions import pint_extension
 from signal_processing.extensions import numpy_extension
+
 from signal_processing.segment import Segment
+
+from continuous_data_obj import ContinuousData
+
+
 from signal_processing.segments.segments_obj import Segments
 
 from signal_processing import uerg
+from signal_processing.continuous import modulate, demodulation
 
 
 class ContinuousDataEven(ContinuousData):
@@ -418,7 +422,7 @@ class ContinuousDataEven(ContinuousData):
         sig_demodulated
         """
         raise NotImplementedError
-        demodulator = getattr(demodulate, kind)
+        demodulator = getattr(demodulation, kind)
         demodulated_sig = demodulator(self, mode)
         return modulated_sig
 
