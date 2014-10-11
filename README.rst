@@ -69,6 +69,9 @@ Main issues before first release
    * encapsulate
    * old old old
    * link to
+   * deprecated
+
+#. make sure to remove the use of old interface (like module generators)
 
 #. arrange the imports according to a certain order even within the package, for example:
    import warnings
