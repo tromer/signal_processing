@@ -68,6 +68,7 @@ Main issues before first release
    * refactor
    * encapsulate
    * old old old
+   * link to
 
 #. tag a commit as release 0.1
 #. find how to let some functions share documentation of parameters with same behaviour. very important when I wrap functions
