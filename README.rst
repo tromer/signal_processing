@@ -1,35 +1,51 @@
 Background
 ----------------
-This module introduces a natural interface for signal processing.
-It also introduces some signal processing functions.
-it's heavily based on numpy, scipy, and uses pint for units support.
+This module introduces a natural interface for signal processing,
+as well as various signal processing functions.
+It's based on numpy, scipy, and uses pint for units support.
 
 Motivation
 -----------------------
-Scipy has great mathematical tools, but doesn't have a natural interface for signal processing.
-One want to think of a signal as a continuous data (the interface), not vector of samples (internal implementation). One also want to think with physical units of the data.
+Scipy has great mathematical tools, but it lacks a * natural interface * for signal processing.
+
+    * A signal as a continuous data (the interface), not vector of samples (internal implementation).
+    * A signal should support physical unit. it's a measurement!
 
 Data types - the interface for signal processing
 ----------------------------------------------------
 the package introduces a few data types to represent different datas
 easily and efficiently:
 
-1. ContinuousData - every continuous data, like signals.
-2. Segments - a quantisation / clustering / finding areas of interest
-within signals
+1) Object that represent continuous data such as voice recording (a signal).
+other examples:
+
+    - continuous spatial measurement. Such as mountain's profile. 
+    - continuous kinematic measurement: position of something as a function of time.
+    - a distribution (continuous histogram)
+    - a spectrum of another signal (FFT).
+
+2) Object that represent segments of interest within a signal, such as:
+    
+    - times and amplitudes of pulses of energy in an electromagnetic signal.
+    - locations of seismic bursts in a continuous seismic measurement.
+    - cluster: ranges that contain most of the value in a continuous distribution.
+
+The use of these objects eliminates irrelevant information and thus simplifies the code.
+
 
 
 Processes
 -------------------
 various processes to manipulate ContinuousData and Segments:
-frequency filtering, adjoining segments together, filtering by some properties.
-automatic parameters finding for various processes (thresholds)
+
+    - frequency filtering, modulations, demodulatioins
+    - Auto noise level detection, threshold operations, algorithms to cope with noise.
 
 How to proceed
 -------------------
 
 1. look at the code examples.
-2. read the documentation of ContinuousData and Segments. it explains the they way this package percieves signals.
+2. read the documentation of ContinuousData, ContinuousDataEven and Segments. it explains the they way this package percieves signals.
 
 naming conventions
 ---------------------------------
