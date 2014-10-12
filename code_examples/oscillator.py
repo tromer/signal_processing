@@ -2,7 +2,7 @@
 #XXX
 #this example uses old interface
 import signal_processing as sigpro
-rom sigpro.global_ureg import ureg, Q_
+from sigpro.global_ureg import ureg, Q_
 
 oscillator, motor =  sigpro.continuous_data.read_wav("~/harmonic.wav", ureg.rad, channels=[0,1])
 oscillator, motor = oscillator.down_sample(2), motor.down_sample(2)
