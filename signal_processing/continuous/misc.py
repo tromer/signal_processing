@@ -1,6 +1,6 @@
 import warnings
 from filters import band_pass_filter
-import demodulation
+import demodulate
 
 
 def filter_downsample_fm_demodulation_base_band_filter(raw_sig, freq_range, freq_mask_len, down_factor, base_band_range, base_band_mask_len):
@@ -37,7 +37,7 @@ def filter_downsample_fm_demodulation_base_band_filter(raw_sig, freq_range, freq
         down.fft().abs().plot()
     
     # step_4: fm demodulation
-    de_fm = demodulation.fm(down, mode='fast')
+    de_fm = demodulate.fm(down, mode='fast')
     
     if False:
         de_fm.plot()

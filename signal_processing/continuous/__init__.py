@@ -6,7 +6,7 @@ import math
 import generators
 import io
 import filters
-import demodulation
+import demodulate
 import modulate
 import misc
 

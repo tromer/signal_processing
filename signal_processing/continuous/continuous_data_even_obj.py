@@ -17,7 +17,7 @@ from continuous_data_obj import ContinuousData
 from signal_processing.segments.segments_obj import Segments
 
 from signal_processing import U_
-from signal_processing.continuous import modulate, demodulation
+from signal_processing.continuous import modulate, demodulate
 
 
 class ContinuousDataEven(ContinuousData):
@@ -441,7 +441,7 @@ class ContinuousDataEven(ContinuousData):
         ----------
         sig_demodulated
         """
-        demodulator = getattr(demodulation, kind)
+        demodulator = getattr(demodulate, kind)
         demodulated_sig = demodulator(self, mode)
         return demodulated_sig
 

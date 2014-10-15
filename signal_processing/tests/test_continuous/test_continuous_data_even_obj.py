@@ -8,7 +8,7 @@ from signal_processing.extensions import pint_extension
 
 from signal_processing.continuous.continuous_data_obj import ContinuousData
 from signal_processing.continuous.continuous_data_even_obj import ContinuousDataEven
-from signal_processing.continuous import modulate, demodulation
+from signal_processing.continuous import modulate, demodulate
 
 from signal_processing.segment import Segment
 
@@ -186,9 +186,9 @@ def test_demodulate():
     sig_fm = sig.demodulate('fm')
     sig_pm = sig.demodulate('pm')
 
-    expected_sig_am = demodulation.am(sig)
-    expected_sig_fm = demodulation.fm(sig)
-    expected_sig_pm = demodulation.pm(sig)
+    expected_sig_am = demodulate.am(sig)
+    expected_sig_fm = demodulate.fm(sig)
+    expected_sig_pm = demodulate.pm(sig)
 
     assert sig_am.is_close(expected_sig_am)
     assert sig_fm.is_close(expected_sig_fm)
