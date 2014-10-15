@@ -23,7 +23,7 @@ def test_ContinuousDataEven():
     assert pint_extension.allclose(sig.total_domain_width, 10 * U_.sec)
     assert pint_extension.allclose(sig.domain_samples, np.arange(10) * sample_step)
     assert sig.is_close(ContinuousData(values, np.arange(10) * sample_step))
-    assert pint_extension.allclose(sig.first_sample, 0 * sample_step)
+    assert pint_extension.allclose(sig.domain_start, 0 * sample_step)
 
     # testing a __getitem__ (slicing) is mostly copied from the tester of ContinuousData
     t_range = Segment(np.array([2.5, 6.5]) * U_.sec)

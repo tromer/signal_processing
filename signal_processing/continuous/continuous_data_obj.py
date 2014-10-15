@@ -131,16 +131,16 @@ class ContinuousData(object):
         return len(self.values)
 
     @property
-    def first_sample(self):
+    def domain_start(self):
         return self.domain_samples[0]
 
     @property
-    def last_sample(self):
+    def domain_end(self):
         return self.domain_samples[-1]
 
     @property
     def domain_range(self):
-        range_ = Segment([self.first_sample, self.last_sample])
+        range_ = Segment([self.domain_start, self.domain_end])
         return range_
 
     @property

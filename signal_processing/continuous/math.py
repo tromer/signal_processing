@@ -79,13 +79,14 @@ def correlate(sig_stable, sig_sliding, mode='valid'):
 
     #times
     if mode == 'full':
-        first_sample = (-1) * sig_stable.sample_step * (-1 + 0.5 * (sig_stable.n_samples + sig_sliding.n_samples)) + sig_stable.first_sample
+        domain_start = (-1) * sig_stable.sample_step * (-1 + 0.5 * (sig_stable.n_samples + sig_sliding.n_samples)) + sig_stable.domain_start
     elif mode == 'same':
         raise NotImplementedError("timing the correlation not implemented for same mode")
     elif mode == 'valid':
         raise NotImplementedError("timing the correlation not implemented for valid mode")
 
-    sig_c = sig_stable.new_values(sig_c_values, assert_same_n_samples=False, new_first_sample = first_sample)
+    sig_c = sig_stable.new_values(sig_c_values, assert_same_n_samples=False,
+                                  new_domain_start = domain_start)
     # old old old
     # sig_c = ContinuousDataEven(sig_c_values, sig_stable.sample_step, first_sample)
 
@@ -111,7 +112,7 @@ def correlate_find_new_location(sig_stable, sig_sliding, mode='valid', is_return
     """
     corr = correlate(sig_stable, sig_sliding, mode)
     top_index = np.argmax(corr.values)
-    top_domain_sample = corr.first_sample + corr.sample_step * top_index
+    top_domain_sample = corr.domain_start + corr.sample_step * top_index
     max_value = corr.values[top_index]
 
     if not is_return_max:

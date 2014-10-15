@@ -58,7 +58,6 @@ Main issues before first release
 ---------------------------------
 1. refactoring issues:
 
-   1. name - first_sample, last_sample > domain_start, domain_end.
    2. shorten the name of some functions in the sub-modules (adjoin, filter. threshold etc.) since they are in a module, they can have a less indicative name
    3. change cotinuous/plots.py to continuous/visualisation.py and fix imports
    4. in tests and examples, use continuos/generators.py instead if creating a signal manualy

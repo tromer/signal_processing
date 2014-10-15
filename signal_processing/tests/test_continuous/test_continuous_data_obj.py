@@ -17,8 +17,8 @@ def test_ContinuousData():
     assert pint_extension.allclose(sig.domain_samples, t)
     assert pint_extension.allclose(sig.values, vals)
     assert sig.n_samples == 10
-    assert sig.first_sample == 0 * U_.sec
-    assert sig.last_sample == 9 * U_.sec
+    assert sig.domain_start == 0 * U_.sec
+    assert sig.domain_end == 9 * U_.sec
     assert sig.domain_range.is_close(Segment([0,9], U_.sec))
     assert sig.domain_unit == U_.sec
     assert sig.values_unit == U_.volt

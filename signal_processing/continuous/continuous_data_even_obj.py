@@ -32,21 +32,22 @@ class ContinuousDataEven(ContinuousData):
     they accept string as a parameter.
     maybe they should accept enum to avoid typos (values errors)
     """
-    def __init__(self, values, sample_step, first_sample=0, values_des=None, domain_des=None):
+    def __init__(self, values, sample_step, domain_start=0,
+                 values_description=None, domain_description=None):
         self._values = values
         self._sample_step = sample_step
-        if not first_sample:
-            self._first_sample = 0 * sample_step
+        if not domain_start:
+            self._domain_start = 0 * sample_step
         else:
-            self._first_sample = first_sample
+            self._domain_start = domain_start
 
         # copied from ContinuousData
-        self._domain_description = domain_des
-        self._values_description = values_des
+        self._domain_description = domain_description
+        self._values_description = values_description
 
     @classmethod
     def generate(cls, waveform, sample_step, n_samples,
-                 amplitude=U_.dimensionless, first_sample=0,
+                 amplitude=U_.dimensionless, domain_start=0,
                  phase_at_0=0, **kwargs):
         """
         generate signal of certain type
@@ -67,7 +68,7 @@ class ContinuousDataEven(ContinuousData):
         amplitude : U_.Quantity
             all the values would be between -amplitude to +amplitude
 
-        first_sample : U_.Quantity
+        domain_start : U_.Quantity
 
         phase_at_0 : float
             between -pi and pi, or between 0 and 2 * pi
@@ -121,7 +122,7 @@ class ContinuousDataEven(ContinuousData):
             # encapsulate
             warnings.warn("you are using phase_at_0 not from [-2 pi, 2 pi], weird")
 
-        t = np.arange(n_samples) * sample_step + first_sample
+        t = np.arange(n_samples) * sample_step + domain_start
         phase = 2 * np.pi * freq * t + phase_at_0
 
         if waveform == 'sine':
@@ -137,7 +138,7 @@ class ContinuousDataEven(ContinuousData):
         vals = vals * amplitude
         mean = kwargs.get('mean', default_mean_value[waveform])
         vals = vals + mean
-        sig = cls(vals, sample_step, first_sample)
+        sig = cls(vals, sample_step, domain_start)
         return sig
 
 
@@ -150,8 +151,8 @@ class ContinuousDataEven(ContinuousData):
         return 1.0 / self.sample_step
 
     @property
-    def first_sample(self):
-        return self._first_sample
+    def domain_start(self):
+        return self._domain_start
 
 
     @property
@@ -188,9 +189,9 @@ class ContinuousDataEven(ContinuousData):
         #print "******"
         #print self.values
         """ TODO: mayebe some cashing would be helpful? """
-        return np.arange(len(self.values)) * self.sample_step + self.first_sample
+        return np.arange(len(self.values)) * self.sample_step + self.domain_start
 
-    def new_values(self, new_vals, assert_same_n_samples=True, new_first_sample=None):
+    def new_values(self, new_vals, assert_same_n_samples=True, new_domain_start=None):
         """
         parameters:
         ---------------
@@ -204,12 +205,12 @@ class ContinuousDataEven(ContinuousData):
         """
         if assert_same_n_samples and len(new_vals) != self.n_samples:
             raise ValueError("the number of new values must be like the number of values of the old signal")
-        if new_first_sample == None:
-            first_sample = self.first_sample
+        if new_domain_start == None:
+            domain_start = self.domain_start
         else:
-            first_sample = new_first_sample
+            domain_start = new_domain_start
 
-        new_sig = ContinuousDataEven(new_vals, self.sample_step, first_sample)
+        new_sig = ContinuousDataEven(new_vals, self.sample_step, domain_start)
         return new_sig
 
 
@@ -230,23 +231,23 @@ class ContinuousDataEven(ContinuousData):
             domain_range = key
             bottom_index = np.ceil(1.0 * domain_range.start / self.sample_step)
             top_index = np.floor(domain_range.end / self.sample_step)
-            return ContinuousDataEven(self.values[bottom_index:top_index + 1], self.sample_step, first_sample=bottom_index * self.sample_step)
+            return ContinuousDataEven(self.values[bottom_index:top_index + 1], self.sample_step, domain_start=bottom_index * self.sample_step)
 
         elif type(key) in [Segments,]:
             return [self[domain_range] for domain_range in key]
 
 
-    def move_first_sample(self, new_first_sample=0):
+    def move_domain_start(self, new_domain_start=0):
         """
 
         """
         warnings.warn("not tested")
-        return ContinuousDataEven(self.values, self.sample_step, new_first_sample)
+        return ContinuousDataEven(self.values, self.sample_step, new_domain_start)
 
 
     def is_same_domain_samples(self, other):
         return self.n_samples == other.n_samples and \
-        pint_extension.allclose(self.first_sample, other.first_sample) and \
+        pint_extension.allclose(self.domain_start, other.domain_start) and \
         pint_extension.allclose(self.sample_step, other.sample_step)
 
     def _extract_values_from_other_for_continuous_data_arithmetic(self, other):
@@ -274,7 +275,7 @@ class ContinuousDataEven(ContinuousData):
 
     def __add__(self, other):
         values = self._extract_values_from_other_for_continuous_data_arithmetic(other)
-        return ContinuousDataEven(self.values + values, self.sample_step, self.first_sample)
+        return ContinuousDataEven(self.values + values, self.sample_step, self.domain_start)
 
     def __radd__(self, other):
         raise NotImplementedError
@@ -283,13 +284,13 @@ class ContinuousDataEven(ContinuousData):
     def __sub__(self, other):
         # TODO: add test for operation with num
         values = self._extract_values_from_other_for_continuous_data_arithmetic(other)
-        return ContinuousDataEven(self.values - values, self.sample_step, self.first_sample)
+        return ContinuousDataEven(self.values - values, self.sample_step, self.domain_start)
 
 
     def __mul__(self, other):
         # TODO: add test for operation with num
         values = self._extract_values_from_other_for_continuous_data_arithmetic(other)
-        return ContinuousDataEven(self.values * values, self.sample_step, self.first_sample)
+        return ContinuousDataEven(self.values * values, self.sample_step, self.domain_start)
 
     def __rmul__(self, other):
         raise NotImplementedError
@@ -297,24 +298,24 @@ class ContinuousDataEven(ContinuousData):
 
     def __div__(self, other):
         values = self._extract_values_from_other_for_continuous_data_arithmetic(other)
-        return ContinuousDataEven(self.values / values, self.sample_step, self.first_sample)
+        return ContinuousDataEven(self.values / values, self.sample_step, self.domain_start)
 
     def abs(self):
-        return ContinuousDataEven(np.abs(self.values), self.sample_step, self.first_sample, "abs(" + self.values_description + ")")
+        return ContinuousDataEven(np.abs(self.values), self.sample_step, self.domain_start, "abs(" + self.values_description + ")")
 
 
     def gain(self, factor):
         """
         see doc of base class
         """
-        return ContinuousDataEven(self.values * factor, self.sample_step, self.first_sample)
+        return ContinuousDataEven(self.values * factor, self.sample_step, self.domain_start)
 
     def down_sample(self, down_factor):
         assert down_factor > 0
         if int(down_factor) != down_factor:
             raise NotImplementedError
         # maybe there should be another interface, with "new sample rate"
-        return ContinuousDataEven(self.values[::down_factor], down_factor * self.sample_step, self.first_sample)
+        return ContinuousDataEven(self.values[::down_factor], down_factor * self.sample_step, self.domain_start)
 
     def is_power_of_2_samples(self):
         """
@@ -329,7 +330,7 @@ class ContinuousDataEven(ContinuousData):
         """
         warnings.warn("XXX trim_to_power_of_2_looses_data")
         new_n = numpy_extension.close_power_of_2(self.n_samples, mode='smaller')
-        trimmed = ContinuousDataEven(self.values[:new_n], self.sample_step, self.first_sample)
+        trimmed = ContinuousDataEven(self.values[:new_n], self.sample_step, self.domain_start)
         assert trimmed.n_samples == new_n
         return trimmed
 
@@ -493,7 +494,7 @@ class ContinuousDataEven(ContinuousData):
         chunks_odd = []
         n_of_chunks_odd = np.floor(n_samples_tot / n_samples_chunk)
         chunks_odd_data = self.values[:n_samples_chunk * n_of_chunks_odd].reshape((n_of_chunks_odd, n_samples_chunk)).transpose()
-        chunk_odd_first_samples = self.first_sample + self.sample_step * n_samples_chunk * np.arange(n_of_chunks_odd)
+        chunk_odd_first_samples = self.domain_start + self.sample_step * n_samples_chunk * np.arange(n_of_chunks_odd)
         assert chunks_odd_data.shape[1] == len(chunk_odd_first_samples)
 
         for i in xrange(len(chunk_odd_first_samples)):
@@ -506,7 +507,7 @@ class ContinuousDataEven(ContinuousData):
             chunks_even = []
             n_of_chunks_even = np.floor((n_samples_tot - 0.5 * n_samples_chunk) / n_samples_chunk)
             chunks_even_data = self.values[0.5 * n_samples_chunk : 0.5 * n_samples_chunk + n_samples_chunk * n_of_chunks_even].reshape((n_of_chunks_even, n_samples_chunk)).transpose()
-            chunk_even_first_samples = self.first_sample + self.sample_step * 0.5 * n_samples_chunk + self.sample_step * n_samples_chunk * np.arange(n_of_chunks_even)
+            chunk_even_first_samples = self.domain_start + self.sample_step * 0.5 * n_samples_chunk + self.sample_step * n_samples_chunk * np.arange(n_of_chunks_even)
             assert chunks_even_data.shape[1] == len(chunk_even_first_samples)
 
             for i in xrange(len(chunk_even_first_samples)):
