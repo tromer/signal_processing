@@ -1,5 +1,5 @@
 import warnings
-from filters import band_pass_filter
+from filters import band_pass
 import demodulate
 
 
@@ -17,7 +17,7 @@ def filter_downsample_fm_demodulation_base_band_filter(raw_sig, freq_range, freq
     # step_2: filtering the raw_data
     # Note:  getting memory error with long signals (290 M-Byte and more). the problem is with the convolution. need to try fftconvolve
     # maybe we want to filter, only after finding where are the traces, and with the exact band of the real raw_sig (not noise)
-    filterred = band_pass_filter(raw_sig, freq_range, freq_mask_len)
+    filterred = band_pass(raw_sig, freq_range, freq_mask_len)
     
     if False:
         filterred[parameters.time_for_quick_plot].plot()
@@ -43,7 +43,7 @@ def filter_downsample_fm_demodulation_base_band_filter(raw_sig, freq_range, freq
         de_fm.plot()
     
     # step 4.1 filter the base-band signal
-    sig = band_pass_filter(de_fm, freq_range=base_band_range, mask_len=base_band_mask_len)
+    sig = band_pass(de_fm, freq_range=base_band_range, mask_len=base_band_mask_len)
     return sig
 
 

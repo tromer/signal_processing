@@ -10,7 +10,7 @@ from signal_processing.segment import Segment
 from signal_processing.continuous import filters
 
 
-def visual_test_band_pass_filter():
+def visual_test_band_pass():
     sample_step = U_.sec
     np.random.seed(13)
     # TODO: use generators.white_noise instead

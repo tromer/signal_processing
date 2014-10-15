@@ -7,15 +7,15 @@ from signal_processing.extensions import pint_extension
 from signal_processing.extensions import scipy_extension
 
 
-def band_pass_filter(sig, freq_range, mask_len):
+def band_pass(sig, freq_range, mask_len):
     """
     band pass filter of ContinuousDataEven
-    
+
     parameters:
     freq_range: a Segment of frequencies
-    
+
     implemented using np.convolve with a mask. maybe with fft is better
-    
+
     XXX TODO: shuold change interface. maks len is something without units. shoult receive something else
     XXX this function is not stable with downsampling for this reason
     """
