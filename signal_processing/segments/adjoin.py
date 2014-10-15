@@ -9,7 +9,7 @@ from signal_processing.extensions import pint_extension
 from segments_obj import Segments
 
 
-def adjoin_segments_max_distance(segments, max_distance):
+def max_dist(segments, max_distance):
     """
     if the segments are close enough, maybe they represent the same segment of interest,
     that was "broken" due to noise / wring threshold / mistake
@@ -36,7 +36,7 @@ def adjoin_segments_max_distance(segments, max_distance):
     then xoring with a shift to find ends and starts, then trim the edges
     """
 #%%
-def adjoin_segments_considering_durations(segments_, segment_gap_ratio, absolute_max_dist=None, mode='mean'):
+def consider_duration(segments_, segment_gap_ratio, absolute_max_dist=None, mode='mean'):
     """
     to determine whether to adjoin two nearby segments, we consider their durations and the gap duration.
     we calculate a reference_duration for each gap, for comparison
@@ -91,10 +91,10 @@ def adjoin_segments_considering_durations(segments_, segment_gap_ratio, absolute
     else:
         max_distance = max_distance_due_to_duration
 
-    adjoined_segments = adjoin_segments_max_distance(segments_, max_distance)
+    adjoined_segments = max_dist(segments_, max_distance)
     return adjoined_segments
 
-def adjoin_segments(segments_, delta=0, ratio=0, max_dist=None, n=1):
+def recursive(segments_, delta=0, ratio=0, max_dist=None, n=1):
     """
     parameters:
     ----------------
@@ -105,19 +105,18 @@ def adjoin_segments(segments_, delta=0, ratio=0, max_dist=None, n=1):
     ---------
     add parameter to allow maximal / ultimate adjoining. adjoin again and again until it cannot adjoin anymore
     """
-    warnings.warn("adjoin_segments is not tested")
+    warnings.warn("not tested")
     if delta != 0:
         assert delta.dimensionality == segments_.starts.dimensionality
     if max_dist != None:
         assert max_dist.dimensionality == segments_.starts.dimensionality
 
-
     adjoined_segments = segments_
     for i in xrange(n):
         if delta != 0:
-            adjoined_segments = adjoin_segments_max_distance(adjoined_segments, delta)
+            adjoined_segments = max_dist(adjoined_segments, delta)
         if ratio != 0:
-            adjoined_segments = adjoin_segments_considering_durations(adjoined_segments, ratio, max_dist)
+            adjoined_segments = consider_duration(adjoined_segments, ratio, max_dist)
 
     return adjoined_segments
 

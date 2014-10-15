@@ -89,11 +89,11 @@ def threshold_aggregate_filter_short(sig, threshold, max_dist, duration_ratio, a
     warnings.warn("threshold_aggregate_filter_short not tested")
     backgrounds = threshold_crosses(sig, threshold)
     # remove small drops in the middle, and drops near the edge
-    backgrounds = adjoin.adjoin_segments_max_distance(backgrounds, max_dist)
+    backgrounds = adjoin.max_dist(backgrounds, max_dist)
     
     
     # remove big drops in the middle
-    backgrounds = adjoin.adjoin_segments_considering_durations(backgrounds, duration_ratio, absolute_max_dist, mode='min')
+    backgrounds = adjoin.consider_duration(backgrounds, duration_ratio, absolute_max_dist, mode='min')
     # remove interrupts. some interupts are a little bit too close
     # so removing only by a factor multiplied by the interrupt duration
     # is not enough. we filter harder
