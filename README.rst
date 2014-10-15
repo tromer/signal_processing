@@ -72,6 +72,7 @@ Main issues before first release
    2. use test classes.
    3. add tests
    4. grep all the "not tested" signs (there are warnings that some functions are not tested
+   5. add test to the examples
 
 3. choose the right license.
 4. choose a way to manage the issues and TODO's.
