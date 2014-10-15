@@ -10,7 +10,7 @@ noise = ContinuousDataEven.generate('white_noise', U_.msec, 2 ** 7,
 sig_line = sig_line_0 + noise
 
 freq_range = Segment([48.0, 52.0], U_.Hz)
-sig_line_clean = cont.filters.band_pass_filter(sig_line, freq_range,
+sig_line_clean = cont.filters.band_pass(sig_line, freq_range,
                                                mask_len=32)
 
 sig_line.values_description = 'sine unclean'

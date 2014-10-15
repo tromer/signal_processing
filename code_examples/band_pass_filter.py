@@ -8,7 +8,7 @@ white_noise = ContinuousDataEven.generate('white_noise', U_.sec,
 white_noise.values_description = "white noise"
 
 freq_range = Segment([0.3, 0.4], U_.Hz)
-white_noise_filterred = cont.filters.band_pass_filter(white_noise, freq_range,
+white_noise_filterred = cont.filters.band_pass(white_noise, freq_range,
                                                       mask_len=32)
 white_noise_filterred.values_description = "filterred"
 
