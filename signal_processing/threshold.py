@@ -68,13 +68,14 @@ def crosses(sig, threshold, is_above=True):
     return Segments(starts, ends)
 #%%
 #%%
-def threshold_adjoin_filter_short_segments(sig, threshold, max_distance, min_duration):
+def threshold_adjoin_filter_short_segments(
+    sig, threshold, max_distance, min_duration):
     """
     concatanates 3 processes one after another:
     threshold, adjoin, filter_short_segments
     """
     warnings.warn("not tested")
-    p = threshold_crosses(sig, threshold)
+    p = crosses(sig, threshold)
     # note that it's important to adjoin before filtering short segments
     p = adjoin.adjoin_close_segments(p, max_distance)
     p = manipulate.filter_short_segments(p, min_duration)
@@ -82,22 +83,31 @@ def threshold_adjoin_filter_short_segments(sig, threshold, max_distance, min_dur
 
 
 #%%
-def threshold_aggregate_filter_short(sig, threshold, max_dist, duration_ratio, absolute_max_dist, max_pulse_duration):
+def threshold_aggregate_filter_short(
+    sig, threshold, max_dist, duration_ratio,
+    absolute_max_dist, max_pulse_duration):
     """
     TODO: add documentation, test
+
+    refactor
+    ----------------
+    this function and the function threshold_adjoin_filter_short_segments
+    are similar. should probably unite them as one
     """
     warnings.warn("threshold_aggregate_filter_short not tested")
-    backgrounds = threshold_crosses(sig, threshold)
+    backgrounds = crosses(sig, threshold)
     # remove small drops in the middle, and drops near the edge
     backgrounds = adjoin.max_dist(backgrounds, max_dist)
 
 
     # remove big drops in the middle
-    backgrounds = adjoin.consider_duration(backgrounds, duration_ratio, absolute_max_dist, mode='min')
+    backgrounds = adjoin.consider_duration(
+        backgrounds, duration_ratio, absolute_max_dist, mode='min')
     # remove interrupts. some interupts are a little bit too close
     # so removing only by a factor multiplied by the interrupt duration
     # is not enough. we filter harder
-    backgrounds = adjoin.filter_short_segments(backgrounds, max_pulse_duration)
+    backgrounds = manipulate.filter_short_segments(
+        backgrounds, max_pulse_duration)
     # TODO: fine tuning - get entire background pulse
     return backgrounds
 
@@ -128,7 +138,6 @@ def estimate_noise_level(sig, mode, factor):
     then another convolution for mean
     then sqrt
     """
-    # TODO: rename it to estimate_noise_level
     warnings.warn("not tested")
     vals = sig.values
     if mode == 'mean':
@@ -156,5 +165,5 @@ def cluster1d(vec, resolution, threshold):
     raise NotImplementedError
     bins_num = np.ceil(1.0 * vec.ptp() / resolution)
     hist, edges = pint_extension.histogram(vec, bins_num, density=True)
-    clusters = threshold_crosses(vec, 1, threshold)
+    clusters = crosses(vec, 1, threshold)
     return clusters
