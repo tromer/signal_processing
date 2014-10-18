@@ -222,6 +222,12 @@ class ContinuousData(object):
 
         TODO: since the domain samples should be sorted, maybe there
         is a more efficient implementation
+
+        design issue
+        ------------------
+        in case the key is Segments
+        maybe it should return a SegmentsOfContinuous instance, instead of a
+        list of signals
         """
         if type(key) in [int, float]:
             raise KeyError("wrong key. key for ContinuousData is Segment or Segments of the same domain")
