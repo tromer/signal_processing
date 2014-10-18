@@ -25,12 +25,6 @@ class ContinuousDataEven(ContinuousData):
     read the ContinuousData documentation.
     the domain samples are evenly spaced
 
-    design issue
-    -----------------------
-    some methods are applied to multiple options.
-    modulate, demodulate, and also generate.
-    they accept string as a parameter.
-    maybe they should accept enum to avoid typos (values errors)
     """
     def __init__(self, values, sample_step, domain_start=0,
                  values_description=None, domain_description=None):
@@ -98,6 +92,8 @@ class ContinuousDataEven(ContinuousData):
         other options is passing a function like np.sin, sp.signal.square,
         utils.white_noise.
         it's also optional to create a flag is_periodic
+        maybe it should be possible to pass every function that is defined on
+        the segment [0, 2 * pi] as a  waveform for periodic function
         """
 
         default_mean_value = {'white_noise' : 0, 'sine' : 0, 'square' : amplitude}
