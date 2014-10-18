@@ -73,6 +73,7 @@ Main issues before first release
    2. use test classes.
    3. add tests
    4. grep all the "not tested" signs (there are warnings that some functions are not tested
+         start with removing the user warings of "not tested" and put TODO instead
    5. add test to the examples
 
 3. choose the right license.
@@ -91,6 +92,7 @@ Main issues before first release
    * deprecated
    * NotImpmentedError
 
+#. compile documentation using Sphinx package
 #. make sure to remove the use of old interface (like module generators)
 
 #. arrange the imports according to a certain order even within the package, for example:
@@ -118,3 +120,13 @@ Design principles
    in this cases the service (function in most cases) is put on the coresponding file in the extensions/ sub-package. \n
    the core sub-package: signal_processing, uses this services, but should never implement them on it's own, as it's not it's reponsability.\n
    Ideally, in the future all this extension files would be incorporated to the cpresponding modules.
+
+Design Issues
+-----------------------
+1. some methods and functions in this package has several similar modes of action.
+   usually, this mode chooses a different manipulation or function to apply on the input. such as: mean/min/max, sine/square.
+   examples for such functions: ContinuousDataEven.modulate, ContinuousDataEven.generate, ContinuousDataEven.demodulate, threshold.estimate_noise_level
+    current interface: they accept string as a parameter. (such as 'mean')
+    possible other interface: maybe should accept function as input (such as np.sin, np.median)
+    possible other interface: maybe they should accept enum to avoid typos (values errors), for modes like 'accurate' / 'fast'...
+
