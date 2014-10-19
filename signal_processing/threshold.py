@@ -1,5 +1,12 @@
 # -*- coding: utf-8 -*-
 """
+threshold module has functions that takes threshold on a ContinuousData to
+find segments of interest.
+The core function is crosses.
+There are other function that apply other processes after the threshold
+
+"""
+"""
 Created on Thu Aug 21 18:31:11 2014
 
 @author: noam
@@ -137,6 +144,10 @@ def estimate_noise_level(sig, mode, factor):
     then (vec - mean) ** 2
     then another convolution for mean
     then sqrt
+
+    refactor
+    ------------
+    maybe this function should be in continuous.math module?
     """
     warnings.warn("not tested")
     vals = sig.values

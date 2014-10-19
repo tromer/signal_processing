@@ -1,3 +1,19 @@
+
+"""
+histograms module contains functions that uses data to create histogram
+as a ContinuousData object.
+Manipulation of histograms is just manipulation of ContinuousData or
+ContinuousDataEven instances.
+
+
+refactor
+-----------
+change the names of functions here to not include the word hist (it's already
+in the name of the module)
+
+"""
+
+
 import warnings
 
 
