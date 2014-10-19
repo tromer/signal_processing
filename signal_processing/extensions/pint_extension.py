@@ -151,11 +151,6 @@ def concatenate(vec_list):
     return unit * np.concatenate(mag)
 
 # some functions that are connected to plotting and presentations
-"""
-TODO: making pint work well with matplotlib
-Herlpers: matplotlib.units?
-http://matplotlib.org/examples/units/basic_units.html
-"""
 
 def get_dimensionality_str(unit):
     """

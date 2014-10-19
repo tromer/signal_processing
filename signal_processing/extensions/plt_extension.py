@@ -1,6 +1,14 @@
 
 import warnings
 import matplotlib.pyplot as plt
+"""
+TODO
+-------
+making pint work well with matplotlib
+Herlpers: matplotlib.units?
+http://matplotlib.org/examples/units/basic_units.html
+make sure it works well also with share_x
+"""
 
 # refactor
 # -------------
