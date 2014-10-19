@@ -11,6 +11,22 @@ Scipy has great mathematical tools, but it lacks a * natural interface * for sig
     * A signal as a continuous data (the interface), not vector of samples (internal implementation).
     * A signal should support physical unit. it's a measurement!
 
+
+Installation
+-----------------------------
+
+* it's preferred to install in in virtualenv
+* the installation takes a few minutes because it installs also numpy and scipy
+* Note: matplotlib requires a few libraries (like truetype) to be installed on your machine.
+
+with pip:\n
+pip install -e https://github.com/noamg/signal_processing.git
+
+Contact
+------------------------
+If you encounter problems, you can contanct me:
+gavishnoam@gmail.com
+
 Data types - the interface for signal processing
 ----------------------------------------------------
 the package introduces a few data types to represent different datas
