@@ -8,6 +8,16 @@ making pint work well with matplotlib
 Herlpers: matplotlib.units?
 http://matplotlib.org/examples/units/basic_units.html
 make sure it works well also with share_x
+
+refactor
+----------------
+try the object oriented interface to matplotlib.
+if it works nicely, maybe it's better to migrate this package to work with the
+object oriented interface
+
+However, if we continue to work with the regular interface,
+then maybe the functions shouldn't accept fig, subplot parametrs,
+and the responsability for focusing would be of the caller
 """
 
 # refactor
@@ -21,8 +31,8 @@ make sure it works well also with share_x
     #"""
     #raise NotImplementedError
     #warnings.warn("plot_quick is not tested")
-    TODO: test this function!
-     creat the figure here
+    #TODO: test this function!
+    # creat the figure here
     #return plot(contin, fig=None, is_abs=is_abs, fmt=fmt)
 #%%
 def focus_on_figure_and_subplot(fig, subplot, share_x):
@@ -173,5 +183,3 @@ def plot_under(contin_list, fig=None, is_abs=False, fmt="-"):
         lines.append(line)
 
     return f, lines
-
-
