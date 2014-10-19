@@ -2,19 +2,38 @@
 import warnings
 import matplotlib.pyplot as plt
 
-
-def plot_quick(contin, is_abs=False, fmt="-"):
-    """
-    contin is a ContinuousData object
-    is_abs - whether to plot the abs of the y values. for spectrums.
-    Maybe - there sould be an input of lambda functions. to preprocess x,y
-    """
-    raise NotImplementedError
-    warnings.warn("plot_quick is not tested")
-    #TODO: test this function!
-    # creat the figure here
-    return plot(contin, fig=None, is_abs=is_abs, fmt=fmt)
+# refactor
+# -------------
+# remove plot_quick function, it works with an old interface
+#def plot_quick(contin, is_abs=False, fmt="-"):
+    #"""
+    #contin is a ContinuousData object
+    #is_abs - whether to plot the abs of the y values. for spectrums.
+    #Maybe - there sould be an input of lambda functions. to preprocess x,y
+    #"""
+    #raise NotImplementedError
+    #warnings.warn("plot_quick is not tested")
+    TODO: test this function!
+     creat the figure here
+    #return plot(contin, fig=None, is_abs=is_abs, fmt=fmt)
 #%%
+def focus_on_figure_and_subplot(fig, subplot, share_x):
+    """
+    focuses on required figure and subplot
+
+    returns
+    ----------
+    fig : plt.figure object
+    """
+    if fig == None:
+        fig = plt.figure()
+    else:
+        plt.figure(fig.number)
+
+    if subplot != None:
+        plt.subplot(*subplot, sharex=share_x)
+
+    return fig
 
 def plot_with_labels(x, y, x_label, curv_label, fig=None, subplot=None, share_x=None):
     """
@@ -40,17 +59,11 @@ def plot_with_labels(x, y, x_label, curv_label, fig=None, subplot=None, share_x=
     """
     # assert contin type?
     # TODO: add support for legend
-    warnings.warn("plot is not tested")
+    warnings.warn("not tested")
     warnings.warn("plot dosn't rescale the last signal according to axes")
 
     # choose the appropriate figure and subplot
-    if fig == None:
-        fig = plt.figure()
-    else:
-        plt.figure(fig.number)
-
-    if subplot != None:
-        plt.subplot(*subplot, sharex=share_x)
+    fig = focus_on_figure_and_subplot(fig, subplot, share_x)
 
     # TODO add units to the label
     line = plt.plot(x, y, label=curv_label)[0]
