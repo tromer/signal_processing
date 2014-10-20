@@ -1,22 +1,52 @@
 
 """
+
+Data types
+=================
 .. module:: continuous
     :synopsis: signals.
 
-continuous
-================
 .. automodule:: signal_processing.continuous.continuous_data_obj
-.. autoclass:: ContinuousData
     :members:
 
 .. automodule:: signal_processing.continuous.continuous_data_even_obj
-.. autoclass:: ContinuousDataEven
+    :members:
+
+filters
+===========
+.. automodule:: signal_processing.continuous.filters
+    :members:
+
+demodulate
+===============
+.. automodule:: signal_processing.continuous.demodulate
+    :members:
+
+modulate
+=============
+.. automodule:: signal_processing.continuous.modulate
+    :members:
+
+misc
+==========
+.. automodule:: signal_processing.continuous.misc
+    :members:
+
+math
+=======
+.. automodule:: signal_processing.continuous.math
     :members:
 
 io
 ========
 .. automodule:: signal_processing.continuous.io
     :members:
+
+non_mathematical_manipulations
+==================================
+.. automodule:: signal_processing.continuous.non_mathematical_manipulations
+    :members:
+
 """
 from continuous_data_obj import ContinuousData
 from continuous_data_even_obj import ContinuousDataEven

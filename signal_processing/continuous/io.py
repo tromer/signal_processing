@@ -1,4 +1,9 @@
 """
+.. module:: io
+    :synopsis: bla
+"""
+
+"""
 io
 
 """

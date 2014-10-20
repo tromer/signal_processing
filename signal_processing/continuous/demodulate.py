@@ -1,3 +1,8 @@
+"""
+.. module:: demodulate
+    :synopsis: bla
+"""
+
 import warnings
 import numpy as np
 

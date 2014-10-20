@@ -1,3 +1,10 @@
+"""
+.. module:: filters
+    :synopsis: bla
+"""
+
+
+
 import warnings
 
 import scipy as sp

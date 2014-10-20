@@ -1,3 +1,8 @@
+"""
+.. module:: non_mathematical_manipulations
+    :synopsis: bla
+"""
+
 import numpy as np
 
 from continuous_data_even_obj import ContinuousDataEven

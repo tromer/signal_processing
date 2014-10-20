@@ -41,30 +41,45 @@ class ContinuousData(object):
     It includes a few kinds that first seem different from each other, has a lot in common.
 
     examples:
+    -*-*-*-*-*-*
+
     1. a "signal" - measurement of the electromagnetic field / voltage as a function of time.
     similar examples: sound (as a function of time), seismic measurments.
+
     2. a spatial measurement: height as a function of place, some material density as a function of place.
     similar examples: stress as a function of place.
+
     3. a distribution: the number of occurances in a population, as a function of age / height / amplitude
+
     4. a kinematic property of a system: position / velocity / acceleration / angle as a function of time.
+
     5. even a spectrum of a signal - the magnitude as a function of frequency.
+
     6. any connection between two continuous variables, such as a response curv of harmonic ocsillator:
     amplitude of the ocsillator as a function of the frequency of external force.
 
     There are some differences beween these kinds of data. Maybe some of them would be implemented as a subclass
 
     basic assumptions:
+    -*-*-*-*-*-*-*-*-*-*-*-*
+
     1. the acctual data in the real world can be really continuous.
     here we of course use sample points. every sample point has exectly one corresponding value.
+
     2. We assume that our data really representes the reallity, spesifically, that
     represents well also the times / places which we didn't measure.
     So, we assume that the data is not changing "too fast" compared to our resolution.
     In signal processing terms, we assume that we didn't under-sample.
 
     Note:
+    -----------
+
     1. we *do not* assume even sampling distance. that would be included in a subclass.
+
     2. this class is intentioned to be used with units. it's real world measurements.
+
     3. measurement errors are not handled here.
+
     4. It may seem like a big overhead to use this object instead of just numpy.ndarray
     this is not so. This object prevents errors of bad handling of sample rate.
     It also works naturally with units, that prevents other errors.
@@ -78,6 +93,7 @@ class ContinuousData(object):
 
     1. this object is immutable, appart from changing the string describing
     the domain and values.
+
     2. in many cases, functions that except ContinuousData extract the values, do some mathematical operation, and construct a new object with the same domain.\n
     when constructing them they accept self.domain_samples.\n
     however, this becomes harder later: in ContinuousDataEven, the domain samples are evenly sampled, and thus need two variables for representation: sample_step and n_samples.\n
@@ -85,12 +101,14 @@ class ContinuousData(object):
     A possible solution is defining a DomainSamples object, with sub-class DomainSamplesEven. \n
     a ContinuousData will hold one of those, and this object would be the interface to the domain.\n
     This would save code, and also enable writing the similar functions that accept both ContinuousData and ContinuousDataEven (in their interface).
+
     3. this solution has one aspect which I don't like: breaking the symetry between domain_samples and values. in a way they are really not symetrical:\n
     in every program there would be many instances sharing the same domain, but usually non sharing values.\n
     also, evenly samples domains are common, but evenly samples values are just linear data, and uncommon.\n
     What I don't like is breaking symetry in the sytax. It would be like:\n
     sig.domain.samples, sig.domain.description as opposed to:\n
     sig.values, sig.values_description.\n
+
     4. In order to restore symetry, we could also work with a Values object.\n
     the problem is that sig.values call is very very common in the functions of the package, and it would be pity to lenghen it to sig.values.samples
 
