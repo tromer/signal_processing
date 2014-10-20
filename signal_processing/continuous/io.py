@@ -7,6 +7,7 @@
 io
 
 """
+import os
 import glob
 import warnings
 
@@ -88,7 +89,10 @@ def read_wav_many(directory, domain_unit=U_.sec, first_sample=0,
     directory : str
     """
     sig_list = []
-    files = glob.glob(directory + "*.wav")
+    print "directory: , ", directory
+    print "path:, ", os.path.join(directory, "*.wav")
+    files = glob.glob(os.path.join(directory, "*.wav"))
+    print files
     for f in files:
         curr_sig = read_wav(f, domain_unit, first_sample, value_unit,
                                  expected_sample_rate_and_tolerance, channels)
@@ -110,15 +114,23 @@ def write_wav(contin, filename):
     continuous_data.write_wav(s_cut, "/home/noam/lab_project/Dropbox/Noam/Periodic recordings for Noam/fast-evo1-chassis-10100-C3000-N200_ettus_cut.wav")
 
     """
+    print filename
     if contin.domain_samples.dimensionality != U_.sec.dimensionality:
         raise NotImplementedError
+
     else:
-        sp.io.wavfile.write(filename, rate=contin.sample_rate.to(U_.Hz).magnitude, data=contin.values.magnitude)
+        with open(filename, 'wb') as wav_file:
+            sp.io.wavfile.write(
+                wav_file,
+                rate=contin.sample_rate.to(U_.Hz).magnitude,
+                data=contin.values.magnitude)
 
 
 def write_wav_many(contin_list, directory):
-    raise NotImplementedError
-
+    for i in xrange(len(contin_list)):
+        curr_sig = contin_list[i]
+        name = str(i)
+        write_wav(curr_sig, os.path.join(directory, '.'.join([name, "wav"])))
 
 def fromfile(f):
     """
@@ -130,6 +142,3 @@ def fromfile(f):
     etc
     """
     raise NotImplementedError
-
-
-
