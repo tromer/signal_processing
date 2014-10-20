@@ -1,5 +1,7 @@
 import tempfile
 import shutil
+import os
+import glob
 
 import numpy as np
 import scipy as sp
@@ -18,12 +20,11 @@ def test_read_wav():
     sample_rate = 1.0 * U_.Hz
     sig = ContinuousDataEven(values, 1.0 / sample_rate)
 
-    f_temp = tempfile.TemporaryFile()
+    _, f_temp = tempfile.mkstemp()
     sp.io.wavfile.write(f_temp, sample_rate.magnitude, values.magnitude)
     sig_read = io.read_wav(f_temp)
 
     assert sig.is_close(sig_read)
-    f_temp.close()
 
 
 def test_read_wav_many():
@@ -32,12 +33,13 @@ def test_read_wav_many():
     sig = ContinuousDataEven(values, 1.0 / sample_rate)
 
     dir_temp = tempfile.mkdtemp()
-    io.write_wav(sig, dir_temp + "1.wav")
-    io.write_wav(sig, dir_temp + "2.wav")
+    io.write_wav(sig, os.path.join(dir_temp, "1.wav"))
+    io.write_wav(sig, os.path.join(dir_temp, "2.wav"))
 
     sig_list = io.read_wav_many(dir_temp)
     expected_sig_list = [sig, sig]
 
+    assert len(sig_list) == len(expected_sig_list)
     for i in xrange(len(sig_list)):
         assert sig_list[i].is_close(expected_sig_list[i])
 
@@ -53,12 +55,34 @@ def test_write_wav():
     sample_rate = 1.0 * U_.Hz
     sig = ContinuousDataEven(values, 1.0 / sample_rate)
 
-    f_temp = tempfile.TemporaryFile()
+    _, f_temp = tempfile.mkstemp()
     io.write_wav(sig, f_temp)
     sig_read = io.read_wav(f_temp)
 
     assert sig.is_close(sig_read)
-    f_temp.close()
 
 
+def test_write_wav_many():
+    values = np.arange(10) * U_.milliamp
+    sample_rate = 1.0 * U_.Hz
+    sig = ContinuousDataEven(values, 1.0 / sample_rate)
 
+    sig_list = [sig, sig]
+
+    dir_temp = tempfile.mkdtemp()
+
+    io.write_wav_many(sig_list, dir_temp)
+
+    print os.listdir(dir_temp)
+
+    sig_list_read = io.read_wav_many(dir_temp)
+    print len(sig_list)
+    print len(sig_list_read)
+
+    print glob.glob(dir_temp + "*.wav")
+
+    assert len(sig_list) == len(sig_list_read)
+    for i in xrange(len(sig_list)):
+        assert sig_list[i].is_close(sig_list_read[i])
+
+    shutil.rmtree(dir_temp)
