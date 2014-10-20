@@ -1,5 +1,6 @@
 """
 .. module:: continuous_data_even_obj
+    :synopsis: bla
 """
 from operator import xor
 import warnings

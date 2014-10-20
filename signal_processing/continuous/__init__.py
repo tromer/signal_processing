@@ -5,17 +5,17 @@
 
 continuous
 ================
-.. automodule:: continuous.continuous_data_obj
+.. automodule:: signal_processing.continuous.continuous_data_obj
 .. autoclass:: ContinuousData
     :members:
 
-.. automodule:: continuous.continuous_data_even_obj
+.. automodule:: signal_processing.continuous.continuous_data_even_obj
 .. autoclass:: ContinuousDataEven
     :members:
 
 io
 ========
-.. automodule:: continuous.io
+.. automodule:: signal_processing.continuous.io
     :members:
 """
 from continuous_data_obj import ContinuousData

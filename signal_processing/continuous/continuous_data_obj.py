@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 .. module:: continuous_data_obj
+    :synopsis: bla
 """
 
 
