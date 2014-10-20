@@ -50,6 +50,20 @@ class SegmentsOfContinuous(Segments):
         """
         return self._segments
 
+    @property
+    def starts(self):
+        return self.segments.starts
+
+    @property
+    def ends(self):
+        return self.segments.ends
+
+    def shift(self, delta):
+        raise NotImplementedError
+        new_segments = self.segments.shift(delta)
+        new_source = self.source.shift(delta)
+        return SegmentsOfContinuous(new_segments, new_source)
+
     def __getitem__(self, key):
         """
         """

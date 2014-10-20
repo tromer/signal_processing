@@ -133,6 +133,17 @@ class Segments(object):
     def end_to_start(self):
         return self.starts[1:] - self.ends[:-1]
 
+    def shift(self, delta):
+        """
+        returns:
+        -----------
+        shifted : Segments
+            the segments shifted
+
+        """
+        raise NotImplementedError
+        return Segments(self.starts + delta, self.ends + delta)
+
     def __getitem__(self, key):
         if type(key) == int:
             return Segment([self.starts[key], self.ends[key]])

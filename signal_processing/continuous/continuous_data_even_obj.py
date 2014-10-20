@@ -240,6 +240,14 @@ class ContinuousDataEven(ContinuousData):
         warnings.warn("not tested")
         return ContinuousDataEven(self.values, self.sample_step, new_domain_start)
 
+    def shift(self, delta):
+        """
+        shifts the domain
+        """
+        raise NotImplementedError
+        new_domain_start = self.domain_start + delta
+        return self.move_domain_start(new_domain_start)
+
 
     def is_same_domain_samples(self, other):
         return self.n_samples == other.n_samples and \
