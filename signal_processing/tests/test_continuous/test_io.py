@@ -1,5 +1,5 @@
 import tempfile
-import os
+import shutil
 
 import numpy as np
 import scipy as sp
@@ -31,7 +31,7 @@ def test_read_wav_many():
     sample_rate = 1.0 * U_.Hz
     sig = ContinuousDataEven(values, 1.0 / sample_rate)
 
-    dir_temp = tempfile.gettempdir() + 'signal_processing/tests/'
+    dir_temp = tempfile.mkdtemp()
     io.write_wav(sig, dir_temp + "1.wav")
     io.write_wav(sig, dir_temp + "2.wav")
 
@@ -41,7 +41,7 @@ def test_read_wav_many():
     for i in xrange(len(sig_list)):
         assert sig_list[i].is_close(expected_sig_list[i])
 
-    os.removedirs(dir_temp)
+    shutil.rmtree(dir_temp)
 
 
 
