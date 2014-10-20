@@ -27,6 +27,10 @@ Contact
 If you encounter problems, you can contanct me:
 gavishnoam@gmail.com
 
+documentation
+---------------------
+https://github.com/noamg/signal_processing/doc/built/html/index.html
+
 Data types - the interface for signal processing
 ----------------------------------------------------
 the package introduces a few data types to represent different datas
