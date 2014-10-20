@@ -1,7 +1,8 @@
 
 """
-histograms module contains functions that uses data to create histogram
-as a ContinuousData object.
+.. module:: histograms
+    :synopsis: uses data to create histogram as a ContinuousData object.
+
 Manipulation of histograms is just manipulation of ContinuousData or
 ContinuousDataEven instances.
 

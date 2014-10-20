@@ -1,3 +1,6 @@
+"""
+.. module:: continuous_data_even_obj
+"""
 from operator import xor
 import warnings
 

@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Created on Sat Aug 30 01:29:39 2014
-
-@author: noam
+.. module:: continuous_data_obj
 """
 
 

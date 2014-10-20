@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 """
-threshold module has functions that takes threshold on a ContinuousData to
-find segments of interest.
+
+.. module:: threshold
+    :synopsis: takes threshold on a ContinuousData to find segments of interest.
+
 The core function is crosses.
 There are other function that apply other processes after the threshold
 
