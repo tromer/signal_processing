@@ -19,8 +19,9 @@ Installation
 * the installation takes a few minutes because it installs also numpy and scipy
 * Note: matplotlib requires a few libraries (like truetype) to be installed on your machine.
 
-with pip:\n
-pip install -e https://github.com/noamg/signal_processing.git
+with pip:
+
+pip install -e git+https://github.com/noamg/signal_processing.git#egg=signal_processing-master
 
 Contact
 ------------------------
