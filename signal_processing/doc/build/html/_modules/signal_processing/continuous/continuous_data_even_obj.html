@@ -1,0 +1,624 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>signal_processing.continuous.continuous_data_even_obj &mdash; signal_processing 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="top" title="signal_processing 0.1 documentation" href="../../../index.html" />
+    <link rel="up" title="signal_processing" href="../../signal_processing.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">signal_processing 0.1 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../../signal_processing.html" accesskey="U">signal_processing</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for signal_processing.continuous.continuous_data_even_obj</h1><div class="highlight"><pre>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">.. module:: continuous_data_even_obj</span>
+<span class="sd">    :synopsis: bla</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">operator</span> <span class="kn">import</span> <span class="n">xor</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">scipy</span> <span class="kn">as</span> <span class="nn">sp</span>
+<span class="kn">from</span> <span class="nn">scipy</span> <span class="kn">import</span> <span class="n">signal</span>
+
+
+<span class="kn">from</span> <span class="nn">signal_processing.extensions</span> <span class="kn">import</span> <span class="n">pint_extension</span>
+<span class="kn">from</span> <span class="nn">signal_processing.extensions</span> <span class="kn">import</span> <span class="n">numpy_extension</span>
+
+<span class="kn">from</span> <span class="nn">signal_processing.segment</span> <span class="kn">import</span> <span class="n">Segment</span>
+
+<span class="kn">from</span> <span class="nn">continuous_data_obj</span> <span class="kn">import</span> <span class="n">ContinuousData</span>
+
+
+<span class="kn">from</span> <span class="nn">signal_processing.segments.segments_obj</span> <span class="kn">import</span> <span class="n">Segments</span>
+
+<span class="kn">from</span> <span class="nn">signal_processing</span> <span class="kn">import</span> <span class="n">U_</span>
+<span class="kn">from</span> <span class="nn">signal_processing.continuous</span> <span class="kn">import</span> <span class="n">modulate</span><span class="p">,</span> <span class="n">demodulate</span>
+
+
+<div class="viewcode-block" id="ContinuousDataEven"><a class="viewcode-back" href="../../../code.html#signal_processing.continuous.continuous_data_even_obj.ContinuousDataEven">[docs]</a><span class="k">class</span> <span class="nc">ContinuousDataEven</span><span class="p">(</span><span class="n">ContinuousData</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    read the ContinuousData documentation.</span>
+<span class="sd">    the domain samples are evenly spaced</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">values</span><span class="p">,</span> <span class="n">sample_step</span><span class="p">,</span> <span class="n">domain_start</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                 <span class="n">values_description</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">domain_description</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_values</span> <span class="o">=</span> <span class="n">values</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sample_step</span> <span class="o">=</span> <span class="n">sample_step</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">domain_start</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_domain_start</span> <span class="o">=</span> <span class="mi">0</span> <span class="o">*</span> <span class="n">sample_step</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_domain_start</span> <span class="o">=</span> <span class="n">domain_start</span>
+
+        <span class="c"># copied from ContinuousData</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_domain_description</span> <span class="o">=</span> <span class="n">domain_description</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_values_description</span> <span class="o">=</span> <span class="n">values_description</span>
+
+    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="ContinuousDataEven.generate"><a class="viewcode-back" href="../../../code.html#signal_processing.continuous.continuous_data_even_obj.ContinuousDataEven.generate">[docs]</a>    <span class="k">def</span> <span class="nf">generate</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="n">waveform</span><span class="p">,</span> <span class="n">sample_step</span><span class="p">,</span> <span class="n">n_samples</span><span class="p">,</span>
+                 <span class="n">amplitude</span><span class="o">=</span><span class="n">U_</span><span class="o">.</span><span class="n">dimensionless</span><span class="p">,</span> <span class="n">domain_start</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                 <span class="n">phase_at_0</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        generate signal of certain type</span>
+
+<span class="sd">        parameters:</span>
+<span class="sd">        ---------------</span>
+<span class="sd">        waveform : str</span>
+<span class="sd">            &#39;white_noise&#39;</span>
+<span class="sd">            &#39;const&#39;</span>
+
+<span class="sd">            &#39;sine&#39;</span>
+<span class="sd">            &#39;square&#39;</span>
+
+<span class="sd">        sample_step : U_.Quantity</span>
+
+<span class="sd">        n_samples : int</span>
+
+<span class="sd">        amplitude : U_.Quantity</span>
+<span class="sd">            all the values would be between -amplitude to +amplitude</span>
+
+<span class="sd">        domain_start : U_.Quantity</span>
+
+<span class="sd">        phase_at_0 : float</span>
+<span class="sd">            between -pi and pi, or between 0 and 2 * pi</span>
+
+<span class="sd">        kwargs</span>
+<span class="sd">        ------------</span>
+<span class="sd">        freq : U_.Quantity</span>
+
+<span class="sd">        period : U_.Quantity</span>
+<span class="sd">            instead of freq</span>
+
+<span class="sd">        duty : float</span>
+<span class="sd">            for square</span>
+
+<span class="sd">        mean : U_.Quantity</span>
+
+<span class="sd">        TODO: Table of default values for each waveform</span>
+<span class="sd">        -----------------------------------------------</span>
+
+<span class="sd">        returns</span>
+<span class="sd">        ---------</span>
+<span class="sd">        sig : ContinuousDataEven</span>
+
+<span class="sd">        design issue</span>
+<span class="sd">        ---------------------</span>
+<span class="sd">        maybe passing a string to determine the type of waveform is not optimal</span>
+<span class="sd">        other options is passing a function like np.sin, sp.signal.square,</span>
+<span class="sd">        utils.white_noise.</span>
+<span class="sd">        it&#39;s also optional to create a flag is_periodic</span>
+<span class="sd">        maybe it should be possible to pass every function that is defined on</span>
+<span class="sd">        the segment [0, 2 * pi] as a  waveform for periodic function</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">default_mean_value</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;white_noise&#39;</span> <span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s">&#39;sine&#39;</span> <span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s">&#39;square&#39;</span> <span class="p">:</span> <span class="n">amplitude</span><span class="p">}</span>
+
+        <span class="c"># case 1 : non periodic</span>
+        <span class="k">if</span> <span class="n">waveform</span> <span class="o">==</span> <span class="s">&#39;const&#39;</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+        <span class="k">elif</span> <span class="n">waveform</span> <span class="o">==</span> <span class="s">&#39;white_noise&#39;</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s">&#39;not tested&#39;</span><span class="p">)</span>
+            <span class="n">vals</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">n_samples</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+
+        <span class="c"># case 2 : periodic</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">xor</span><span class="p">(</span><span class="s">&#39;freq&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">,</span> <span class="s">&#39;period&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;given both period and freq parameters&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s">&#39;freq&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="n">freq</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s">&#39;freq&#39;</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="s">&#39;period&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="n">freq</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">kwargs</span><span class="p">[</span><span class="s">&#39;period&#39;</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">phase_at_0</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">:</span>
+            <span class="c"># encapsulate</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s">&quot;you are using phase_at_0 not from [-2 pi, 2 pi], weird&quot;</span><span class="p">)</span>
+
+        <span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n_samples</span><span class="p">)</span> <span class="o">*</span> <span class="n">sample_step</span> <span class="o">+</span> <span class="n">domain_start</span>
+        <span class="n">phase</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">freq</span> <span class="o">*</span> <span class="n">t</span> <span class="o">+</span> <span class="n">phase_at_0</span>
+
+        <span class="k">if</span> <span class="n">waveform</span> <span class="o">==</span> <span class="s">&#39;sine&#39;</span><span class="p">:</span>
+            <span class="c"># encapsulate</span>
+            <span class="k">if</span> <span class="n">freq</span> <span class="o">&gt;</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">sample_step</span><span class="p">:</span>
+                <span class="k">raise</span><span class="p">(</span><span class="s">&quot;trying to generate undersampled sine signal, abbort! consider the nyquist!&quot;</span><span class="p">)</span>
+            <span class="n">vals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">phase</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">waveform</span> <span class="o">==</span> <span class="s">&#39;square&#39;</span><span class="p">:</span>
+            <span class="n">duty</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;duty&#39;</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)</span>
+            <span class="n">vals</span> <span class="o">=</span>  <span class="n">sp</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">phase</span><span class="p">,</span> <span class="n">duty</span><span class="p">)</span>
+
+        <span class="n">vals</span> <span class="o">=</span> <span class="n">vals</span> <span class="o">*</span> <span class="n">amplitude</span>
+        <span class="n">mean</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;mean&#39;</span><span class="p">,</span> <span class="n">default_mean_value</span><span class="p">[</span><span class="n">waveform</span><span class="p">])</span>
+        <span class="n">vals</span> <span class="o">=</span> <span class="n">vals</span> <span class="o">+</span> <span class="n">mean</span>
+        <span class="n">sig</span> <span class="o">=</span> <span class="n">cls</span><span class="p">(</span><span class="n">vals</span><span class="p">,</span> <span class="n">sample_step</span><span class="p">,</span> <span class="n">domain_start</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">sig</span>
+
+</div>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">sample_step</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sample_step</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">sample_rate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">sample_step</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">domain_start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_domain_start</span>
+
+
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="ContinuousDataEven.total_domain_range"><a class="viewcode-back" href="../../../code.html#signal_processing.continuous.continuous_data_even_obj.ContinuousDataEven.total_domain_range">[docs]</a>    <span class="k">def</span> <span class="nf">total_domain_range</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        returns:</span>
+<span class="sd">        ------------</span>
+<span class="sd">        domain_range : Segment</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+</div>
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="ContinuousDataEven.total_domain_width"><a class="viewcode-back" href="../../../code.html#signal_processing.continuous.continuous_data_even_obj.ContinuousDataEven.total_domain_width">[docs]</a>    <span class="k">def</span> <span class="nf">total_domain_width</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        returns the total length of the signal</span>
+
+<span class="sd">        Note:</span>
+<span class="sd">        maybe it&#39;s possible to base the implementation on total_domain_range</span>
+<span class="sd">        at the moment it&#39;s done differently</span>
+
+<span class="sd">        TODO: use this method as a first check in comparison</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_samples</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">sample_step</span>
+</div>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    @property</span>
+<span class="sd">    def last_sample(self):</span>
+<span class="sd">        # TODO: possible to create a better implementation then in the father class</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="ContinuousDataEven.domain_samples"><a class="viewcode-back" href="../../../code.html#signal_processing.continuous.continuous_data_even_obj.ContinuousDataEven.domain_samples">[docs]</a>    <span class="k">def</span> <span class="nf">domain_samples</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c">#print &quot;******&quot;</span>
+        <span class="c">#print self.values</span>
+        <span class="sd">&quot;&quot;&quot; TODO: mayebe some cashing would be helpful? &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">))</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">sample_step</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">domain_start</span>
+</div>
+<div class="viewcode-block" id="ContinuousDataEven.new_values"><a class="viewcode-back" href="../../../code.html#signal_processing.continuous.continuous_data_even_obj.ContinuousDataEven.new_values">[docs]</a>    <span class="k">def</span> <span class="nf">new_values</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_vals</span><span class="p">,</span> <span class="n">assert_same_n_samples</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">new_domain_start</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        parameters:</span>
+<span class="sd">        ---------------</span>
+<span class="sd">        new_vals : U_.Quantity</span>
+<span class="sd">            vectors of values of with the same amount of values as the samples</span>
+
+<span class="sd">        returns:</span>
+<span class="sd">        ---------</span>
+<span class="sd">        new_sig : ContinuousDataEven</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">assert_same_n_samples</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">new_vals</span><span class="p">)</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_samples</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;the number of new values must be like the number of values of the old signal&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">new_domain_start</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">domain_start</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">domain_start</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">domain_start</span> <span class="o">=</span> <span class="n">new_domain_start</span>
+
+        <span class="n">new_sig</span> <span class="o">=</span> <span class="n">ContinuousDataEven</span><span class="p">(</span><span class="n">new_vals</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sample_step</span><span class="p">,</span> <span class="n">domain_start</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">new_sig</span>
+
+</div>
+    <span class="k">def</span> <span class="nf">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Note: it&#39;s coppied from __getitem__ of ContinuousData</span>
+<span class="sd">        parameters:</span>
+<span class="sd">        -------------</span>
+<span class="sd">        domain_range : Segment</span>
+<span class="sd">            the range, from the domain, of which we want the slice.</span>
+<span class="sd">            for example: which time range?</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="ow">in</span> <span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="s">&quot;wrong key. key for ContinuousData is Segment or Segments of the same domain&quot;</span><span class="p">)</span>
+
+
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="ow">in</span> <span class="p">[</span><span class="n">Segment</span><span class="p">,</span> <span class="p">]:</span>
+            <span class="n">domain_range</span> <span class="o">=</span> <span class="n">key</span>
+            <span class="n">bottom_index</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="mf">1.0</span> <span class="o">*</span> <span class="n">domain_range</span><span class="o">.</span><span class="n">start</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">sample_step</span><span class="p">)</span>
+            <span class="n">top_index</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">domain_range</span><span class="o">.</span><span class="n">end</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">sample_step</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">ContinuousDataEven</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">bottom_index</span><span class="p">:</span><span class="n">top_index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">sample_step</span><span class="p">,</span> <span class="n">domain_start</span><span class="o">=</span><span class="n">bottom_index</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">sample_step</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="ow">in</span> <span class="p">[</span><span class="n">Segments</span><span class="p">,]:</span>
+            <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="p">[</span><span class="n">domain_range</span><span class="p">]</span> <span class="k">for</span> <span class="n">domain_range</span> <span class="ow">in</span> <span class="n">key</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="ContinuousDataEven.move_domain_start"><a class="viewcode-back" href="../../../code.html#signal_processing.continuous.continuous_data_even_obj.ContinuousDataEven.move_domain_start">[docs]</a>    <span class="k">def</span> <span class="nf">move_domain_start</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_domain_start</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s">&quot;not tested&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ContinuousDataEven</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sample_step</span><span class="p">,</span> <span class="n">new_domain_start</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="ContinuousDataEven.shift"><a class="viewcode-back" href="../../../code.html#signal_processing.continuous.continuous_data_even_obj.ContinuousDataEven.shift">[docs]</a>    <span class="k">def</span> <span class="nf">shift</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">delta</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        shifts the domain</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+        <span class="n">new_domain_start</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">domain_start</span> <span class="o">+</span> <span class="n">delta</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">move_domain_start</span><span class="p">(</span><span class="n">new_domain_start</span><span class="p">)</span>
+
+</div>
+    <span class="k">def</span> <span class="nf">is_same_domain_samples</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_samples</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">n_samples</span> <span class="ow">and</span> \
+        <span class="n">pint_extension</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">domain_start</span><span class="p">,</span> <span class="n">other</span><span class="o">.</span><span class="n">domain_start</span><span class="p">)</span> <span class="ow">and</span> \
+        <span class="n">pint_extension</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sample_step</span><span class="p">,</span> <span class="n">other</span><span class="o">.</span><span class="n">sample_step</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_extract_values_from_other_for_continuous_data_arithmetic</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        core method to help arithmency between methods</span>
+<span class="sd">        TODO: add more test not tested enough. some bugs</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">other</span><span class="p">)</span> <span class="ow">in</span> <span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
+            <span class="n">values</span> <span class="o">=</span> <span class="n">other</span>
+
+        <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="n">other</span><span class="p">)</span> <span class="o">==</span> <span class="n">U_</span><span class="o">.</span><span class="n">Quantity</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">magnitude</span><span class="p">)</span> <span class="ow">in</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,]:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;add const value, or other ContinuousData with same domain samples&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">values</span> <span class="o">=</span> <span class="n">other</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c"># TODO: add gaurdian, that other is another ContinuousData</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_same_domain_samples</span><span class="p">(</span><span class="n">other</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;diffrent domain samples&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">values</span> <span class="o">=</span> <span class="n">other</span><span class="o">.</span><span class="n">values</span>
+
+        <span class="k">return</span> <span class="n">values</span>
+
+    <span class="k">def</span> <span class="nf">__add__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="n">values</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_extract_values_from_other_for_continuous_data_arithmetic</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ContinuousDataEven</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span> <span class="o">+</span> <span class="n">values</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sample_step</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">domain_start</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__radd__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+        <span class="k">return</span> <span class="bp">self</span> <span class="o">+</span> <span class="n">other</span>
+
+    <span class="k">def</span> <span class="nf">__sub__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="c"># TODO: add test for operation with num</span>
+        <span class="n">values</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_extract_values_from_other_for_continuous_data_arithmetic</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ContinuousDataEven</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span> <span class="o">-</span> <span class="n">values</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sample_step</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">domain_start</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">__mul__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="c"># TODO: add test for operation with num</span>
+        <span class="n">values</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_extract_values_from_other_for_continuous_data_arithmetic</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ContinuousDataEven</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span> <span class="o">*</span> <span class="n">values</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sample_step</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">domain_start</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__rmul__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+        <span class="k">return</span> <span class="bp">self</span> <span class="o">*</span> <span class="n">other</span>
+
+    <span class="k">def</span> <span class="nf">__div__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="n">values</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_extract_values_from_other_for_continuous_data_arithmetic</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ContinuousDataEven</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span> <span class="o">/</span> <span class="n">values</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sample_step</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">domain_start</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">abs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">ContinuousDataEven</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">sample_step</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">domain_start</span><span class="p">,</span> <span class="s">&quot;abs(&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">values_description</span> <span class="o">+</span> <span class="s">&quot;)&quot;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="ContinuousDataEven.gain"><a class="viewcode-back" href="../../../code.html#signal_processing.continuous.continuous_data_even_obj.ContinuousDataEven.gain">[docs]</a>    <span class="k">def</span> <span class="nf">gain</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">factor</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        see doc of base class</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">ContinuousDataEven</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span> <span class="o">*</span> <span class="n">factor</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sample_step</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">domain_start</span><span class="p">)</span>
+</div>
+    <span class="k">def</span> <span class="nf">down_sample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">down_factor</span><span class="p">):</span>
+        <span class="k">assert</span> <span class="n">down_factor</span> <span class="o">&gt;</span> <span class="mi">0</span>
+        <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">down_factor</span><span class="p">)</span> <span class="o">!=</span> <span class="n">down_factor</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+        <span class="c"># maybe there should be another interface, with &quot;new sample rate&quot;</span>
+        <span class="k">return</span> <span class="n">ContinuousDataEven</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">[::</span><span class="n">down_factor</span><span class="p">],</span> <span class="n">down_factor</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">sample_step</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">domain_start</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ContinuousDataEven.is_power_of_2_samples"><a class="viewcode-back" href="../../../code.html#signal_processing.continuous.continuous_data_even_obj.ContinuousDataEven.is_power_of_2_samples">[docs]</a>    <span class="k">def</span> <span class="nf">is_power_of_2_samples</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        check for performance issues</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">numpy_extension</span><span class="o">.</span><span class="n">is_power_of_2</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_samples</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="ContinuousDataEven.trim_to_power_of_2_XXX"><a class="viewcode-back" href="../../../code.html#signal_processing.continuous.continuous_data_even_obj.ContinuousDataEven.trim_to_power_of_2_XXX">[docs]</a>    <span class="k">def</span> <span class="nf">trim_to_power_of_2_XXX</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        trancate data to power of 2 sample points</span>
+<span class="sd">        loss of data, very dangareous</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s">&quot;XXX trim_to_power_of_2_looses_data&quot;</span><span class="p">)</span>
+        <span class="n">new_n</span> <span class="o">=</span> <span class="n">numpy_extension</span><span class="o">.</span><span class="n">close_power_of_2</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_samples</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s">&#39;smaller&#39;</span><span class="p">)</span>
+        <span class="n">trimmed</span> <span class="o">=</span> <span class="n">ContinuousDataEven</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">[:</span><span class="n">new_n</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">sample_step</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">domain_start</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">trimmed</span><span class="o">.</span><span class="n">n_samples</span> <span class="o">==</span> <span class="n">new_n</span>
+        <span class="k">return</span> <span class="n">trimmed</span>
+</div>
+    <span class="k">def</span> <span class="nf">_spectrum_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_fft</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        parameters</span>
+<span class="sd">        -------------------------</span>
+<span class="sd">        contin : ContinuousDataEven</span>
+
+<span class="sd">        n_fft : int</span>
+<span class="sd">            len of fft</span>
+
+<span class="sd">        returns</span>
+<span class="sd">        --------------</span>
+<span class="sd">        freq_step : U_.Quantity</span>
+<span class="sd">            the correct frequency step of the spectrum</span>
+
+<span class="sd">        first_freq : U_.Quantity</span>
+<span class="sd">            the first frequency. it&#39;s determined here to be (-1) * nyquist rate</span>
+<span class="sd">            thus the spectrum is around 0 (as is should!)</span>
+
+<span class="sd">        spectrum_amplitude : U_.Quantity</span>
+<span class="sd">            the factor that multiplies the mathematical spectrum.</span>
+<span class="sd">            it&#39;s the multiplication of the units of the values of the signal, and of the sample step itself</span>
+<span class="sd">            (remember the definition of fft: F(freq) = integral(sig * exp(- 2 * pi * j * freq * t) * dt))</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">freq_step</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">sample_rate</span> <span class="o">/</span> <span class="n">n_fft</span>
+        <span class="n">first_freq</span> <span class="o">=</span> <span class="o">-</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">sample_rate</span>
+        <span class="n">spectrum_sample_step_factor</span> <span class="o">=</span>  <span class="bp">self</span><span class="o">.</span><span class="n">sample_step</span>
+
+        <span class="k">return</span> <span class="n">freq_step</span><span class="p">,</span> <span class="n">first_freq</span><span class="p">,</span> <span class="n">spectrum_sample_step_factor</span>
+
+
+<div class="viewcode-block" id="ContinuousDataEven.fft"><a class="viewcode-back" href="../../../code.html#signal_processing.continuous.continuous_data_even_obj.ContinuousDataEven.fft">[docs]</a>    <span class="k">def</span> <span class="nf">fft</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s">&#39;accurate&#39;</span><span class="p">,</span> <span class="n">n_fft</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        fft of a ContinuousDataEven.</span>
+<span class="sd">        takes the samples step into account.</span>
+<span class="sd">        a *thin* wrap arround pint_extension.fft</span>
+<span class="sd">        uses ContinuousDataEven._spectrum_parameters for determining all</span>
+<span class="sd">        the spectrum frequency parameters</span>
+
+<span class="sd">        parameters:</span>
+<span class="sd">        ----------------</span>
+
+<span class="sd">        mode : str</span>
+<span class="sd">            if n_fft is None (default) then n_fft is determined according to a mode bevaviour</span>
+<span class="sd">            copied from determine_fft_len</span>
+<span class="sd">            &#39;accurate&#39; like n</span>
+<span class="sd">            &#39;trim&#39; - smaller then n</span>
+<span class="sd">            &#39;zero-pad&#39; - bigger then n</span>
+<span class="sd">            &#39;closer&#39; - either trim or zero pad, depends which is closer (logarithmic scale)</span>
+
+<span class="sd">        n_fft : int</span>
+<span class="sd">            number of samples for fft</span>
+
+<span class="sd">        returns</span>
+<span class="sd">        ---------</span>
+<span class="sd">        spectrum : ContinuousDataEven</span>
+<span class="sd">            a ContinuousDataEven object that represents the spectrum</span>
+<span class="sd">        the frequencies are considerred from -0.5 nyq frequency to 0.5 nyq frequency</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">n_fft</span> <span class="o">=</span> <span class="n">numpy_extension</span><span class="o">.</span><span class="n">determine_n_fft</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_samples</span><span class="p">,</span> <span class="n">mode</span><span class="p">,</span> <span class="n">n_fft</span><span class="p">)</span>
+        <span class="n">freq_step</span><span class="p">,</span> <span class="n">first_freq</span><span class="p">,</span> <span class="n">spectrum_sample_step_factor</span> <span class="o">=</span> \
+                <span class="bp">self</span><span class="o">.</span><span class="n">_spectrum_parameters</span><span class="p">(</span><span class="n">n_fft</span><span class="p">)</span>
+        <span class="n">spectrum_values</span> <span class="o">=</span> <span class="n">pint_extension</span><span class="o">.</span><span class="n">fft</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">n_fft</span> <span class="o">=</span> <span class="n">n_fft</span><span class="p">)</span> <span class="o">*</span> <span class="n">spectrum_sample_step_factor</span>
+        <span class="n">spectrum</span> <span class="o">=</span> <span class="n">ContinuousDataEven</span><span class="p">(</span><span class="n">spectrum_values</span><span class="p">,</span> <span class="n">freq_step</span><span class="p">,</span> <span class="n">first_freq</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">values_description</span> <span class="o">+</span> <span class="s">&quot; specturm&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">spectrum</span>
+</div>
+<div class="viewcode-block" id="ContinuousDataEven.modulate"><a class="viewcode-back" href="../../../code.html#signal_processing.continuous.continuous_data_even_obj.ContinuousDataEven.modulate">[docs]</a>    <span class="k">def</span> <span class="nf">modulate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">kind</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        create a modulated signal. self is considerred as the data for the\</span>
+<span class="sd">            signal. This applies also to amplitude modulation (am).</span>
+<span class="sd">        in amplitude modulation self is the envelope (and therfore have to be\</span>
+<span class="sd">            non-negative)</span>
+
+<span class="sd">        parameters:</span>
+<span class="sd">        -------------</span>
+<span class="sd">        kind : str</span>
+<span class="sd">            &#39;am&#39;</span>
+<span class="sd">            &#39;pm&#39;</span>
+<span class="sd">            &#39;fm&#39;</span>
+
+<span class="sd">        kwargs</span>
+<span class="sd">        -----------</span>
+<span class="sd">        amp_carrier</span>
+
+<span class="sd">        f_carrier</span>
+
+<span class="sd">        phase_0_carrier</span>
+
+<span class="sd">        returns:</span>
+<span class="sd">        -------------</span>
+<span class="sd">        sig_modulated</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">modulator</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">modulate</span><span class="p">,</span> <span class="n">kind</span><span class="p">)</span>
+        <span class="n">modulated_sig</span> <span class="o">=</span> <span class="n">modulator</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">modulated_sig</span>
+</div>
+<div class="viewcode-block" id="ContinuousDataEven.demodulate"><a class="viewcode-back" href="../../../code.html#signal_processing.continuous.continuous_data_even_obj.ContinuousDataEven.demodulate">[docs]</a>    <span class="k">def</span> <span class="nf">demodulate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">kind</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s">&#39;accurate&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        kind : str</span>
+<span class="sd">            link to ContinuousDataEven.modulate</span>
+
+<span class="sd">        mode : str</span>
+<span class="sd">            link to numpy_extension. the preparator of fourier??</span>
+
+<span class="sd">        returns</span>
+<span class="sd">        ----------</span>
+<span class="sd">        sig_demodulated</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">demodulator</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">demodulate</span><span class="p">,</span> <span class="n">kind</span><span class="p">)</span>
+        <span class="n">demodulated_sig</span> <span class="o">=</span> <span class="n">demodulator</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">demodulated_sig</span>
+
+</div>
+<div class="viewcode-block" id="ContinuousDataEven.get_chunks"><a class="viewcode-back" href="../../../code.html#signal_processing.continuous.continuous_data_even_obj.ContinuousDataEven.get_chunks">[docs]</a>    <span class="k">def</span> <span class="nf">get_chunks</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">domain_duration</span><span class="p">,</span> <span class="n">is_power_of_2_samples</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">is_overlap</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">mode_last_chunk</span><span class="o">=</span><span class="s">&#39;throw&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        get small chunks of the signal</span>
+
+<span class="sd">        parameters</span>
+<span class="sd">        -----------------</span>
+<span class="sd">        domain_duration : U_.Quantity</span>
+<span class="sd">            the duration / len / width of the chunk</span>
+<span class="sd">        is_power_of_2_samples : bool</span>
+<span class="sd">            whether to return bigger chunks, with 2 ** m samples</span>
+<span class="sd">            for performence / efficiency issues</span>
+<span class="sd">        is_overlap : bool</span>
+<span class="sd">            whether to give chunks with overlap of half the duration</span>
+<span class="sd">            in order to cope with splits</span>
+<span class="sd">        mode_last_chunk : str</span>
+<span class="sd">            what to do with the last chunk, which is smaller?</span>
+<span class="sd">            &#39;throw&#39; - just don&#39;t give it back</span>
+
+<span class="sd">        returns</span>
+<span class="sd">        ----------</span>
+<span class="sd">        a list of signals.</span>
+<span class="sd">        if performence issues erise, it&#39;s better to return a</span>
+<span class="sd">        generator using yield.</span>
+
+<span class="sd">        TODO:</span>
+<span class="sd">        --------</span>
+<span class="sd">        there is a lot of code duplication with the odd and even</span>
+<span class="sd">        maybe should return a sig array object</span>
+<span class="sd">            channels object is another option, but I think that it&#39;s a bad idea</span>
+<span class="sd">            since the chunks do not share the domain samples. (different time)</span>
+<span class="sd">        maybe should enable passing Segment, or Segments to specify where to chunk</span>
+<span class="sd">        cope with case the signal is too short compared to chunk asked</span>
+
+<span class="sd">        refactor</span>
+<span class="sd">        -----------</span>
+<span class="sd">        this is a huge function, I have to cut it</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">n_samples_chunk</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">domain_duration</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">sample_step</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">is_power_of_2_samples</span><span class="p">:</span>
+            <span class="n">n_samples_chunk</span> <span class="o">=</span> <span class="n">numpy_extension</span><span class="o">.</span><span class="n">close_power_of_2</span><span class="p">(</span><span class="n">n_samples_chunk</span><span class="p">,</span> <span class="s">&#39;bigger&#39;</span><span class="p">)</span>
+
+        <span class="n">n_samples_tot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_samples</span>
+
+        <span class="n">chunks_odd</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">n_of_chunks_odd</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">n_samples_tot</span> <span class="o">/</span> <span class="n">n_samples_chunk</span><span class="p">)</span>
+        <span class="n">chunks_odd_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">[:</span><span class="n">n_samples_chunk</span> <span class="o">*</span> <span class="n">n_of_chunks_odd</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">n_of_chunks_odd</span><span class="p">,</span> <span class="n">n_samples_chunk</span><span class="p">))</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span>
+        <span class="n">chunk_odd_first_samples</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">domain_start</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">sample_step</span> <span class="o">*</span> <span class="n">n_samples_chunk</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n_of_chunks_odd</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">chunks_odd_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">chunk_odd_first_samples</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">chunk_odd_first_samples</span><span class="p">)):</span>
+            <span class="n">chunk</span> <span class="o">=</span> <span class="n">ContinuousDataEven</span><span class="p">(</span><span class="n">chunks_odd_data</span><span class="p">[:,</span><span class="n">i</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">sample_step</span><span class="p">,</span> <span class="n">chunk_odd_first_samples</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+            <span class="n">chunks_odd</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">chunk</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">is_overlap</span><span class="p">:</span>
+            <span class="n">chunks</span> <span class="o">=</span> <span class="n">chunks_odd</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">chunks_even</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">n_of_chunks_even</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">((</span><span class="n">n_samples_tot</span> <span class="o">-</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">n_samples_chunk</span><span class="p">)</span> <span class="o">/</span> <span class="n">n_samples_chunk</span><span class="p">)</span>
+            <span class="n">chunks_even_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mf">0.5</span> <span class="o">*</span> <span class="n">n_samples_chunk</span> <span class="p">:</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">n_samples_chunk</span> <span class="o">+</span> <span class="n">n_samples_chunk</span> <span class="o">*</span> <span class="n">n_of_chunks_even</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">n_of_chunks_even</span><span class="p">,</span> <span class="n">n_samples_chunk</span><span class="p">))</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span>
+            <span class="n">chunk_even_first_samples</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">domain_start</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">sample_step</span> <span class="o">*</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">n_samples_chunk</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">sample_step</span> <span class="o">*</span> <span class="n">n_samples_chunk</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n_of_chunks_even</span><span class="p">)</span>
+            <span class="k">assert</span> <span class="n">chunks_even_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">chunk_even_first_samples</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">chunk_even_first_samples</span><span class="p">)):</span>
+                <span class="n">chunk</span> <span class="o">=</span> <span class="n">ContinuousDataEven</span><span class="p">(</span><span class="n">chunks_even_data</span><span class="p">[:,</span><span class="n">i</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">sample_step</span><span class="p">,</span> <span class="n">chunk_even_first_samples</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+                <span class="n">chunks_even</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">chunk</span><span class="p">)</span>
+
+            <span class="n">chunks</span> <span class="o">=</span> <span class="n">chunks_odd</span> <span class="o">+</span> <span class="n">chunks_even</span>
+
+        <span class="k">if</span> <span class="n">mode_last_chunk</span> <span class="o">!=</span> <span class="s">&#39;throw&#39;</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+        <span class="k">return</span> <span class="n">chunks</span>
+</pre></div></div></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">signal_processing 0.1 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../../signal_processing.html" >signal_processing</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Noam Gavish.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>
