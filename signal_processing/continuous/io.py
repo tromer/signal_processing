@@ -78,6 +78,24 @@ def read_wav(filename, domain_unit=U_.sec, first_sample=0,
 
     #return signal
 
+def read_wav_many(directory, domain_unit=U_.sec, first_sample=0,
+                  value_unit=U_.milliamp,
+                  expected_sample_rate_and_tolerance=None, channels=None):
+    """
+    add docs
+    parameters:
+    ------------
+    directory : str
+    """
+    sig_list = []
+    files = glob.glob(directory + "*.wav")
+    for f in files:
+        curr_sig = read_wav(f, domain_unit, first_sample, value_unit,
+                                 expected_sample_rate_and_tolerance, channels)
+        sig_list.append(curr_sig)
+
+    return sig_list
+
 def write_wav(contin, filename):
     """
     write contin to wav file, and return the units of the axis, and the first sample
@@ -101,20 +119,6 @@ def write_wav(contin, filename):
 def write_wav_many(contin_list, directory):
     raise NotImplementedError
 
-
-def read_wav_many(directory, domain_unit=U_.sec, first_sample=0,
-                  value_unit=U_.milliamp,
-                  expected_sample_rate_and_tolerance=None, channels=None):
-    """
-    """
-    raise NotImplementedError
-    sig_list = []
-    files = glob.glob(directory + "*.wav")
-    for f in files:
-        sig_list.append(read_wav(f, domain_unit, first_sample, value_unit,
-                                 expected_sample_rate_and_tolerance, channels))
-
-    return sig_list
 
 def fromfile(f):
     """
