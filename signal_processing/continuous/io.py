@@ -2,6 +2,7 @@
 io
 
 """
+import glob
 import warnings
 
 import numpy as np
@@ -12,7 +13,9 @@ from continuous_data_even_obj import ContinuousDataEven
 
 from signal_processing import U_
 
-def read_wav(filename, domain_unit=U_.sec, first_sample=0, value_unit=U_.milliamp, expected_sample_rate_and_tolerance=None, channels=None):
+def read_wav(filename, domain_unit=U_.sec, first_sample=0,
+             value_unit=U_.milliamp, expected_sample_rate_and_tolerance=None,
+             channels=None):
     """
     read wav file to ContinuousDataEven.
     implemented only for one channal
@@ -40,6 +43,10 @@ def read_wav(filename, domain_unit=U_.sec, first_sample=0, value_unit=U_.milliam
     ------------
     if channels == None, returns signal
     if channels != None, returns a list of signals
+
+    rename
+    ----------
+    first_sample to domain_start
     """
     sample_rate, raw_sig = sp.io.wavfile.read(filename)
     sample_rate = 1.0 * sample_rate / domain_unit
@@ -85,6 +92,24 @@ def write_wav(contin, filename):
     else:
         sp.io.wavfile.write(filename, rate=contin.sample_rate.to(U_.Hz).magnitude, data=contin.values.magnitude)
 
+
+def write_wav_many(contin_list, directory):
+    raise NotImplementedError
+
+
+def read_wav_many(directory, domain_unit=U_.sec, first_sample=0,
+                  value_unit=U_.milliamp,
+                  expected_sample_rate_and_tolerance=None, channels=None):
+    """
+    """
+    raise NotImplementedError
+    sig_list = []
+    files = glob.glob(directory + "*.wav")
+    for f in files:
+        sig_list.append(read_wav(f, domain_unit, first_sample, value_unit,
+                                 expected_sample_rate_and_tolerance, channels))
+
+    return sig_list
 
 def fromfile(f):
     """
