@@ -50,7 +50,7 @@ class ContinuousDataEven(ContinuousData):
         """
         generate signal of certain type
 
-        parameters:
+        parameters
         ---------------
         waveform : str
             'white_noise'
@@ -193,7 +193,7 @@ class ContinuousDataEven(ContinuousData):
 
     def new_values(self, new_vals, assert_same_n_samples=True, new_domain_start=None):
         """
-        parameters:
+        parameters
         ---------------
         new_vals : U_.Quantity
             vectors of values of with the same amount of values as the samples
@@ -217,7 +217,7 @@ class ContinuousDataEven(ContinuousData):
     def __getitem__(self, key):
         """
         Note: it's coppied from __getitem__ of ContinuousData
-        parameters:
+        parameters
         -------------
         domain_range : Segment
             the range, from the domain, of which we want the slice.
@@ -380,7 +380,7 @@ class ContinuousDataEven(ContinuousData):
         uses ContinuousDataEven._spectrum_parameters for determining all
         the spectrum frequency parameters
 
-        parameters:
+        parameters
         ----------------
 
         mode : str
@@ -415,7 +415,7 @@ class ContinuousDataEven(ContinuousData):
         in amplitude modulation self is the envelope (and therfore have to be\
             non-negative)
 
-        parameters:
+        parameters
         -------------
         kind : str
             'am'

@@ -36,32 +36,37 @@ from signal_processing.segments.segments_obj import Segments
 
 class ContinuousData(object):
     """
-    Note: see also the object Segments. they go hand in hand together, refer to different aspects of the same subjects
+
     this class represents any kind of continuous data (one dimensional).
     It includes a few kinds that first seem different from each other, has a lot in common.
 
-    examples:
-    -*-*-*-*-*-*
+    **examples:**
 
-    1. a "signal" - measurement of the electromagnetic field / voltage as a function of time.
-    similar examples: sound (as a function of time), seismic measurments.
+    1. a "signal":
+        measurement of the electromagnetic field / voltage as a function of time.
+        similar examples: sound (as a function of time), seismic measurments.
 
-    2. a spatial measurement: height as a function of place, some material density as a function of place.
-    similar examples: stress as a function of place.
+    2. a spatial measurement:
+        height as a function of place, some material density as a function of place.
+        similar examples: stress as a function of place.
 
-    3. a distribution: the number of occurances in a population, as a function of age / height / amplitude
+    3. a distribution:
+        the number of occurances in a population, as a function of age / height / amplitude
 
-    4. a kinematic property of a system: position / velocity / acceleration / angle as a function of time.
+    4. a kinematic property of a physical system:
+        position / velocity / acceleration / angle as a function of time.
 
-    5. even a spectrum of a signal - the magnitude as a function of frequency.
+    5. spectrum of a signal:
+        the magnitude as a function of frequency.
 
-    6. any connection between two continuous variables, such as a response curv of harmonic ocsillator:
-    amplitude of the ocsillator as a function of the frequency of external force.
+    6. the most general case:
+        any connection between two continuous variables.
+        example: a response curv of harmonic ocsillator:
+        amplitude of the ocsillator as a function of the frequency of external force.
 
     There are some differences beween these kinds of data. Maybe some of them would be implemented as a subclass
 
-    basic assumptions:
-    -*-*-*-*-*-*-*-*-*-*-*-*
+    **basic assumptions:**
 
     1. the acctual data in the real world can be really continuous.
     here we of course use sample points. every sample point has exectly one corresponding value.
@@ -71,7 +76,7 @@ class ContinuousData(object):
     So, we assume that the data is not changing "too fast" compared to our resolution.
     In signal processing terms, we assume that we didn't under-sample.
 
-    Note:
+    notes
     -----------
 
     1. we *do not* assume even sampling distance. that would be included in a subclass.
@@ -88,8 +93,8 @@ class ContinuousData(object):
     When you encounter an operation that is not implemented for ContinuousData,
     the correct thing to do is to wrap the numpy or scipy operation.
 
-    design issues
-    --------------------
+
+    **design issues**
 
     1. this object is immutable, appart from changing the string describing
     the domain and values.
@@ -112,6 +117,10 @@ class ContinuousData(object):
     4. In order to restore symetry, we could also work with a Values object.\n
     the problem is that sig.values call is very very common in the functions of the package, and it would be pity to lenghen it to sig.values.samples
 
+    See Also
+    ----------
+    signal_processing.Segments:  object that describe segments of interest within a `ContinuousData`
+    signal_processing.SegmentsOfContinuous
 
     TODO
     ----------
@@ -231,7 +240,7 @@ class ContinuousData(object):
 
     def __getitem__(self, key):
         """
-        parameters:
+        parameters
         -------------
         domain_range : Segment
             the range, from the domain, of which we want the slice.
@@ -292,7 +301,7 @@ class ContinuousData(object):
         """
         basic plot
 
-        parameters:
+        parameters
         --------------
         fig : figure
 
