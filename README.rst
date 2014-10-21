@@ -34,6 +34,7 @@ gavishnoam@gmail.com
 
 documentation
 ---------------------
+is compiled using sphinx, and numpydoc extension
 https://github.com/noamg/signal_processing/doc/built/html/index.html
 
 Data types - the interface for signal processing
@@ -134,6 +135,8 @@ Main issues before first release
 
 #. Tutorial!
 
+#. connect to readthedocs
+
 Design principles
 ---------------------
 1. The API of the ContinuousData object have several distinguished layers and they have to be repected.
@@ -156,4 +159,5 @@ Design Issues
     current interface: they accept string as a parameter. (such as 'mean')
     possible other interface: maybe should accept function as input (such as np.sin, np.median)
     possible other interface: maybe they should accept enum to avoid typos (values errors), for modes like 'accurate' / 'fast'...
+    of course, that when the function is a mere wrap around a numpy / scipy package, the interface should be as similar as possible
 
