@@ -275,17 +275,43 @@ class ContinuousData(object):
         # maybe it should be an extra param. seying which one to use
         # maybe should be an external function, not a method
 
-    def plot(self, fig=None):
+    def _prepare_data_labels_for_plot(self):
+        """
+        this is a thin interface to pint_extension.prepare_data_and_labels_for_plot
+        """
+        data_labels_for_plot = \
+            pint_extension.prepare_data_and_labels_for_plot(
+                self.domain_samples,
+                self.values,
+                self.domain_description,
+                self.values_description)
+
+        return data_labels_for_plot
+
+    def plot(self, fig=None, domain_range=None):
         """
         basic plot
 
+        parameters:
+        --------------
+        fig : figure
+
+        domain_range : Segment
+            if you want to plot only a certain range from the signal
         returns
         ----------
         the fig only, for plotting other signals on top
         """
-        x_bare, y_bare, x_label, curv_label = pint_extension.prepare_data_and_labels_for_plot(self.domain_samples, self.values, self.domain_description, self.values_description)
+        if domain_range is None:
+            sig_for_plot = self
+        else:
+            sig_for_plot = self[domain_range]
 
-        return plt_extension.plot_with_labels(x_bare, y_bare, x_label, curv_label, fig)[0]
+        x_bare, y_bare, x_label, curv_label =\
+            sig_for_plot._prepare_data_labels_for_plot()
+
+        return plt_extension.plot_with_labels(
+            x_bare, y_bare, x_label, curv_label, fig)[0]
 
     def tofile(self, f):
         """
