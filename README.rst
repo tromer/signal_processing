@@ -23,6 +23,10 @@ with pip:
 
 pip install -e git+https://github.com/noamg/signal_processing.git#egg=signal_processing-master
 
+Tutorial
+-----------
+link....
+
 Contact
 ------------------------
 If you encounter problems, you can contanct me:
@@ -127,6 +131,8 @@ Main issues before first release
 #. improve use of exceptions. design the package exceptions, and use pint exceptions for units errors
 #. use sphinx to compile documentation.
 #. tag a commit as release 0.1
+
+#. Tutorial!
 
 Design principles
 ---------------------
