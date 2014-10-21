@@ -307,6 +307,7 @@ class ContinuousData(object):
 
         domain_range : Segment
             if you want to plot only a certain range from the signal
+
         returns
         ----------
         the fig only, for plotting other signals on top

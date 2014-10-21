@@ -53,7 +53,7 @@ def correlate(sig_stable, sig_sliding, mode='valid'):
     """
     a correlation between 2 signals. we try to relocate the sliding sig, to fit the location of the stable sig
 
-    parameters:
+    parameters
     --------------------
     sig_stable : ContinuousData
 
@@ -104,7 +104,7 @@ def correlate_find_new_location(sig_stable, sig_sliding, mode='valid', is_return
     for most of the documentation refer to correlate
     TODO: the signature of this function is not stable, according to user input it returns either 1 or 2 values
 
-    parameters:
+    parameters
     --------------------
     is_return_max : bool
         can return also the max value, in order to compare the success of different correlations
@@ -128,7 +128,7 @@ def correlate_find_new_location(sig_stable, sig_sliding, mode='valid', is_return
 
 def clip(sig, values_range):
     """
-    parameters:
+    parameters
     ---------------------
     sig : ContinuousData
 

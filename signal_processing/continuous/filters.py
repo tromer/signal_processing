@@ -18,9 +18,12 @@ def band_pass(sig, freq_range, mask_len):
     """
     band pass filter of ContinuousDataEven
 
-    parameters:
+    parameters
+    --------------
     freq_range: a Segment of frequencies
 
+    notes
+    ----------
     implemented using np.convolve with a mask. maybe with fft is better
 
     XXX TODO: shuold change interface. maks len is something without units. shoult receive something else

@@ -27,7 +27,7 @@ def read_wav(filename, domain_unit=U_.sec, first_sample=0,
     implemented only for one channal
     for multiple channels we probably want to return a list of ContinuousDataEven
 
-    parameters:
+    parameters
     ------------
     domain_unit
         the unit of the domain. usually sec
@@ -86,7 +86,7 @@ def read_wav_many(directory, domain_unit=U_.sec, first_sample=0,
     reads all the wavs in a directory
 
     add docs
-    parameters:
+    parameters
     ------------
     directory : str
     """
