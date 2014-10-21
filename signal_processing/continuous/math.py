@@ -102,7 +102,7 @@ def correlate(sig_stable, sig_sliding, mode='valid'):
     return sig_c
 
 
-def correlate_find_shift(sig_stable, sig_stable, mode='valid'):
+def correlate_find_shift(sig_stable, sig_sliding, mode='valid'):
     """
 
     returns
@@ -110,6 +110,8 @@ def correlate_find_shift(sig_stable, sig_stable, mode='valid'):
     shift : Quantity
         the shift that the sliding signal need to be in max correlation with
         the stable sig
+    """
+    raise NotImplementedError
 
 def correlate_find_new_location(sig_stable, sig_sliding, mode='valid', is_return_max=False):
     """
