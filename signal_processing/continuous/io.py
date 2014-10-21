@@ -83,6 +83,8 @@ def read_wav_many(directory, domain_unit=U_.sec, first_sample=0,
                   value_unit=U_.milliamp,
                   expected_sample_rate_and_tolerance=None, channels=None):
     """
+    reads all the wavs in a directory
+
     add docs
     parameters:
     ------------
@@ -113,6 +115,16 @@ def write_wav(contin, filename):
     s_cut = s[Segment([5.720, 6.610], U_.sec)]
     continuous_data.write_wav(s_cut, "/home/noam/lab_project/Dropbox/Noam/Periodic recordings for Noam/fast-evo1-chassis-10100-C3000-N200_ettus_cut.wav")
 
+    known issues:
+    ---------------
+    usually the data is floats. when written to a file it is read well by
+    read_wav, by the program audacity, but not by python module wave.
+    wave.open doesn't recognize the format
+
+    possible improvement
+    ---------------------
+    if it's possible to write some parameters as the wav metadata, it's great.
+    so far I didn't find a way
     """
     print filename
     if contin.domain_samples.dimensionality != U_.sec.dimensionality:
@@ -127,6 +139,9 @@ def write_wav(contin, filename):
 
 
 def write_wav_many(contin_list, directory):
+    """
+    write a list of signals to a directory
+    """
     for i in xrange(len(contin_list)):
         curr_sig = contin_list[i]
         name = str(i)
