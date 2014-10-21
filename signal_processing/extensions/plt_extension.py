@@ -99,6 +99,10 @@ def plot_few(*args):
     """
     plots few objects on the same figure
 
+    TOOD
+    ------
+    add optional **kwargs and pass it to obj.plot()
+    (for parameter of zoom, for instance)
     """
     fig =  args[0].plot()
     for obj in args[1:]:
