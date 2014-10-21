@@ -5,6 +5,10 @@ Created on Sat Aug 30 01:29:39 2014
 @author: noam
 """
 
+raise NotImplementedError("this is an old file. it's contents are\
+                          split between various other modules. don't use it\
+                          it's mere purpose is to enable tracking of\
+                          the history in git.")
 import warnings
 import tempfile
 #%%
@@ -34,7 +38,7 @@ class ContinuousData(object):
     Note: see also the object Segments. they go hand in hand together, refer to different aspects of the same subjects
     this class represents any kind of continuous data (one dimensional).
     It includes a few kinds that first seem different from each other, has a lot in common.
-    
+
     examples:
     1. a "signal" - measurement of the electromagnetic field / voltage as a function of time.
     similar examples: sound (as a function of time), seismic measurments.
@@ -45,9 +49,9 @@ class ContinuousData(object):
     5. even a spectrum of a signal - the magnitude as a function of frequency.
     6. any connection between two continuous variables, such as a response curv of harmonic ocsillator:
     amplitude of the ocsillator as a function of the frequency of external force.
-    
+
     There are some differences beween these kinds of data. Maybe some of them would be implemented as a subclass
-    
+
     basic assumptions:
     1. the acctual data in the real world can be really continuous.
     here we of course use sample points. every sample point has exectly one corresponding value.
@@ -55,7 +59,7 @@ class ContinuousData(object):
     represents well also the times / places which we didn't measure.
     So, we assume that the data is not changing "too fast" compared to our resolution.
     In signal processing terms, we assume that we didn't under-sample.
-    
+
     Note:
     1. we *do not* assume even sampling distance. that would be included in a subclass.
     2. this class is intentioned to be used with units. it's real world measurements.
@@ -67,53 +71,53 @@ class ContinuousData(object):
     FFT sould take the sample rate into account, and so on.
     When you encounter an operation that is not implemented for ContinuousData,
     the correct thing to do is to wrap the numpy or scipy operation.
-    
+
     TODO: maybe I want to implement a domain_samples object. it would have
     a subclass of even samples
-    
+
     TODO: maybe it's smart to implement a similar object with few channels.
     It may be useful in some implementation and performance issues,
     since the channels would be a 2D np.ndarray, and channel-wise
     operations like fft would be applied along axis, and be
     efficient.
-    
+
     TODO: maybe add a self.base attribute, like in np.ndarrays
-    
+
     """
     def __init__(self, values, domain_samples):
         assert len(values) == len(domain_samples)
         self._domain_samples = domain_samples
         self._values = values
-        
+
     @property
     def domain_samples(self):
         return self._domain_samples
-        
+
     @property
     def values(self):
         return self._values
-        
+
     @property
     def n_samples(self):
         return len(self.values)
-        
+
     @property
     def first_sample(self):
         return self.domain_samples[0]
-    
-    @property     
+
+    @property
     def last_sample(self):
         return self.domain_samples[-1]
-        
+
     def is_same_domain_samples(self, other):
         raise NotImplementedError
-        
-        
+
+
     def is_close(self, other, domain_rtol=1e-5, domain_atol=None, values_rtol=1e-5, values_atol=None):
         """ TODO: use is_same_domain_samples in this func """
         return pint_extension.allclose(self.domain_samples, other.domain_samples, domain_rtol, domain_atol) \
         and pint_extension.allclose(self.values, other.values, values_rtol, values_atol)
-        
+
     def is_close_l_1(self, other, param_1, param_2):
         """
         checks if 2 signals are close using l_1 norm
@@ -129,7 +133,7 @@ class ContinuousData(object):
         raise NotImplementedError
         return self.domain_samples.ptp()
     """
-    
+
     def __getitem__(self, key):
         """
         parameters:
@@ -137,39 +141,39 @@ class ContinuousData(object):
         domain_range : Segment
             the range, from the domain, of which we want the slice.
             for example: which time range?
-            
+
         TODO: since the domain samples should be sorted, maybe there
         is a more efficient implementation
         """
         if type(key) in [int, float]:
             raise KeyError("wrong key. key for ContinuousData is Segment or Segments of the same domain")
-        
+
         if type(key) in [Segment,]:
             domain_range = key
             is_each_in_range = domain_range.is_each_in(self.domain_samples)
             return ContinuousData(self.values[is_each_in_range], self.domain_samples[is_each_in_range])
-            
+
         elif type(key) in [Segments,]:
             return [self[domain_range] for domain_range in key]
-        
+
     def gain(self, factor):
         """
         multiplies the values by the factor
         """
         raise NotImplementedError
-        
+
     def __add__(self, other):
         raise NotImplementedError
-        
+
     def abs(self):
         raise NotImplementedError
-    
+
     def DFT(self):
         raise NotImplementedError
         # maybe there is an issue regarding using DFT or IDTF, depending the domain
         # maybe it should be an extra param. seying which one to use
         # maybe should be an external function, not a method
-        
+
     def tofile(self, f):
         """
         read the docs of fromfile
@@ -185,7 +189,7 @@ def test_ContinuousData():
     assert sig.n_samples == 10
     assert sig.first_sample == 0 * uerg.sec
     assert sig.last_sample == 9 * uerg.sec
-    
+
     assert sig.is_close(sig)
     assert not sig.is_close(ContinuousData(vals, t + 1 * uerg.sec))
     assert not sig.is_close(ContinuousData(vals + 1 * uerg.volt, t))
@@ -196,18 +200,18 @@ def test_ContinuousData():
     expected_sig_middle = ContinuousData(vals[expected_slice], t[expected_slice])
     sig_middle = sig[t_range]
     assert sig_middle.is_close(expected_sig_middle)
-    
+
     t_ranges = Segments(np.array([2.5, 7.5]) * uerg.sec, np.array([6.5, 8.5]) * uerg.sec)
     sig_list = sig[t_ranges]
     ranges = t_ranges.to_segments_list()
     expected_sig_list = [sig[ranges[0]], sig[ranges[1]]]
     for i in range(len(sig_list)):
         assert sig_list[i].is_close(expected_sig_list[i])
-    
+
 test_ContinuousData()
 
 
-#%%    
+#%%
 def plot_quick(contin, is_abs=False, fmt="-"):
     """
     contin is a ContinuousData object
@@ -219,13 +223,13 @@ def plot_quick(contin, is_abs=False, fmt="-"):
     # creat the figure here
     return plot(contin, fig=None, is_abs=is_abs, fmt=fmt)
 #%%
-    
+
 def visual_test_plot_quick():
     t = np.arange(10) * uerg.sec
     vals = np.arange(10) * uerg.volt
     sig = ContinuousData(vals, t)
     plot_quick(sig)
-    
+
 #visual_test_plot_quick()
 
 def plot(contin, fig=None, subplot=None, share_x=None, is_abs=False, fmt="-", ):
@@ -236,7 +240,7 @@ def plot(contin, fig=None, subplot=None, share_x=None, is_abs=False, fmt="-", ):
     TODO: make sure somehow that all the plots on the same figure, share x axis dimensionality
     and rescale them - (fig, x_untis) tuple
     TODO: instead of putting units on y axis, use legend and put units there
-    
+
     parameters:
     -------------
     contin
@@ -249,32 +253,32 @@ def plot(contin, fig=None, subplot=None, share_x=None, is_abs=False, fmt="-", ):
     # TODO: add support for legend
     warnings.warn("plot is not tested")
     warnings.warn("plot dosn't rescale the last signal according to axes")
-    
+
     if fig == None:
         fig = plt.figure()
     else:
         plt.figure(fig.number)
-        
+
     if subplot != None:
         plt.subplot(*subplot, sharex=share_x)
-    
+
     x = contin.domain_samples
     y = contin.values
     if is_abs:
         y = np.abs(y)
-    
+
     line = plt.plot(x, y, fmt)[0]
-    plt.xlabel(ARBITRARY_UNITS_STR) 
+    plt.xlabel(ARBITRARY_UNITS_STR)
     plt.ylabel(ARBITRARY_UNITS_STR)
     if type(x) == uerg.Quantity:
         if not x.unitless:
             plt.xlabel(str(x.dimensionality) + " [" + str(x.units) + "]")
-            
+
     if type(y) == uerg.Quantity:
         if not y.unitless:
             plt.ylabel(str(y.dimensionality) + " [" + str(y.units) + "]")
-            
-    return fig, line 
+
+    return fig, line
     #raise NotImplementedError
         # return fig, axes??
 
@@ -284,27 +288,27 @@ def visual_test_plot():
     vals = np.arange(10) * uerg.volt
     sig = ContinuousData(vals, t)
     plot(sig)
-    
+
 # visual_test_plot_quick()
 
 def plot_under(contin_list, fig=None, is_abs=False, fmt="-"):
     """
     plot a few signals one above the other
-    
-    
-    
-    
+
+
+
+
     OLD OLD OLD XXX
     add subplot of the signal, to an existing plot of another signal.
     the x axis would be coordinated.
     should enable easier examining of signals
-    
+
     TODO: maybe add parameter of subplot or something
     """
     warnings.warn("not tested well for units, nots tested")
     if fig != None:
         raise NotImplementedError
-    
+
     f = plt.figure()
     lines = []
     N = len(contin_list)
@@ -313,9 +317,9 @@ def plot_under(contin_list, fig=None, is_abs=False, fmt="-"):
     for i in xrange(N):
         junk, line = plot(contin_list[i], f, [N, 1, i + 1], share_x=ax)
         lines.append(line)
-    
+
     return f, lines
-    
+
 def visual_test_plot_under():
     t = np.arange(10) * uerg.sec
     vals = np.arange(10) * uerg.amp
@@ -324,7 +328,7 @@ def visual_test_plot_under():
     sig_list = [sig, sig_2]
     plot_under(sig_list)
 
-#%%    
+#%%
 class ContinuousDataEven(ContinuousData):
     """
     read the ContinuousData documentation.
@@ -337,57 +341,57 @@ class ContinuousDataEven(ContinuousData):
             self._first_sample = 0 * sample_step
         else:
             self._first_sample = first_sample
-        
-        
+
+
     @property
     def sample_step(self):
         return self._sample_step
-        
+
     @property
     def sample_rate(self):
         return 1.0 / self.sample_step
-    
+
     @property
     def first_sample(self):
         return self._first_sample
-    
-        
+
+
     @property
     def total_domain_range(self):
         """
-        
+
         returns:
         ------------
         domain_range : Segment
         """
         raise NotImplementedError
-        
+
     @property
     def total_domain_width(self):
         """
         returns the total length of the signal
-        
+
         Note:
         maybe it's possible to base the implementation on total_domain_range
         at the moment it's done differently
-        
+
         TODO: use this method as a first check in comparison
         """
         return self.n_samples * self.sample_step
-        
+
     """
     @property
     def last_sample(self):
         # TODO: possible to create a better implementation then in the father class
     """
-        
+
     @property
     def domain_samples(self):
         #print "******"
         #print self.values
         """ TODO: mayebe some cashing would be helpful? """
         return np.arange(len(self.values)) * self.sample_step + self.first_sample
-        
+
     def __getitem__(self, key):
         """
         Note: it's coppied from __getitem__ of ContinuousData
@@ -399,40 +403,40 @@ class ContinuousDataEven(ContinuousData):
         """
         if type(key) in [int, float]:
             raise KeyError("wrong key. key for ContinuousData is Segment or Segments of the same domain")
-        
+
 
         if type(key) in [Segment,]:
             domain_range = key
             bottom_index = np.ceil(1.0 * domain_range.start / self.sample_step)
             top_index = np.floor(domain_range.end / self.sample_step)
             return ContinuousDataEven(self.values[bottom_index:top_index + 1], self.sample_step, first_sample=bottom_index * self.sample_step)
-            
+
         elif type(key) in [Segments,]:
             return [self[domain_range] for domain_range in key]
-        
-        
+
+
     def move_first_sample(self, new_first_sample=0):
         """
-        
+
         """
         warnings.warn("not tested")
         return ContinuousDataEven(self.values, self.sample_step, new_first_sample)
-        
-        
+
+
     def is_same_domain_samples(self, other):
         return self.n_samples == other.n_samples and \
         pint_extension.allclose(self.first_sample, other.first_sample) and \
         pint_extension.allclose(self.sample_step, other.sample_step)
-        
+
     def _extract_values_from_other_for_continuous_data_arithmetic(self, other):
         """
         core method to help arithmency between methods
         TODO: add more test not tested enough. some bugs
         """
-        
+
         if type(other) in [float, int]:
             values = other
-        
+
         elif type(other) == uerg.Quantity:
             if type(other.magnitude) in [np.ndarray,]:
                 raise ValueError("add const value, or other ContinuousData with same domain samples")
@@ -443,60 +447,60 @@ class ContinuousDataEven(ContinuousData):
             if not self.is_same_domain_samples(other):
                 raise ValueError("diffrent domain samples")
             else:
-                values = other.values        
-        
+                values = other.values
+
         return values
-        
+
     def __add__(self, other):
-        values = self._extract_values_from_other_for_continuous_data_arithmetic(other)    
+        values = self._extract_values_from_other_for_continuous_data_arithmetic(other)
         return ContinuousDataEven(self.values + values, self.sample_step, self.first_sample)
-        
+
     def __radd__(self, other):
         raise NotImplementedError
         return self + other
-            
+
     def __sub__(self, other):
         # TODO: add test for operation with num
-        values = self._extract_values_from_other_for_continuous_data_arithmetic(other)    
-        return ContinuousDataEven(self.values - values, self.sample_step, self.first_sample)           
+        values = self._extract_values_from_other_for_continuous_data_arithmetic(other)
+        return ContinuousDataEven(self.values - values, self.sample_step, self.first_sample)
 
-            
+
     def __mul__(self, other):
         # TODO: add test for operation with num
-        values = self._extract_values_from_other_for_continuous_data_arithmetic(other)    
+        values = self._extract_values_from_other_for_continuous_data_arithmetic(other)
         return ContinuousDataEven(self.values * values, self.sample_step, self.first_sample)
 
     def __rmul__(self, other):
         raise NotImplementedError
         return self * other
-        
+
     def __div__(self, other):
-        values = self._extract_values_from_other_for_continuous_data_arithmetic(other)    
-        return ContinuousDataEven(self.values / values, self.sample_step, self.first_sample)            
-    
+        values = self._extract_values_from_other_for_continuous_data_arithmetic(other)
+        return ContinuousDataEven(self.values / values, self.sample_step, self.first_sample)
+
     def abs(self):
         return ContinuousDataEven(np.abs(self.values), self.sample_step, self.first_sample)
-        
-        
+
+
     def gain(self, factor):
         """
         see doc of base class
         """
         return ContinuousDataEven(self.values * factor, self.sample_step, self.first_sample)
-        
+
     def down_sample(self, down_factor):
         assert down_factor > 0
         if int(down_factor) != down_factor:
             raise NotImplementedError
         # maybe there should be another interface, with "new sample rate"
         return ContinuousDataEven(self.values[::down_factor], down_factor * self.sample_step, self.first_sample)
-        
+
     def is_power_of_2_samples(self):
         """
         check for performance issues
         """
         return numpy_extension.is_power_of_2(self.n_samples)
-        
+
     def trim_to_power_of_2_XXX(self):
         """
         trancate data to power of 2 sample points
@@ -507,11 +511,11 @@ class ContinuousDataEven(ContinuousData):
         trimmed = ContinuousDataEven(self.values[:new_n], self.sample_step, self.first_sample)
         assert trimmed.n_samples == new_n
         return trimmed
-        
+
     def get_chunks(self, domain_duration, is_power_of_2_samples=True, is_overlap=False, mode_last_chunk='throw'):
         """
         get small chunks of the signal
-        
+
         parameters
         -----------------
         domain_duration : uerg.Quantity
@@ -525,13 +529,13 @@ class ContinuousDataEven(ContinuousData):
         mode_last_chunk : str
             what to do with the last chunk, which is smaller?
             'throw' - just don't give it back
-            
+
         returns
         ----------
         a list of signals.
         if performence issues erise, it's better to return a
         generator using yield.
-        
+
         TODO:
         --------
         there is a lot of code duplication with the odd and even
@@ -540,13 +544,13 @@ class ContinuousDataEven(ContinuousData):
             since the chunks do not share the domain samples. (different time)
         maybe should enable passing Segment, or Segments to specify where to chunk
         cope with case the signal is too short compared to chunk asked
-        
+
         """
         n_samples_chunk = np.ceil(domain_duration / self.sample_step)
         if is_power_of_2_samples:
             n_samples_chunk = numpy_extension.close_power_of_2(n_samples_chunk, 'bigger')
 
-        n_samples_tot = self.n_samples   
+        n_samples_tot = self.n_samples
 
         chunks_odd = []
         n_of_chunks_odd = np.floor(n_samples_tot / n_samples_chunk)
@@ -566,19 +570,19 @@ class ContinuousDataEven(ContinuousData):
             chunks_even_data = self.values[0.5 * n_samples_chunk : 0.5 * n_samples_chunk + n_samples_chunk * n_of_chunks_even].reshape((n_of_chunks_even, n_samples_chunk)).transpose()
             chunk_even_first_samples = self.first_sample + self.sample_step * 0.5 * n_samples_chunk + self.sample_step * n_samples_chunk * np.arange(n_of_chunks_even)
             assert chunks_even_data.shape[1] == len(chunk_even_first_samples)
-                
+
             for i in xrange(len(chunk_even_first_samples)):
                 chunk = ContinuousDataEven(chunks_even_data[:,i], self.sample_step, chunk_even_first_samples[i])
                 chunks_even.append(chunk)
-                
+
             chunks = chunks_odd + chunks_even
-    
+
         if mode_last_chunk != 'throw':
             raise NotImplementedError
-            
+
         return chunks
-            
-        
+
+
 
 def test_ContinuousDataEven():
     values = np.arange(10) * uerg.amp
@@ -591,7 +595,7 @@ def test_ContinuousDataEven():
     assert pint_extension.allclose(sig.domain_samples, np.arange(10) * sample_step)
     assert sig.is_close(ContinuousData(values, np.arange(10) * sample_step))
     assert pint_extension.allclose(sig.first_sample, 0 * sample_step)
-    
+
     # testing a __getitem__ (slicing) is mostly copied from the tester of ContinuousData
     t_range = Segment(np.array([2.5, 6.5]) * uerg.sec)
     expected_slice = np.arange(3,7)
@@ -606,7 +610,7 @@ def test_down_sample():
     expected_down = ContinuousDataEven(np.arange(0, 32, 2) * uerg.amp, 2.0 * uerg.sec)
     down = sig.down_sample(down_factor)
     assert down.is_close(expected_down)
-    
+
 
 def test_gain():
     # copied from test_ContinuousDataEven
@@ -617,7 +621,7 @@ def test_gain():
     expected_sig_gain = ContinuousDataEven(values * factor, sample_step)
     sig_gain = sig.gain(factor)
     assert sig_gain.is_close(expected_sig_gain)
-    
+
 def test_is_same_domain_samples():
     step_1 = uerg.sec
     step_2 = uerg.sec * 2
@@ -637,7 +641,7 @@ def test__extract_values_from_other_for_continuous_data_arithmetic():
     expected_values = sig.values
     values = sig._extract_values_from_other_for_continuous_data_arithmetic(sig)
     assert pint_extension.allclose(values, expected_values)
-    
+
     num = 2 * uerg.mamp
     expected_values = num
     values = sig._extract_values_from_other_for_continuous_data_arithmetic(num)
@@ -650,37 +654,37 @@ def test___add__():
     add_1 = sig + num
     expected_add_1 = ContinuousDataEven((2 + np.arange(10)) * uerg.mamp, uerg.sec)
     assert add_1.is_close(expected_add_1)
-    
+
 def test___sub__():
     sig = ContinuousDataEven(np.arange(10) * uerg.mamp, uerg.sec)
     sig_2 = ContinuousDataEven(np.ones(10) * uerg.mamp, uerg.sec)
     dif = ContinuousDataEven(np.arange(-1,9) * uerg.mamp, uerg.sec)
     assert (sig - sig_2).is_close(dif)
-    
+
 def test___mul__():
     sig = ContinuousDataEven(np.arange(10) * uerg.mamp, uerg.sec)
     expected_sig_pow_2 = ContinuousDataEven(np.arange(10) ** 2 * uerg.mamp ** 2, uerg.sec)
     sig_pow_2 = sig * sig
     assert sig_pow_2.is_close(expected_sig_pow_2)
-    
+
 def test___div__():
         sig = ContinuousDataEven(np.arange(1, 10) * uerg.mamp, uerg.sec)
         assert (sig / sig).is_close(ContinuousDataEven(1 * uerg.dimensionless * np.ones(9), uerg.sec))
         assert (sig / 2.0).is_close(ContinuousDataEven(0.5 * np.arange(1, 10) * uerg.mamp, uerg.sec))
-    
+
 def test_abs():
     sig = ContinuousDataEven((-1) * np.ones(10) * uerg.mamp, uerg.sec)
     expected_sig_abs = ContinuousDataEven(np.ones(10) * uerg.mamp, uerg.sec)
     sig_abs = sig.abs()
     assert sig_abs.is_close(expected_sig_abs)
-    
+
 def test_is_power_of_2_samples():
     sig = ContinuousDataEven(np.ones(16) * uerg.mamp, uerg.sec)
     assert sig.is_power_of_2_samples()
 
     sig = ContinuousDataEven(np.ones(13) * uerg.mamp, uerg.sec)
     assert not sig.is_power_of_2_samples()
-    
+
 def test_trim_to_power_of_2_XXX():
     sig = ContinuousDataEven(uerg.mamp * np.arange(12), 1 * uerg.sec)
     expected_sig_trim = ContinuousDataEven(uerg.mamp * np.arange(8), 1 * uerg.sec)
@@ -697,15 +701,15 @@ def test_get_chunks():
     expected_chunked_odd = [ContinuousDataEven(np.arange(4 * i, 4 * (i + 1)) * uerg.mamp, uerg.sec, uerg.sec * 4 * i) for i in range(8)]
     for i in xrange(len(chunked_odd)):
         assert chunked_odd[i].is_close(expected_chunked_odd[i])
-        
+
     expected_chunked_even = [ContinuousDataEven(np.arange(2 + 4 * i, 2 + 4 * (i + 1)) * uerg.mamp, uerg.sec, uerg.sec * ( 4 * i + 2)) for i in range(7)]
     expected_chunked = expected_chunked_odd + expected_chunked_even
-    
+
     for i in xrange(len(chunked)):
         assert chunked[i].is_close(expected_chunked[i])
 
-    
-    
+
+
 test_ContinuousDataEven()
 test_down_sample()
 test_gain()
@@ -732,25 +736,25 @@ def read_wav(filename, domain_unit=uerg.sec, first_sample=0, value_unit=uerg.mil
     read wav file to ContinuousDataEven.
     implemented only for one channal
     for multiple channels we probably want to return a list of ContinuousDataEven
-    
+
     parameters:
     ------------
     domain_unit
         the unit of the domain. usually sec
-    
+
     first_sample
         in case it's not 0
-        
+
     value_unit
         the unit of the values
-        
+
     channels
         if it's list, it says which channels to return
-    
+
     XXX TODO: understand whether it reads 16pcm correctly. it's not sure
     some source:
     http://nbviewer.ipython.org/github/mgeier/python-audio/blob/master/audio-files/audio-files-with-scipy-io.ipynb#Reading
-    
+
     returns:
     ------------
     if channels == None, returns signal
@@ -764,30 +768,30 @@ def read_wav(filename, domain_unit=uerg.sec, first_sample=0, value_unit=uerg.mil
         is_sample_rate_as_expected = np.abs(sample_rate - expected_sample_rate_and_tolerance[0]) < expected_sample_rate_and_tolerance[1]
         if not is_sample_rate_as_expected:
             warnings.warn("sample rate is not as expected")
-    
+
     if channels == None:
         sig = ContinuousDataEven(raw_sig, 1.0 / sample_rate, first_sample)
         return sig
-        
+
     else:
         warnings.warn("reading multiple channels is not tested")
         sig_list = []
         for c in channels:
             sig_c = ContinuousDataEven(raw_sig[:, c], 1.0 / sample_rate, first_sample)
             sig_list.append(sig_c)
-        
+
         return sig_list
-            
-        
+
+
     #return signal
-    
+
 def write_wav(contin, filename):
     """
     write contin to wav file, and return the units of the axis, and the first sample
-    
+
     Note: I didn't think deeply about the signature of this function
     TODO: add way to rescale between the domain unit and sec
-    
+
     example
     --------------
     s = continuous_data.read_wav("/home/noam/lab_project/Dropbox/Noam/Periodic recordings for Noam/fast-evo1-chassis-10100-C3000-N200_ettus.wav")
@@ -811,33 +815,33 @@ def fromfile(f):
     etc
     """
     raise NotImplementedError
-    
-   
+
+
 def test_read_wav():
     values = np.arange(10) * uerg.milliamp
     sample_rate = 1.0 * uerg.Hz
     sig = ContinuousDataEven(values, 1.0 / sample_rate)
-    
+
     f_temp = tempfile.TemporaryFile()
     sp.io.wavfile.write(f_temp, sample_rate.magnitude, values.magnitude)
     sig_read = read_wav(f_temp)
-    
+
     assert sig.is_close(sig_read)
     f_temp.close()
-    
+
 def test_write_wav():
     # copied from test_read_wav
     values = np.arange(10) * uerg.milliamp
     sample_rate = 1.0 * uerg.Hz
     sig = ContinuousDataEven(values, 1.0 / sample_rate)
-    
+
     f_temp = tempfile.TemporaryFile()
     write_wav(sig, f_temp)
     sig_read = read_wav(f_temp)
-    
+
     assert sig.is_close(sig_read)
-    f_temp.close()    
-    
+    f_temp.close()
+
 test_read_wav()
 test_write_wav()
 
@@ -856,7 +860,7 @@ def generate_sine(sample_step, n_samples, amplitude, sine_freq, phase_at_0=0, fi
     """
     returns:
     a ContinuousDataEven which is a sine
-    
+
     TODO: add DC parameter
     """
     if np.abs(phase_at_0) > 2 * np.pi:
@@ -867,7 +871,7 @@ def generate_sine(sample_step, n_samples, amplitude, sine_freq, phase_at_0=0, fi
     phase = 2 * np.pi * sine_freq * t + phase_at_0
     sine = ContinuousDataEven(amplitude * np.sin(phase), sample_step, first_sample)
     return sine
-    
+
 def test_generate_sine():
     sample_step = 1 * uerg.sec
     n_samples = 128
@@ -876,15 +880,15 @@ def test_generate_sine():
     expected_sine = ContinuousDataEven(amplitude * np.sin(2 * np.pi * sine_freq * sample_step * np.arange(n_samples)), sample_step)
     sine = generate_sine(sample_step, n_samples, amplitude, sine_freq)
     assert sine.is_close(expected_sine)
-    
+
 def generate_white_noise():
     raise NotImplementedError
-    
+
 def generate_square(sample_step, n_samples, amplitude, period, duty=0.5, phase_at_0=0, first_sample=0):
     """
     returns:
     a ContinuousDataEven which is suqare wave with min at zero and max at amplitude
-    
+
     TODO: maybe add a parameter of base level.
     """
     if np.abs(phase_at_0) > 2 * np.pi:
@@ -895,7 +899,7 @@ def generate_square(sample_step, n_samples, amplitude, period, duty=0.5, phase_a
     phase = 2 * np.pi * 1.0 / period * t + phase_at_0
     square = ContinuousDataEven(amplitude * 0.5 * (1 + sp.signal.square(phase)), sample_step, first_sample)
     return square
-    
+
 def test_generate_square():
     sample_step = 1 * uerg.sec
     n_samples = 128
@@ -905,7 +909,7 @@ def test_generate_square():
     square = generate_square(sample_step, n_samples, amplitude, period)
     assert square.is_close(expected_square)
     #plot_quick(square)
-    
+
 def generate_square_freq_modulated(sample_step, n_samples, amplitude, sine_freq, period, duty=0.5, sine_phase_at_0=0, square_phase_at_t_0=0, first_sample=0):
     """
     returns:
@@ -916,7 +920,7 @@ def generate_square_freq_modulated(sample_step, n_samples, amplitude, sine_freq,
     sine = generate_sine(sample_step, n_samples, amplitude, sine_freq, sine_phase_at_0, first_sample)
     modulated = envelope * sine
     return modulated
-    
+
 def test_generate_square_freq_modulated():
     sample_step = 1 * uerg.sec
     n_samples = 2 ** 12
@@ -928,7 +932,7 @@ def test_generate_square_freq_modulated():
     sine = generate_sine(sample_step, n_samples, amplitude, sine_freq)
     assert modulated.is_close(envelope * sine)
 
-    
+
 test_generate_sine()
 test_generate_square()
 test_generate_square_freq_modulated()
@@ -944,44 +948,44 @@ non mathematical manipulations
 def concatenate(sig_list):
     """
     concatenate signals
-    
+
     parameters:
     -------------------
     sig_list : list of ContinuousData
-    
+
     returns:
     -----------------
     sig : ContinuousData
     """
     if len(sig_list) == 0:
         raise ValueError("no signals in the list")
-        
+
     if len(sig_list) == 1:
         return sig_list[0]
-    
+
     if not np.unique(map(type, sig_list))[0] == ContinuousDataEven:
         raise NotImplementedError("concatenate implemented only for ContinuousDataEven type")
-        
+
     sample_steps = pint_extension.array(map(lambda(s) : s.sample_step, sig_list))
     sample_step = sig_list[0].sample_step
     if not pint_extension.allclose(sample_step, sample_steps):
         raise NotImplementedError("concatenate implemented only for ContinuousDataEven type, with same sample rate")
-        
-    
-        
+
+
+
     first_samples = pint_extension.array(map(lambda(s) : s.first_sample, sig_list))
     last_samples = pint_extension.array(map(lambda(s) : s.last_sample, sig_list))
-    
+
     gaps = first_samples[1:] - last_samples[:-1]
     if not pint_extension.allclose(sample_step, gaps):
         print gaps
         print sample_step
         raise NotImplementedError("concatenate implemented only for ContinuousDataEven type, with same sample rate, and right one after the other, at diffrence of sample_step")
-        
+
     values = pint_extension.concatenate(map(lambda s : s.values, sig_list))
     sig = ContinuousDataEven(values, sample_step, sig_list[0].first_sample)
     return sig
-    
+
 def test_concatenate():
     sig_1 = ContinuousDataEven(np.arange(32) * uerg.mamp, uerg.sec)
     chunks = sig_1.get_chunks(15 * uerg.sec)
@@ -992,7 +996,7 @@ def test_concatenate():
     """
     sig_2 = concatenate(chunks)
     assert sig_1.is_close(sig_2)
-    
+
 test_concatenate()
 
 
@@ -1015,13 +1019,13 @@ def diff(contin, n=1):
     """
     numeric differentiation of a ContinuousData
     a wrap around numpy.diff
-    
+
     returns:
     ContinuousData of the same type, of the same same length
     for n == 1:
     all points except the last one are calculated using np.diff,
     the last one is defined to be like the one before it.
-    
+
     TODO: Design issues:
     --------------
     it's not clean / beautiful definition for the last sample, but it hardly matters.
@@ -1031,7 +1035,7 @@ def diff(contin, n=1):
     """
     if type(contin) != ContinuousDataEven:
         raise NotImplementedError
-    
+
     new_vals = np.empty(len(contin.values))
     if n != 1:
         raise NotImplementedError
@@ -1039,9 +1043,9 @@ def diff(contin, n=1):
         new_vals[:-1] = np.diff(contin.values.magnitude, 1)
         new_vals[-1] = new_vals[-2]
         new_vals = new_vals * pint_extension.get_units(contin.values) * contin.sample_rate ** n
-        
+
     return ContinuousDataEven(new_vals, contin.sample_step, contin.first_sample)
-    
+
 def test_diff():
     #copied from other test
     values = np.arange(10) * uerg.amp
@@ -1056,35 +1060,35 @@ def test_diff():
 def correlate(sig_stable, sig_sliding, mode='valid'):
     """
     a correlation between 2 signals. we try to relocate the sliding sig, to fit the location of the stable sig
-    
+
     parameters:
     --------------------
     sig_stable : ContinuousData
-    
+
     sig_sliding : ContinuousData
-    
+
     returns:
     -------------
     the correlation as signal. the peak of the correlation should inticate the bast location for the first sample of sig_sliding
-    
-    
+
+
     """
     warnings.warn("correlate is not tested")
     if not type(sig_stable) in [ContinuousDataEven,] or not type(sig_sliding) in [ContinuousDataEven,]:
         raise NotImplementedError("implemented only for ContinuousDataEven")
-        
+
     if not pint_extension.allclose(sig_stable.sample_step, sig_sliding.sample_step):
         raise NotImplementedError("implemented only for same sample step signals")
-        
+
     if sig_stable.n_samples < sig_sliding.n_samples:
         warnings.warn("note that sig_stable has less points then sig_sliding, why is thay?")
-    
-    # values        
+
+    # values
     a = sig_stable.values.magnitude
     b = sig_sliding.values.magnitude
     c = np.correlate(a, b, mode)
     sig_c_values = c * pint_extension.get_units(sig_stable.values) * pint_extension.get_units(sig_sliding.values) * sig_stable.sample_step
-    
+
     #times
     if mode == 'full':
         first_sample = (-1) * sig_stable.sample_step * (-1 + 0.5 * (sig_stable.n_samples + sig_sliding.n_samples)) + sig_stable.first_sample
@@ -1092,10 +1096,10 @@ def correlate(sig_stable, sig_sliding, mode='valid'):
         raise NotImplementedError("timing the correlation not implemented for same mode")
     elif mode == 'valid':
         raise NotImplementedError("timing the correlation not implemented for valid mode")
-    
+
     sig_c = ContinuousDataEven(sig_c_values, sig_stable.sample_step, first_sample)
     return sig_c
-    
+
 def visual_test_correlate():
     v = np.concatenate([np.arange(10), np.arange(10)[::-1]])
     sig_stable = ContinuousDataEven(v * uerg.mamp, uerg.sec, 10 * uerg.sec)
@@ -1104,20 +1108,20 @@ def visual_test_correlate():
     plot_quick(sig_stable, "o")
     plot_quick(sig_sliding, "o")
     plot_quick(sig_c, "o")
-    
+
 
 def correlate_find_new_location(sig_stable, sig_sliding, mode='valid', is_return_max=False):
     """
     for most of the documentation refer to correlate
     TODO: the signature of this function is not stable, according to user input it returns either 1 or 2 values
-    
+
     parameters:
     --------------------
     is_return_max : bool
         can return also the max value, in order to compare the success of different correlations
-    
-    
-    
+
+
+
     behind the scences:
     ----------------------
     using correlate and np.argmax
@@ -1126,12 +1130,12 @@ def correlate_find_new_location(sig_stable, sig_sliding, mode='valid', is_return
     top_index = np.argmax(corr.values)
     top_domain_sample = corr.first_sample + corr.sample_step * top_index
     max_value = corr.values[top_index]
-    
+
     if not is_return_max:
         return top_domain_sample
     else:
         return top_domain_sample, max_value
-    
+
 def test_correlate_find_new_location():
     v = np.concatenate([np.arange(10), np.arange(10)[::-1]])
     sig_stable = ContinuousDataEven(v * uerg.mamp, uerg.sec, 10 * uerg.sec)
@@ -1142,23 +1146,23 @@ def test_correlate_find_new_location():
     expected_max_val = 2 * (np.arange(10) ** 2).sum() * uerg.mamp ** 2 * uerg.sec
     assert pint_extension.allclose(new_location, expected_new_location)
     assert pint_extension.allclose(max_val, expected_max_val)
-    
+
 def clip(sig, values_range):
     """
     parameters:
     ---------------------
     sig : ContinuousData
-    
+
     values_range : Segment
-    
+
     """
     if type(sig) != ContinuousDataEven:
         raise NotImplementedError
-    
+
     clipped_vals = np.clip(sig.values, values_range.start, values_range.end)
     clipped = ContinuousDataEven(clipped_vals, sig.sample_step, sig.first_sample)
     return clipped
-    
+
 def test_clip():
     v = np.arange(10) * uerg.mamp
     sig = ContinuousDataEven(v, uerg.sec)
@@ -1166,7 +1170,7 @@ def test_clip():
     clipped = clip(sig, Range)
     expected_clipped = ContinuousDataEven(np.clip(v, 3 * uerg.mamp, 6 * uerg.mamp), uerg.sec)
     assert clipped.is_close(expected_clipped)
-    
+
 test_diff()
 #visual_test_correlate()
 test_correlate_find_new_location()
@@ -1188,7 +1192,7 @@ def determine_fft_len(n_samples, mode='accurate'):
     """
     helper function to determine the number of samples for a fft
     if mode is not 'accurate', it's a power of 2
-    
+
     parameters:
     --------------
     n_samples : int
@@ -1203,86 +1207,86 @@ def determine_fft_len(n_samples, mode='accurate'):
         n_fft = n_samples
     else:
         n_fft = numpy_extension.close_power_of_2(n_samples, modes_dict[mode])
-        
+
     return n_fft
-        
+
 def test_determine_fft_len():
     assert determine_fft_len(14, 'accurate') == 14
     assert determine_fft_len(14, 'fast') == 16
     assert determine_fft_len(7, 'trim') == 4
     assert determine_fft_len(5, 'zero-pad') == 8
-    
+
 test_determine_fft_len()
-    
+
 #%%
 def fft(contin, n=None, mode='accurate'):
     """
     fft of a ContinuousData instance.
     implemented only for ContinuousDataEven
     a wrap arround np.fft.fft
-    
+
     parameters:
     ----------------
     n : int
         number of samples for fft
-    
+
     mode : str
         copied from determine_fft_len
         'accurate' like n
         'trim' - smaller then n
         'zero-pad' - bigger then n
-        'closer' - either trim or zero pad, depends which is closer (logarithmic scale)    
-    
+        'closer' - either trim or zero pad, depends which is closer (logarithmic scale)
+
     returns: a ContinuousDataEven object that represents the spectrum
     the frequencies are considerred from -0.5 nyq frequency to 0.5 nyq frequency
     """
     # shoult insert a way to enforce "fast", poer of 2 stuff
     n_sig = len(contin.values)
     # maybe the process deciding the fft len should be encapsulated
-    
+
     if not n:
-        n = determine_fft_len(n_sig, mode)        
-            
+        n = determine_fft_len(n_sig, mode)
+
     freq_step = 1.0 * contin.sample_rate / n
     first_freq = - 0.5 * contin.sample_rate
-    
+
     spectrum = np.fft.fftshift(np.fft.fft(contin.values.magnitude, n))
     spectrum = spectrum * pint_extension.get_units(contin.values) * contin.sample_step
-    
+
     return ContinuousDataEven(spectrum, freq_step, first_freq)
-    
+
 def test_fft():
     sig = ContinuousDataEven(np.arange(32) * uerg.amp, 1.0 * uerg.sec)
     expected_freqs = np.fft.fftshift(np.fft.fftfreq(32)) / uerg.sec
     expected_freqs_vals = np.fft.fftshift(np.fft.fft(np.arange(32))) * uerg.amp * uerg.sec
     expected_spec = ContinuousData(expected_freqs_vals, expected_freqs)
     spec = fft(sig)
-    
+
     assert spec.is_close(expected_spec)
-    
+
     #mostly a copy of the other test
     sig = ContinuousDataEven(np.arange(31) * uerg.amp, 1.0 * uerg.sec)
     expected_freqs_fast = np.fft.fftshift(np.fft.fftfreq(32)) / uerg.sec
     expected_freqs_vals_fast = np.fft.fftshift(np.fft.fft(np.arange(31), 32)) * uerg.amp * uerg.sec
     expected_spec_fast = ContinuousData(expected_freqs_vals_fast, expected_freqs_fast)
     spec_fast = fft(sig, mode='fast')
-    
+
     assert spec_fast.is_close(expected_spec_fast)
-    
-    
+
+
 test_fft()
 #%%
 
 
 
 
-    
+
 """
 def freq_filter(contin, freq_ranges, ?, ?, ?):
     raise NotImplementedError
-    
-     
-    @uerg.wraps(None, (None, uerg.Hz, uerg.Hz, None, None, None, uerg.Hz))    
+
+
+    @uerg.wraps(None, (None, uerg.Hz, uerg.Hz, None, None, None, uerg.Hz))
     def firwin_pint(numtaps, cutoff, width, window, pass_zero, scale, nyq):
         return sp.signal.firwin(numtaps, cutoff, width, window, pass_zero, scale, nyq)
 """
@@ -1290,12 +1294,12 @@ def freq_filter(contin, freq_ranges, ?, ?, ?):
 def band_pass_filter(sig, freq_range, mask_len):
     """
     band pass filter of ContinuousDataEven
-    
+
     parameters:
     freq_range: a Segment of frequencies
-    
+
     implemented using np.convolve with a mask. maybe with fft is better
-    
+
     XXX TODO: shuold change interface. maks len is something without units. shoult receive something else
     XXX this function is not stable with downsampling for this reason
     """
@@ -1310,7 +1314,7 @@ def band_pass_filter(sig, freq_range, mask_len):
     filterred_values = scipy_extension.smart_convolve(sig.values.magnitude, mask_1, mode="same") * pint_extension.get_units(sig.values)
     filterred = ContinuousDataEven(filterred_values, sig.sample_step, sig.first_sample)
     return filterred
-    
+
 def test_band_pass_filter():
     sample_step = uerg.sec
     np.random.seed(13)
@@ -1321,18 +1325,18 @@ def test_band_pass_filter():
     white_noise_filterred_spec = fft(white_noise_filterred)
     plot_quick(white_noise_spec, is_abs=True)
     plot_quick(white_noise_filterred_spec, is_abs=True)
-    
-    
-    
-    
+
+
+
+
 # test_band_pass_filter()
-    
-    
+
+
 #%%
 
 
 
-    
+
 def hilbert(sig, mode='fast'):
     """
     returns the analytic signal
@@ -1343,7 +1347,7 @@ def hilbert(sig, mode='fast'):
     new_sample_step = 1.0 * sig.sample_step * sig.n_samples / n_fft
     analytic_signal = ContinuousDataEven(analytic_sig_values, new_sample_step, sig.first_sample)
     return analytic_signal
-    
+
 def test_hilbert():
     # copied from test_pm_demodulation
     sample_step = 1.0 * uerg.sec
@@ -1362,15 +1366,15 @@ def test_hilbert():
     plot_quick(fft(expected_sine_hilbert), is_abs=True)
     """
     assert sine_hilbert.is_close(expected_sine_hilbert)
-    
-    
+
+
 def pm_demodulation(sig, mode='fast'):
     """
     based on hilbert transform.
     the pm demodulation at the edges is not accurate.
     TODO: map how much of the edges is a problem
     TODO: maybe it should return only the time without the edges.
-    TODO: how to improve the pm demodulation at the edges?    
+    TODO: how to improve the pm demodulation at the edges?
     TODO: maybe should add a "n_fft" parameter
     TODO: maybe it's better to allow calculation of phase with separation to windows?
     """
@@ -1382,7 +1386,7 @@ def pm_demodulation(sig, mode='fast'):
     phase_wrapped = np.angle(analytic_sig.values.magnitude)
     phase = np.unwrap(phase_wrapped) * uerg.dimensionless
     return ContinuousDataEven(phase, analytic_sig.sample_step, analytic_sig.first_sample)
-    
+
 def test_pm_demodulation():
     check_range = Segment(np.array([2, 30]) * uerg.ksec)
     sample_step = 1.0 * uerg.sec
@@ -1393,7 +1397,7 @@ def test_pm_demodulation():
     expected_phase_sig = ContinuousDataEven(phase, sample_step)
     phase_sig = pm_demodulation(sine)
     assert phase_sig[check_range].is_close(expected_phase_sig[check_range], values_rtol=0.01)
-    
+
     time = np.arange(2 ** 15 - 100) * sample_step
     phase = 2 * np.pi * freq * time
     sine = ContinuousDataEven(np.sin(phase) * uerg.mamp, sample_step)
@@ -1408,7 +1412,7 @@ def test_pm_demodulation():
     #plot(phase_sig, fig)
     #assert pint_extension.allclose(phase_sig.sample_step, expected_phase_sig.sample_step)
     #assert phase_sig[check_range].is_close(expected_phase_sig[check_range], values_rtol=0.01)
-        
+
 def fm_demodulation(sig, mode='fast'):
     """
     fm demodulation
@@ -1418,7 +1422,7 @@ def fm_demodulation(sig, mode='fast'):
     angular_freq = diff(sig_phase)
     freq = angular_freq.gain(1.0 / (2 * np.pi))
     return freq
-    
+
 def test_fm_demodulation():
     # copied from test_pm_demodulation
     check_range = Segment(np.array([2, 30]) * uerg.ksec)
@@ -1430,7 +1434,7 @@ def test_fm_demodulation():
     expected_freq_sig = ContinuousDataEven(np.ones(2 ** 15) * freq, sample_step)
     freq_sig = fm_demodulation(sine)
     assert freq_sig[check_range].is_close(expected_freq_sig[check_range], values_rtol=0.01)
-    
+
 def am_demodulation_hilbert(sig, mode='fast'):
     #worning copied from pm_demodulation
     if sig.n_samples < 2 ** 10:
@@ -1439,7 +1443,7 @@ def am_demodulation_hilbert(sig, mode='fast'):
     envelope = np.abs(analytic_sig.values.magnitude) * pint_extension.get_units(analytic_sig.values)
     sig_am = ContinuousDataEven(envelope, analytic_sig.sample_step, analytic_sig.first_sample)
     return sig_am
-    
+
 def test_am_demodulation_hilbert():
     check_range = Segment(np.array([2, 30]) * uerg.ksec)
     sample_step = 1.0 * uerg.sec
@@ -1455,7 +1459,7 @@ def test_am_demodulation_hilbert():
     plot_quick(expected_sine_am)
     """
     assert sine_am[check_range].is_close(expected_sine_am[check_range], values_rtol=0.01)
-    
+
     """
     this test fails now, it needs is_close_l_1 to work properly
     period = 100 * uerg.sec
@@ -1469,8 +1473,8 @@ def test_am_demodulation_hilbert():
     # the big tolerance is due to gibs effect
     assert sig_am[check_range].is_close_l_1(expected_sig_am[check_range], values_rtol=0.2, values_atol=0.2 * amp)
     """
-    
-    
+
+
 def am_demodulation_convolution(sig, t_smooth):
     """
     params:
@@ -1514,13 +1518,13 @@ def test_am_demodulation_convolution():
     # the big tolerance is due to gibs effect
     assert sig_am[check_range].is_close_l_1(expected_sig_am[check_range], values_rtol=0.2, values_atol=0.2 * amp)
 
-    
+
 def am_demodulation_filter(sig, dt_smooth, mask_len):
     warnings.warn("not tested well")
     top_freq = 1.0 / dt_smooth
     band = Segment([1e-12 * pint_extension.get_units(top_freq), top_freq])
     return band_pass_filter(sig.abs(), band, mask_len = mask_len)
-    
+
 
 def test_am_demodulation_filter():
     check_range = Segment(np.array([2, 30]) * uerg.ksec)
@@ -1529,13 +1533,13 @@ def test_am_demodulation_filter():
     freq_1 = 0.15 * uerg.Hz
     freq_2 = 0.40 * uerg.Hz
     amp = uerg.mamp
-    dt = 1.0 / freq_1 * 0.5    
+    dt = 1.0 / freq_1 * 0.5
     """
     sine_1 = generate_sine(sample_step, n_samples, amp, sine_freq=freq_1)
     sine_2 = generate_sine(sample_step, n_samples, amp, freq_2)
     sig = sine_1 + sine_2
-    
-    
+
+
     am = am_demodulation_filter(sig, dt, 128)
     fig, junk = plot(sig)
     plot(sine_1.abs(), fig)
@@ -1543,7 +1547,7 @@ def test_am_demodulation_filter():
     plot_quick(sine_1.abs() - am)
     assert sine_1.is_close(am, domain_rtol=0.01, domain_atol=0.1 * uerg.mamp)
     """
-    
+
     dt = 1.0 / freq_1 * 3
     period = 100 * uerg.sec
     sig = generate_square_freq_modulated(sample_step, n_samples, amp, freq_1, period)
@@ -1555,8 +1559,8 @@ def test_am_demodulation_filter():
     plot_quick(sig_am - expected_sig_am, fig)
     # the big tolerance is due to gibs effect
     assert sig_am[check_range].is_close_l_1(expected_sig_am[check_range], values_rtol=0.2, values_atol=0.2 * amp)
-    
-test_hilbert()    
+
+test_hilbert()
 test_pm_demodulation()
 test_fm_demodulation()
 test_am_demodulation_hilbert()
@@ -1567,22 +1571,22 @@ test_am_demodulation_hilbert()
 def filter_downsample_fm_demodulation_base_band_filter(raw_sig, freq_range, freq_mask_len, down_factor, base_band_range, base_band_mask_len):
     """
     preprocessing of the signal.
-    
+
     returns:
     -------------
     signal : ContinuousDataEven
         signal after filtering, de-fm
-    
+
     """
     warnings.warn("filter_downsample_fm_demodulation_base_band_filter not tested")
     # step_2: filtering the raw_data
     # Note:  getting memory error with long signals (290 M-Byte and more). the problem is with the convolution. need to try fftconvolve
     # maybe we want to filter, only after finding where are the traces, and with the exact band of the real raw_sig (not noise)
     filterred = band_pass_filter(raw_sig, freq_range, freq_mask_len)
-    
+
     if False:
         plot_quick(filterred[parameters.time_for_quick_plot])
-    
+
     # step_3: down sampling, (which also aliases, and changed the freq of the signal)
     # XXX: maybe the frequency band is close to the +0.5 nyq, so the fm
     # signal would be split between +0.5nyq and -0.5nyq
@@ -1592,17 +1596,17 @@ def filter_downsample_fm_demodulation_base_band_filter(raw_sig, freq_range, freq
     # it's a modular / sawtooth calculation. if it's "splinched", then
     # just add and use modulu (roll it)
     down = filterred.down_sample(down_factor)
-    
+
     if False:
         plot_quick(down)
         plot_quick(fft(down), is_abs=True)
-    
+
     # step_4: fm demodulation
     de_fm = fm_demodulation(down, mode='fast')
-    
+
     if False:
         plot_quick(de_fm)
-    
+
     # step 4.1 filter the base-band signal
     sig = band_pass_filter(de_fm, freq_range=base_band_range, mask_len=base_band_mask_len)
     return sig
@@ -1616,8 +1620,8 @@ def resample(sig, new_sample_points):
     algorithm: linear intrapulation
     """
     raise NotImplementedError
-    
 
-    
-    
- 
+
+
+
+

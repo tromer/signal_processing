@@ -137,6 +137,14 @@ Main issues before first release
 
 #. connect to readthedocs
 
+#. git management: two files from the past, were split to several other files, and I didn't delete them.
+   the reason is I don't want to loose the history (log) of commits of their content, up to the split.
+   I need to understand how to keep the log, and delete the files.
+   these files are:
+   signal_processing/continuous_data.py
+   signal_processing/continuous/continuous_data.py
+   signal_processing/segments.py
+
 Design principles
 ---------------------
 1. The API of the ContinuousData object have several distinguished layers and they have to be repected.
