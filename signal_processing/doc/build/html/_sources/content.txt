@@ -1,3 +1,0 @@
-
-.. automodule:: signal_processing/threshold
-    :members:
