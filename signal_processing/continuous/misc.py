@@ -12,7 +12,7 @@ def filter_downsample_fm_demodulation_base_band_filter(raw_sig, freq_range, freq
     """
     preprocessing of the signal.
 
-    returns:
+    returns
     -------------
     signal : ContinuousDataEven
         signal after filtering, de-fm

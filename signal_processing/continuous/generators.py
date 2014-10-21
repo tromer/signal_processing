@@ -32,7 +32,7 @@ def generate_const(sample_step, n_samples, value):
 
 def generate_sine(sample_step, n_samples, amplitude, sine_freq, phase_at_0=0, first_sample=0):
     """
-    returns:
+    returns
     a ContinuousDataEven which is a sine
 
     TODO: add DC parameter
@@ -55,7 +55,7 @@ def white_noise(sample_step, n_samples, amplitude, mean=0):
 
 def generate_square(sample_step, n_samples, amplitude, period, duty=0.5, phase_at_0=0, first_sample=0):
     """
-    returns:
+    returns
     a ContinuousDataEven which is suqare wave with min at zero and max at amplitude
 
     TODO: maybe add a parameter of base level.
@@ -75,7 +75,7 @@ def generate_square(sample_step, n_samples, amplitude, period, duty=0.5, phase_a
 
 def square_freq_modulated(sample_step, n_samples, amplitude, sine_freq, period, duty=0.5, sine_phase_at_0=0, square_phase_at_t_0=0, first_sample=0):
     """
-    returns:
+    returns
     ContinuousDataEven which is a square wave modulated by sine. it's coherentic,
     means that all the "pulses" are taken from the same sine unstopped
     """

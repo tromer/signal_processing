@@ -45,7 +45,7 @@ def read_wav(filename, domain_unit=U_.sec, first_sample=0,
     some source:
     http://nbviewer.ipython.org/github/mgeier/python-audio/blob/master/audio-files/audio-files-with-scipy-io.ipynb#Reading
 
-    returns:
+    returns
     ------------
     if channels == None, returns signal
     if channels != None, returns a list of signals

@@ -159,7 +159,7 @@ class ContinuousDataEven(ContinuousData):
     def total_domain_range(self):
         """
 
-        returns:
+        returns
         ------------
         domain_range : Segment
         """
@@ -198,7 +198,7 @@ class ContinuousDataEven(ContinuousData):
         new_vals : U_.Quantity
             vectors of values of with the same amount of values as the samples
 
-        returns:
+        returns
         ---------
         new_sig : ContinuousDataEven
 
@@ -430,7 +430,7 @@ class ContinuousDataEven(ContinuousData):
 
         phase_0_carrier
 
-        returns:
+        returns
         -------------
         sig_modulated
         """

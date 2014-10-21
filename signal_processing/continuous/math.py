@@ -22,8 +22,12 @@ def diff(contin, n=1):
     numeric differentiation of a ContinuousData
     a wrap around numpy.diff
 
-    returns:
+    returns
+    -------------------
     ContinuousData of the same type, of the same same length
+
+    notes
+    --------
     for n == 1:
     all points except the last one are calculated using np.diff,
     the last one is defined to be like the one before it.
@@ -59,7 +63,7 @@ def correlate(sig_stable, sig_sliding, mode='valid'):
 
     sig_sliding : ContinuousData
 
-    returns:
+    returns
     -------------
     the correlation as signal. the peak of the correlation should inticate the bast location for the first sample of sig_sliding
 
@@ -98,6 +102,14 @@ def correlate(sig_stable, sig_sliding, mode='valid'):
     return sig_c
 
 
+def correlate_find_shift(sig_stable, sig_stable, mode='valid'):
+    """
+
+    returns
+    ---------
+    shift : Quantity
+        the shift that the sliding signal need to be in max correlation with
+        the stable sig
 
 def correlate_find_new_location(sig_stable, sig_sliding, mode='valid', is_return_max=False):
     """
