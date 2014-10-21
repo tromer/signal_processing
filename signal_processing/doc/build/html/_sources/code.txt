@@ -10,6 +10,7 @@ continuous
 
 .. autoclass:: signal_processing.ContinuousData
     :members:
+    :special-members:
 
 segments
 ===========

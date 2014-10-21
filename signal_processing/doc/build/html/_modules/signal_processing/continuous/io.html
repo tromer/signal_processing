@@ -57,6 +57,7 @@
 <span class="sd">io</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">glob</span>
 <span class="kn">import</span> <span class="nn">warnings</span>
 
@@ -128,6 +129,29 @@
 
     <span class="c">#return signal</span>
 </div>
+<div class="viewcode-block" id="read_wav_many"><a class="viewcode-back" href="../../../code.html#signal_processing.continuous.io.read_wav_many">[docs]</a><span class="k">def</span> <span class="nf">read_wav_many</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="n">domain_unit</span><span class="o">=</span><span class="n">U_</span><span class="o">.</span><span class="n">sec</span><span class="p">,</span> <span class="n">first_sample</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                  <span class="n">value_unit</span><span class="o">=</span><span class="n">U_</span><span class="o">.</span><span class="n">milliamp</span><span class="p">,</span>
+                  <span class="n">expected_sample_rate_and_tolerance</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">channels</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    reads all the wavs in a directory</span>
+
+<span class="sd">    add docs</span>
+<span class="sd">    parameters:</span>
+<span class="sd">    ------------</span>
+<span class="sd">    directory : str</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">sig_list</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">print</span> <span class="s">&quot;directory: , &quot;</span><span class="p">,</span> <span class="n">directory</span>
+    <span class="k">print</span> <span class="s">&quot;path:, &quot;</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="s">&quot;*.wav&quot;</span><span class="p">)</span>
+    <span class="n">files</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="s">&quot;*.wav&quot;</span><span class="p">))</span>
+    <span class="k">print</span> <span class="n">files</span>
+    <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">files</span><span class="p">:</span>
+        <span class="n">curr_sig</span> <span class="o">=</span> <span class="n">read_wav</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">domain_unit</span><span class="p">,</span> <span class="n">first_sample</span><span class="p">,</span> <span class="n">value_unit</span><span class="p">,</span>
+                                 <span class="n">expected_sample_rate_and_tolerance</span><span class="p">,</span> <span class="n">channels</span><span class="p">)</span>
+        <span class="n">sig_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">curr_sig</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">sig_list</span>
+</div>
 <div class="viewcode-block" id="write_wav"><a class="viewcode-back" href="../../../code.html#signal_processing.continuous.io.write_wav">[docs]</a><span class="k">def</span> <span class="nf">write_wav</span><span class="p">(</span><span class="n">contin</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    write contin to wav file, and return the units of the axis, and the first sample</span>
@@ -141,30 +165,37 @@
 <span class="sd">    s_cut = s[Segment([5.720, 6.610], U_.sec)]</span>
 <span class="sd">    continuous_data.write_wav(s_cut, &quot;/home/noam/lab_project/Dropbox/Noam/Periodic recordings for Noam/fast-evo1-chassis-10100-C3000-N200_ettus_cut.wav&quot;)</span>
 
+<span class="sd">    known issues:</span>
+<span class="sd">    ---------------</span>
+<span class="sd">    usually the data is floats. when written to a file it is read well by</span>
+<span class="sd">    read_wav, by the program audacity, but not by python module wave.</span>
+<span class="sd">    wave.open doesn&#39;t recognize the format</span>
+
+<span class="sd">    possible improvement</span>
+<span class="sd">    ---------------------</span>
+<span class="sd">    if it&#39;s possible to write some parameters as the wav metadata, it&#39;s great.</span>
+<span class="sd">    so far I didn&#39;t find a way</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">print</span> <span class="n">filename</span>
     <span class="k">if</span> <span class="n">contin</span><span class="o">.</span><span class="n">domain_samples</span><span class="o">.</span><span class="n">dimensionality</span> <span class="o">!=</span> <span class="n">U_</span><span class="o">.</span><span class="n">sec</span><span class="o">.</span><span class="n">dimensionality</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">sp</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">wavfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">rate</span><span class="o">=</span><span class="n">contin</span><span class="o">.</span><span class="n">sample_rate</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">U_</span><span class="o">.</span><span class="n">Hz</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">contin</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">magnitude</span><span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">wav_file</span><span class="p">:</span>
+            <span class="n">sp</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">wavfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span>
+                <span class="n">wav_file</span><span class="p">,</span>
+                <span class="n">rate</span><span class="o">=</span><span class="n">contin</span><span class="o">.</span><span class="n">sample_rate</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">U_</span><span class="o">.</span><span class="n">Hz</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span><span class="p">,</span>
+                <span class="n">data</span><span class="o">=</span><span class="n">contin</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">magnitude</span><span class="p">)</span>
 
 </div>
-<span class="k">def</span> <span class="nf">write_wav_many</span><span class="p">(</span><span class="n">contin_list</span><span class="p">,</span> <span class="n">directory</span><span class="p">):</span>
-    <span class="k">raise</span> <span class="ne">NotImplementedError</span>
-
-
-<div class="viewcode-block" id="read_wav_many"><a class="viewcode-back" href="../../../code.html#signal_processing.continuous.io.read_wav_many">[docs]</a><span class="k">def</span> <span class="nf">read_wav_many</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="n">domain_unit</span><span class="o">=</span><span class="n">U_</span><span class="o">.</span><span class="n">sec</span><span class="p">,</span> <span class="n">first_sample</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
-                  <span class="n">value_unit</span><span class="o">=</span><span class="n">U_</span><span class="o">.</span><span class="n">milliamp</span><span class="p">,</span>
-                  <span class="n">expected_sample_rate_and_tolerance</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">channels</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+<div class="viewcode-block" id="write_wav_many"><a class="viewcode-back" href="../../../code.html#signal_processing.continuous.io.write_wav_many">[docs]</a><span class="k">def</span> <span class="nf">write_wav_many</span><span class="p">(</span><span class="n">contin_list</span><span class="p">,</span> <span class="n">directory</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    write a list of signals to a directory</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">raise</span> <span class="ne">NotImplementedError</span>
-    <span class="n">sig_list</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="n">files</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">directory</span> <span class="o">+</span> <span class="s">&quot;*.wav&quot;</span><span class="p">)</span>
-    <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">files</span><span class="p">:</span>
-        <span class="n">sig_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">read_wav</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">domain_unit</span><span class="p">,</span> <span class="n">first_sample</span><span class="p">,</span> <span class="n">value_unit</span><span class="p">,</span>
-                                 <span class="n">expected_sample_rate_and_tolerance</span><span class="p">,</span> <span class="n">channels</span><span class="p">))</span>
-
-    <span class="k">return</span> <span class="n">sig_list</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">contin_list</span><span class="p">)):</span>
+        <span class="n">curr_sig</span> <span class="o">=</span> <span class="n">contin_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+        <span class="n">write_wav</span><span class="p">(</span><span class="n">curr_sig</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="s">&#39;.&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">name</span><span class="p">,</span> <span class="s">&quot;wav&quot;</span><span class="p">])))</span>
 </div>
 <div class="viewcode-block" id="fromfile"><a class="viewcode-back" href="../../../code.html#signal_processing.continuous.io.fromfile">[docs]</a><span class="k">def</span> <span class="nf">fromfile</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -175,8 +206,8 @@
 <span class="sd">    probably a folder with wav file, and txt/csv/xml file for units</span>
 <span class="sd">    etc</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">raise</span> <span class="ne">NotImplementedError</span>
-</pre></div></div>
+    <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+</pre></div>
 
           </div>
         </div>

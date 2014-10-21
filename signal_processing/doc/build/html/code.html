@@ -57,31 +57,68 @@
 <span class="target" id="module-signal_processing.continuous.continuous_data_obj"></span><span class="target" id="module-continuous_data_obj"></span><dl class="class">
 <dt id="signal_processing.continuous.continuous_data_obj.ContinuousData">
 <em class="property">class </em><tt class="descclassname">signal_processing.continuous.continuous_data_obj.</tt><tt class="descname">ContinuousData</tt><big>(</big><em>values</em>, <em>domain_samples</em>, <em>values_des=None</em>, <em>domain_des=None</em><big>)</big><a class="reference internal" href="_modules/signal_processing/continuous/continuous_data_obj.html#ContinuousData"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#signal_processing.continuous.continuous_data_obj.ContinuousData" title="Permalink to this definition">¶</a></dt>
-<dd><p>Note: see also the object Segments. they go hand in hand together, refer to different aspects of the same subjects
-this class represents any kind of continuous data (one dimensional).
+<dd><p>this class represents any kind of continuous data (one dimensional).
 It includes a few kinds that first seem different from each other, has a lot in common.</p>
-<p>examples:
--<em>-</em>-<em>-</em>-<em>-</em></p>
-<p>1. a &#8220;signal&#8221; - measurement of the electromagnetic field / voltage as a function of time.
+<p><strong>examples:</strong></p>
+<ol class="arabic">
+<li><dl class="first docutils">
+<dt>a &#8220;signal&#8221;:</dt>
+<dd><p class="first last">measurement of the electromagnetic field / voltage as a function of time.
 similar examples: sound (as a function of time), seismic measurments.</p>
-<p>2. a spatial measurement: height as a function of place, some material density as a function of place.
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>a spatial measurement:</dt>
+<dd><p class="first last">height as a function of place, some material density as a function of place.
 similar examples: stress as a function of place.</p>
-<ol class="arabic simple" start="3">
-<li>a distribution: the number of occurances in a population, as a function of age / height / amplitude</li>
-<li>a kinematic property of a system: position / velocity / acceleration / angle as a function of time.</li>
-<li>even a spectrum of a signal - the magnitude as a function of frequency.</li>
-</ol>
-<p>6. any connection between two continuous variables, such as a response curv of harmonic ocsillator:
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>a distribution:</dt>
+<dd><p class="first last">the number of occurances in a population, as a function of age / height / amplitude</p>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>a kinematic property of a physical system:</dt>
+<dd><p class="first last">position / velocity / acceleration / angle as a function of time.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>spectrum of a signal:</dt>
+<dd><p class="first last">the magnitude as a function of frequency.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>the most general case:</dt>
+<dd><p class="first last">any connection between two continuous variables.
+example: a response curv of harmonic ocsillator:
 amplitude of the ocsillator as a function of the frequency of external force.</p>
+</dd>
+</dl>
+</li>
+</ol>
 <p>There are some differences beween these kinds of data. Maybe some of them would be implemented as a subclass</p>
-<p>basic assumptions:
--<em>-</em>-<em>-</em>-<em>-</em>-<em>-</em>-<em>-</em>-<em>-</em></p>
+<p><strong>basic assumptions:</strong></p>
 <p>1. the acctual data in the real world can be really continuous.
 here we of course use sample points. every sample point has exectly one corresponding value.</p>
 <p>2. We assume that our data really representes the reallity, spesifically, that
 represents well also the times / places which we didn&#8217;t measure.
 So, we assume that the data is not changing &#8220;too fast&#8221; compared to our resolution.
 In signal processing terms, we assume that we didn&#8217;t under-sample.</p>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<dl class="docutils">
+<dt><tt class="xref py py-obj docutils literal"><span class="pre">signal_processing.Segments</span></tt></dt>
+<dd>object that describe segments of interest within a <cite>ContinuousData</cite></dd>
+</dl>
+<p class="last"><tt class="xref py py-obj docutils literal"><span class="pre">signal_processing.SegmentsOfContinuous</span></tt></p>
+</div>
+<p class="rubric">Notes</p>
 <ol class="arabic simple">
 <li>we <em>do not</em> assume even sampling distance. that would be included in a subclass.</li>
 <li>this class is intentioned to be used with units. it&#8217;s real world measurements.</li>
@@ -94,6 +131,7 @@ For example: diff sould take the distance between samples into account.
 FFT sould take the sample rate into account, and so on.
 When you encounter an operation that is not implemented for ContinuousData,
 the correct thing to do is to wrap the numpy or scipy operation.</p>
+<p><strong>design issues</strong></p>
 <p>1. this object is immutable, appart from changing the string describing
 the domain and values.</p>
 <ol class="arabic simple" start="2">
@@ -117,16 +155,8 @@ the domain and values.</p>
 <li>In order to restore symetry, we could also work with a Values object.</li>
 </ol>
 <p>the problem is that sig.values call is very very common in the functions of the package, and it would be pity to lenghen it to sig.values.samples</p>
-<p>1. maybe I want to implement a domain_samples object. it would have
-a subclass of even samples</p>
-<p>2. maybe it&#8217;s smart to implement a similar object with few channels.
-It may be useful in some implementation and performance issues,
-since the channels would be a 2D np.ndarray, and channel-wise
-operations like fft would be applied along axis, and be
-efficient.</p>
-<ol class="arabic simple" start="3">
-<li>maybe add a self.base attribute, like in np.ndarrays</li>
-</ol>
+<p class="rubric">Attributes</p>
+<p class="rubric">Methods</p>
 <dl class="method">
 <dt id="signal_processing.continuous.continuous_data_obj.ContinuousData.gain">
 <tt class="descname">gain</tt><big>(</big><em>factor</em><big>)</big><a class="reference internal" href="_modules/signal_processing/continuous/continuous_data_obj.html#ContinuousData.gain"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#signal_processing.continuous.continuous_data_obj.ContinuousData.gain" title="Permalink to this definition">¶</a></dt>
@@ -148,9 +178,24 @@ TODO: maybe should be a norm parameter, to decide which norm to use</p>
 
 <dl class="method">
 <dt id="signal_processing.continuous.continuous_data_obj.ContinuousData.plot">
-<tt class="descname">plot</tt><big>(</big><em>fig=None</em><big>)</big><a class="reference internal" href="_modules/signal_processing/continuous/continuous_data_obj.html#ContinuousData.plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#signal_processing.continuous.continuous_data_obj.ContinuousData.plot" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">plot</tt><big>(</big><em>fig=None</em>, <em>domain_range=None</em><big>)</big><a class="reference internal" href="_modules/signal_processing/continuous/continuous_data_obj.html#ContinuousData.plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#signal_processing.continuous.continuous_data_obj.ContinuousData.plot" title="Permalink to this definition">¶</a></dt>
 <dd><p>basic plot</p>
-<p>the fig only, for plotting other signals on top</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>fig</strong> : figure</p>
+<p><strong>domain_range</strong> : Segment</p>
+<blockquote>
+<div><p>if you want to plot only a certain range from the signal</p>
+</div></blockquote>
+<p><strong>returns</strong></p>
+<p><strong>&#8212;&#8212;&#8212;-</strong></p>
+<p class="last"><strong>the fig only, for plotting other signals on top</strong></p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
@@ -166,6 +211,8 @@ TODO: maybe should be a norm parameter, to decide which norm to use</p>
 <em class="property">class </em><tt class="descclassname">signal_processing.continuous.continuous_data_even_obj.</tt><tt class="descname">ContinuousDataEven</tt><big>(</big><em>values</em>, <em>sample_step</em>, <em>domain_start=0</em>, <em>values_description=None</em>, <em>domain_description=None</em><big>)</big><a class="reference internal" href="_modules/signal_processing/continuous/continuous_data_even_obj.html#ContinuousDataEven"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#signal_processing.continuous.continuous_data_even_obj.ContinuousDataEven" title="Permalink to this definition">¶</a></dt>
 <dd><p>read the ContinuousData documentation.
 the domain samples are evenly spaced</p>
+<p class="rubric">Attributes</p>
+<p class="rubric">Methods</p>
 <dl class="method">
 <dt id="signal_processing.continuous.continuous_data_even_obj.ContinuousDataEven.demodulate">
 <tt class="descname">demodulate</tt><big>(</big><em>kind</em>, <em>mode='accurate'</em><big>)</big><a class="reference internal" href="_modules/signal_processing/continuous/continuous_data_even_obj.html#ContinuousDataEven.demodulate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#signal_processing.continuous.continuous_data_even_obj.ContinuousDataEven.demodulate" title="Permalink to this definition">¶</a></dt>
@@ -175,7 +222,14 @@ the domain samples are evenly spaced</p>
 <dt>mode <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
 <dd>link to numpy_extension. the preparator of fourier??</dd>
 </dl>
-<p>sig_demodulated</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">sig_demodulated</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="attribute">
@@ -192,22 +246,34 @@ takes the samples step into account.
 a <em>thin</em> wrap arround pint_extension.fft
 uses ContinuousDataEven._spectrum_parameters for determining all
 the spectrum frequency parameters</p>
-<dl class="docutils">
-<dt>mode <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
-<dd>if n_fft is None (default) then n_fft is determined according to a mode bevaviour
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>mode</strong> : str</p>
+<blockquote>
+<div><p>if n_fft is None (default) then n_fft is determined according to a mode bevaviour
 copied from determine_fft_len
 &#8216;accurate&#8217; like n
 &#8216;trim&#8217; - smaller then n
 &#8216;zero-pad&#8217; - bigger then n
-&#8216;closer&#8217; - either trim or zero pad, depends which is closer (logarithmic scale)</dd>
-<dt>n_fft <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
-<dd>number of samples for fft</dd>
-</dl>
-<dl class="docutils">
-<dt>spectrum <span class="classifier-delimiter">:</span> <span class="classifier">ContinuousDataEven</span></dt>
-<dd>a ContinuousDataEven object that represents the spectrum</dd>
-</dl>
-<p>the frequencies are considerred from -0.5 nyq frequency to 0.5 nyq frequency</p>
+&#8216;closer&#8217; - either trim or zero pad, depends which is closer (logarithmic scale)</p>
+</div></blockquote>
+<p><strong>n_fft</strong> : int</p>
+<blockquote>
+<div><p>number of samples for fft</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>spectrum</strong> : ContinuousDataEven</p>
+<blockquote>
+<div><p>a ContinuousDataEven object that represents the spectrum</p>
+</div></blockquote>
+<p class="last">the frequencies are considerred from -0.5 nyq frequency to 0.5 nyq frequency</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
@@ -220,70 +286,73 @@ copied from determine_fft_len
 <dt id="signal_processing.continuous.continuous_data_even_obj.ContinuousDataEven.generate">
 <em class="property">classmethod </em><tt class="descname">generate</tt><big>(</big><em>waveform</em>, <em>sample_step</em>, <em>n_samples</em>, <em>amplitude=&lt;Quantity(1</em>, <em>'dimensionless')&gt;</em>, <em>domain_start=0</em>, <em>phase_at_0=0</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/signal_processing/continuous/continuous_data_even_obj.html#ContinuousDataEven.generate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#signal_processing.continuous.continuous_data_even_obj.ContinuousDataEven.generate" title="Permalink to this definition">¶</a></dt>
 <dd><p>generate signal of certain type</p>
-<dl class="docutils">
-<dt>waveform <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
-<dd><p class="first">&#8216;white_noise&#8217;
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>waveform</strong> : str</p>
+<blockquote>
+<div><p>&#8216;white_noise&#8217;
 &#8216;const&#8217;</p>
-<p class="last">&#8216;sine&#8217;
+<p>&#8216;sine&#8217;
 &#8216;square&#8217;</p>
-</dd>
-</dl>
-<p>sample_step : <a href="#id1"><span class="problematic" id="id2">U_</span></a>.Quantity</p>
-<p>n_samples : int</p>
-<dl class="docutils">
-<dt>amplitude <span class="classifier-delimiter">:</span> <span class="classifier"><a href="#id3"><span class="problematic" id="id4">U_</span></a>.Quantity</span></dt>
-<dd>all the values would be between -amplitude to +amplitude</dd>
-</dl>
-<p>domain_start : <a href="#id5"><span class="problematic" id="id6">U_</span></a>.Quantity</p>
-<dl class="docutils">
-<dt>phase_at_0 <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
-<dd>between -pi and pi, or between 0 and 2 * pi</dd>
-</dl>
-<p>freq : <a href="#id7"><span class="problematic" id="id8">U_</span></a>.Quantity</p>
-<dl class="docutils">
-<dt>period <span class="classifier-delimiter">:</span> <span class="classifier"><a href="#id9"><span class="problematic" id="id10">U_</span></a>.Quantity</span></dt>
-<dd>instead of freq</dd>
-<dt>duty <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
-<dd>for square</dd>
-</dl>
-<p>mean : <a href="#id11"><span class="problematic" id="id12">U_</span></a>.Quantity</p>
-<p>sig : ContinuousDataEven</p>
-<p>maybe passing a string to determine the type of waveform is not optimal
-other options is passing a function like np.sin, sp.signal.square,
-utils.white_noise.
-it&#8217;s also optional to create a flag is_periodic
-maybe it should be possible to pass every function that is defined on
-the segment [0, 2 * pi] as a  waveform for periodic function</p>
+</div></blockquote>
+<p><strong>sample_step</strong> : <a href="#id1"><span class="problematic" id="id2">U_</span></a>.Quantity</p>
+<p><strong>n_samples</strong> : int</p>
+<p><strong>amplitude</strong> : <a href="#id3"><span class="problematic" id="id4">U_</span></a>.Quantity</p>
+<blockquote>
+<div><p>all the values would be between -amplitude to +amplitude</p>
+</div></blockquote>
+<p><strong>domain_start</strong> : <a href="#id5"><span class="problematic" id="id6">U_</span></a>.Quantity</p>
+<p><strong>phase_at_0</strong> : float</p>
+<blockquote>
+<div><p>between -pi and pi, or between 0 and 2 * pi</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><strong>sig</strong> : ContinuousDataEven</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
 <dt id="signal_processing.continuous.continuous_data_even_obj.ContinuousDataEven.get_chunks">
 <tt class="descname">get_chunks</tt><big>(</big><em>domain_duration</em>, <em>is_power_of_2_samples=True</em>, <em>is_overlap=False</em>, <em>mode_last_chunk='throw'</em><big>)</big><a class="reference internal" href="_modules/signal_processing/continuous/continuous_data_even_obj.html#ContinuousDataEven.get_chunks"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#signal_processing.continuous.continuous_data_even_obj.ContinuousDataEven.get_chunks" title="Permalink to this definition">¶</a></dt>
 <dd><p>get small chunks of the signal</p>
-<dl class="docutils">
-<dt>domain_duration <span class="classifier-delimiter">:</span> <span class="classifier"><a href="#id13"><span class="problematic" id="id14">U_</span></a>.Quantity</span></dt>
-<dd>the duration / len / width of the chunk</dd>
-<dt>is_power_of_2_samples <span class="classifier-delimiter">:</span> <span class="classifier">bool</span></dt>
-<dd>whether to return bigger chunks, with 2 ** m samples
-for performence / efficiency issues</dd>
-<dt>is_overlap <span class="classifier-delimiter">:</span> <span class="classifier">bool</span></dt>
-<dd>whether to give chunks with overlap of half the duration
-in order to cope with splits</dd>
-<dt>mode_last_chunk <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
-<dd>what to do with the last chunk, which is smaller?
-&#8216;throw&#8217; - just don&#8217;t give it back</dd>
-</dl>
-<p>a list of signals.
-if performence issues erise, it&#8217;s better to return a
-generator using yield.</p>
-<p>there is a lot of code duplication with the odd and even
-maybe should return a sig array object</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>domain_duration</strong> : <a href="#id7"><span class="problematic" id="id8">U_</span></a>.Quantity</p>
 <blockquote>
-<div>channels object is another option, but I think that it&#8217;s a bad idea
-since the chunks do not share the domain samples. (different time)</div></blockquote>
-<p>maybe should enable passing Segment, or Segments to specify where to chunk
-cope with case the signal is too short compared to chunk asked</p>
-<p>this is a huge function, I have to cut it</p>
+<div><p>the duration / len / width of the chunk</p>
+</div></blockquote>
+<p><strong>is_power_of_2_samples</strong> : bool</p>
+<blockquote>
+<div><p>whether to return bigger chunks, with 2 ** m samples
+for performence / efficiency issues</p>
+</div></blockquote>
+<p><strong>is_overlap</strong> : bool</p>
+<blockquote>
+<div><p>whether to give chunks with overlap of half the duration
+in order to cope with splits</p>
+</div></blockquote>
+<p><strong>mode_last_chunk</strong> : str</p>
+<blockquote>
+<div><p>what to do with the last chunk, which is smaller?
+&#8216;throw&#8217; - just don&#8217;t give it back</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">a list of signals.</p>
+<p>if performence issues erise, it&#8217;s better to return a</p>
+<p class="last">generator using yield.</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
@@ -297,16 +366,20 @@ cope with case the signal is too short compared to chunk asked</p>
 <tt class="descname">modulate</tt><big>(</big><em>kind</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/signal_processing/continuous/continuous_data_even_obj.html#ContinuousDataEven.modulate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#signal_processing.continuous.continuous_data_even_obj.ContinuousDataEven.modulate" title="Permalink to this definition">¶</a></dt>
 <dd><p>create a modulated signal. self is considerred as the data for the            signal. This applies also to amplitude modulation (am).
 in amplitude modulation self is the envelope (and therfore have to be            non-negative)</p>
-<dl class="docutils">
-<dt>kind <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
-<dd>&#8216;am&#8217;
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>kind</strong> : str</p>
+<blockquote class="last">
+<div><p>&#8216;am&#8217;
 &#8216;pm&#8217;
-&#8216;fm&#8217;</dd>
-</dl>
-<p>amp_carrier</p>
-<p>f_carrier</p>
-<p>phase_0_carrier</p>
-<p>sig_modulated</p>
+&#8216;fm&#8217;</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
@@ -317,11 +390,18 @@ in amplitude modulation self is the envelope (and therfore have to be           
 <dl class="method">
 <dt id="signal_processing.continuous.continuous_data_even_obj.ContinuousDataEven.new_values">
 <tt class="descname">new_values</tt><big>(</big><em>new_vals</em>, <em>assert_same_n_samples=True</em>, <em>new_domain_start=None</em><big>)</big><a class="reference internal" href="_modules/signal_processing/continuous/continuous_data_even_obj.html#ContinuousDataEven.new_values"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#signal_processing.continuous.continuous_data_even_obj.ContinuousDataEven.new_values" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="docutils">
-<dt>new_vals <span class="classifier-delimiter">:</span> <span class="classifier"><a href="#id15"><span class="problematic" id="id16">U_</span></a>.Quantity</span></dt>
-<dd>vectors of values of with the same amount of values as the samples</dd>
-</dl>
-<p>new_sig : ContinuousDataEven</p>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>new_vals</strong> : <a href="#id9"><span class="problematic" id="id10">U_</span></a>.Quantity</p>
+<blockquote class="last">
+<div><p>vectors of values of with the same amount of values as the samples</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
@@ -333,8 +413,7 @@ in amplitude modulation self is the envelope (and therfore have to be           
 <dl class="attribute">
 <dt id="signal_processing.continuous.continuous_data_even_obj.ContinuousDataEven.total_domain_range">
 <tt class="descname">total_domain_range</tt><a class="reference internal" href="_modules/signal_processing/continuous/continuous_data_even_obj.html#ContinuousDataEven.total_domain_range"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#signal_processing.continuous.continuous_data_even_obj.ContinuousDataEven.total_domain_range" title="Permalink to this definition">¶</a></dt>
-<dd><p>domain_range : Segment</p>
-</dd></dl>
+<dd></dd></dl>
 
 <dl class="attribute">
 <dt id="signal_processing.continuous.continuous_data_even_obj.ContinuousDataEven.total_domain_width">
@@ -397,10 +476,7 @@ TODO: maybe it&#8217;s better to allow calculation of phase with separation to w
 <dl class="function">
 <dt id="signal_processing.continuous.modulate.am">
 <tt class="descclassname">signal_processing.continuous.modulate.</tt><tt class="descname">am</tt><big>(</big><em>amp_t</em>, <em>f_carrier</em>, <em>phase_0_carrier=0</em><big>)</big><a class="reference internal" href="_modules/signal_processing/continuous/modulate.html#am"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#signal_processing.continuous.modulate.am" title="Permalink to this definition">¶</a></dt>
-<dd><p>amp_t : ContinuousDataEven</p>
-<p>f_carrier : <a href="#id17"><span class="problematic" id="id18">U_</span></a>.Quantity</p>
-<p>phase_0_carrier : float or radians?</p>
-</dd></dl>
+<dd></dd></dl>
 
 <dl class="function">
 <dt id="signal_processing.continuous.modulate.fm">
@@ -410,9 +486,7 @@ TODO: maybe it&#8217;s better to allow calculation of phase with separation to w
 <dl class="function">
 <dt id="signal_processing.continuous.modulate.pm">
 <tt class="descclassname">signal_processing.continuous.modulate.</tt><tt class="descname">pm</tt><big>(</big><em>phase_t</em>, <em>amp_carrier</em><big>)</big><a class="reference internal" href="_modules/signal_processing/continuous/modulate.html#pm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#signal_processing.continuous.modulate.pm" title="Permalink to this definition">¶</a></dt>
-<dd><p>phase_t : ContinuousDataEven with dimensionless values</p>
-<p>amp_carrier</p>
-</dd></dl>
+<dd></dd></dl>
 
 </div>
 <div class="section" id="module-signal_processing.continuous.misc">
@@ -421,10 +495,6 @@ TODO: maybe it&#8217;s better to allow calculation of phase with separation to w
 <dt id="signal_processing.continuous.misc.filter_downsample_fm_demodulation_base_band_filter">
 <tt class="descclassname">signal_processing.continuous.misc.</tt><tt class="descname">filter_downsample_fm_demodulation_base_band_filter</tt><big>(</big><em>raw_sig</em>, <em>freq_range</em>, <em>freq_mask_len</em>, <em>down_factor</em>, <em>base_band_range</em>, <em>base_band_mask_len</em><big>)</big><a class="reference internal" href="_modules/signal_processing/continuous/misc.html#filter_downsample_fm_demodulation_base_band_filter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#signal_processing.continuous.misc.filter_downsample_fm_demodulation_base_band_filter" title="Permalink to this definition">¶</a></dt>
 <dd><p>preprocessing of the signal.</p>
-<dl class="docutils">
-<dt>signal <span class="classifier-delimiter">:</span> <span class="classifier">ContinuousDataEven</span></dt>
-<dd>signal after filtering, de-fm</dd>
-</dl>
 </dd></dl>
 
 </div>
@@ -440,17 +510,12 @@ t_smooth is the width in domain units, that you want to smooth together</p>
 <dl class="function">
 <dt id="signal_processing.continuous.math.clip">
 <tt class="descclassname">signal_processing.continuous.math.</tt><tt class="descname">clip</tt><big>(</big><em>sig</em>, <em>values_range</em><big>)</big><a class="reference internal" href="_modules/signal_processing/continuous/math.html#clip"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#signal_processing.continuous.math.clip" title="Permalink to this definition">¶</a></dt>
-<dd><p>sig : ContinuousData</p>
-<p>values_range : Segment</p>
-</dd></dl>
+<dd></dd></dl>
 
 <dl class="function">
 <dt id="signal_processing.continuous.math.correlate">
 <tt class="descclassname">signal_processing.continuous.math.</tt><tt class="descname">correlate</tt><big>(</big><em>sig_stable</em>, <em>sig_sliding</em>, <em>mode='valid'</em><big>)</big><a class="reference internal" href="_modules/signal_processing/continuous/math.html#correlate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#signal_processing.continuous.math.correlate" title="Permalink to this definition">¶</a></dt>
 <dd><p>a correlation between 2 signals. we try to relocate the sliding sig, to fit the location of the stable sig</p>
-<p>sig_stable : ContinuousData</p>
-<p>sig_sliding : ContinuousData</p>
-<p>the correlation as signal. the peak of the correlation should inticate the bast location for the first sample of sig_sliding</p>
 </dd></dl>
 
 <dl class="function">
@@ -458,11 +523,6 @@ t_smooth is the width in domain units, that you want to smooth together</p>
 <tt class="descclassname">signal_processing.continuous.math.</tt><tt class="descname">correlate_find_new_location</tt><big>(</big><em>sig_stable</em>, <em>sig_sliding</em>, <em>mode='valid'</em>, <em>is_return_max=False</em><big>)</big><a class="reference internal" href="_modules/signal_processing/continuous/math.html#correlate_find_new_location"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#signal_processing.continuous.math.correlate_find_new_location" title="Permalink to this definition">¶</a></dt>
 <dd><p>for most of the documentation refer to correlate
 TODO: the signature of this function is not stable, according to user input it returns either 1 or 2 values</p>
-<dl class="docutils">
-<dt>is_return_max <span class="classifier-delimiter">:</span> <span class="classifier">bool</span></dt>
-<dd>can return also the max value, in order to compare the success of different correlations</dd>
-</dl>
-<p>using correlate and np.argmax</p>
 </dd></dl>
 
 <dl class="function">
@@ -508,28 +568,17 @@ etc</p>
 <dd><p>read wav file to ContinuousDataEven.
 implemented only for one channal
 for multiple channels we probably want to return a list of ContinuousDataEven</p>
-<dl class="docutils">
-<dt>domain_unit</dt>
-<dd>the unit of the domain. usually sec</dd>
-<dt>first_sample</dt>
-<dd>in case it&#8217;s not 0</dd>
-<dt>value_unit</dt>
-<dd>the unit of the values</dd>
-<dt>channels</dt>
-<dd>if it&#8217;s list, it says which channels to return</dd>
-</dl>
-<p>XXX TODO: understand whether it reads 16pcm correctly. it&#8217;s not sure
-some source:
-<a class="reference external" href="http://nbviewer.ipython.org/github/mgeier/python-audio/blob/master/audio-files/audio-files-with-scipy-io.ipynb#Reading">http://nbviewer.ipython.org/github/mgeier/python-audio/blob/master/audio-files/audio-files-with-scipy-io.ipynb#Reading</a></p>
-<p>if channels == None, returns signal
-if channels != None, returns a list of signals</p>
-<p>first_sample to domain_start</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="signal_processing.continuous.io.read_wav_many">
 <tt class="descclassname">signal_processing.continuous.io.</tt><tt class="descname">read_wav_many</tt><big>(</big><em>directory</em>, <em>domain_unit=&lt;Quantity(1</em>, <em>'second')&gt;</em>, <em>first_sample=0</em>, <em>value_unit=&lt;Quantity(1</em>, <em>'milliampere')&gt;</em>, <em>expected_sample_rate_and_tolerance=None</em>, <em>channels=None</em><big>)</big><a class="reference internal" href="_modules/signal_processing/continuous/io.html#read_wav_many"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#signal_processing.continuous.io.read_wav_many" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>reads all the wavs in a directory</p>
+<p>add docs
+parameters:
+&#8212;&#8212;&#8212;&#8212;
+directory : str</p>
+</dd></dl>
 
 <dl class="function">
 <dt id="signal_processing.continuous.io.write_wav">
@@ -537,9 +586,12 @@ if channels != None, returns a list of signals</p>
 <dd><p>write contin to wav file, and return the units of the axis, and the first sample</p>
 <p>Note: I didn&#8217;t think deeply about the signature of this function
 TODO: add way to rescale between the domain unit and sec</p>
-<p>s = continuous_data.read_wav(&#8220;/home/noam/lab_project/Dropbox/Noam/Periodic recordings for Noam/fast-evo1-chassis-10100-C3000-N200_ettus.wav&#8221;)
-s_cut = s[Segment([5.720, 6.610], <a href="#id19"><span class="problematic" id="id20">U_</span></a>.sec)]
-continuous_data.write_wav(s_cut, &#8220;/home/noam/lab_project/Dropbox/Noam/Periodic recordings for Noam/fast-evo1-chassis-10100-C3000-N200_ettus_cut.wav&#8221;)</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="signal_processing.continuous.io.write_wav_many">
+<tt class="descclassname">signal_processing.continuous.io.</tt><tt class="descname">write_wav_many</tt><big>(</big><em>contin_list</em>, <em>directory</em><big>)</big><a class="reference internal" href="_modules/signal_processing/continuous/io.html#write_wav_many"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#signal_processing.continuous.io.write_wav_many" title="Permalink to this definition">¶</a></dt>
+<dd><p>write a list of signals to a directory</p>
 </dd></dl>
 
 </div>
@@ -549,8 +601,6 @@ continuous_data.write_wav(s_cut, &#8220;/home/noam/lab_project/Dropbox/Noam/Peri
 <dt id="signal_processing.continuous.non_mathematical_manipulations.concatenate">
 <tt class="descclassname">signal_processing.continuous.non_mathematical_manipulations.</tt><tt class="descname">concatenate</tt><big>(</big><em>sig_list</em><big>)</big><a class="reference internal" href="_modules/signal_processing/continuous/non_mathematical_manipulations.html#concatenate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#signal_processing.continuous.non_mathematical_manipulations.concatenate" title="Permalink to this definition">¶</a></dt>
 <dd><p>concatenate signals</p>
-<p>sig_list : list of ContinuousData</p>
-<p>sig : ContinuousData</p>
 </dd></dl>
 
 <dl class="function">
@@ -564,31 +614,68 @@ algorithm: linear intrapulation</p>
 <dl class="class">
 <dt id="signal_processing.ContinuousData">
 <em class="property">class </em><tt class="descclassname">signal_processing.</tt><tt class="descname">ContinuousData</tt><big>(</big><em>values</em>, <em>domain_samples</em>, <em>values_des=None</em>, <em>domain_des=None</em><big>)</big><a class="headerlink" href="#signal_processing.ContinuousData" title="Permalink to this definition">¶</a></dt>
-<dd><p>Note: see also the object Segments. they go hand in hand together, refer to different aspects of the same subjects
-this class represents any kind of continuous data (one dimensional).
+<dd><p>this class represents any kind of continuous data (one dimensional).
 It includes a few kinds that first seem different from each other, has a lot in common.</p>
-<p>examples:
--<em>-</em>-<em>-</em>-<em>-</em></p>
-<p>1. a &#8220;signal&#8221; - measurement of the electromagnetic field / voltage as a function of time.
+<p><strong>examples:</strong></p>
+<ol class="arabic">
+<li><dl class="first docutils">
+<dt>a &#8220;signal&#8221;:</dt>
+<dd><p class="first last">measurement of the electromagnetic field / voltage as a function of time.
 similar examples: sound (as a function of time), seismic measurments.</p>
-<p>2. a spatial measurement: height as a function of place, some material density as a function of place.
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>a spatial measurement:</dt>
+<dd><p class="first last">height as a function of place, some material density as a function of place.
 similar examples: stress as a function of place.</p>
-<ol class="arabic simple" start="3">
-<li>a distribution: the number of occurances in a population, as a function of age / height / amplitude</li>
-<li>a kinematic property of a system: position / velocity / acceleration / angle as a function of time.</li>
-<li>even a spectrum of a signal - the magnitude as a function of frequency.</li>
-</ol>
-<p>6. any connection between two continuous variables, such as a response curv of harmonic ocsillator:
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>a distribution:</dt>
+<dd><p class="first last">the number of occurances in a population, as a function of age / height / amplitude</p>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>a kinematic property of a physical system:</dt>
+<dd><p class="first last">position / velocity / acceleration / angle as a function of time.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>spectrum of a signal:</dt>
+<dd><p class="first last">the magnitude as a function of frequency.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>the most general case:</dt>
+<dd><p class="first last">any connection between two continuous variables.
+example: a response curv of harmonic ocsillator:
 amplitude of the ocsillator as a function of the frequency of external force.</p>
+</dd>
+</dl>
+</li>
+</ol>
 <p>There are some differences beween these kinds of data. Maybe some of them would be implemented as a subclass</p>
-<p>basic assumptions:
--<em>-</em>-<em>-</em>-<em>-</em>-<em>-</em>-<em>-</em>-<em>-</em></p>
+<p><strong>basic assumptions:</strong></p>
 <p>1. the acctual data in the real world can be really continuous.
 here we of course use sample points. every sample point has exectly one corresponding value.</p>
 <p>2. We assume that our data really representes the reallity, spesifically, that
 represents well also the times / places which we didn&#8217;t measure.
 So, we assume that the data is not changing &#8220;too fast&#8221; compared to our resolution.
 In signal processing terms, we assume that we didn&#8217;t under-sample.</p>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<dl class="docutils">
+<dt><tt class="xref py py-obj docutils literal"><span class="pre">signal_processing.Segments</span></tt></dt>
+<dd>object that describe segments of interest within a <cite>ContinuousData</cite></dd>
+</dl>
+<p class="last"><tt class="xref py py-obj docutils literal"><span class="pre">signal_processing.SegmentsOfContinuous</span></tt></p>
+</div>
+<p class="rubric">Notes</p>
 <ol class="arabic simple">
 <li>we <em>do not</em> assume even sampling distance. that would be included in a subclass.</li>
 <li>this class is intentioned to be used with units. it&#8217;s real world measurements.</li>
@@ -601,6 +688,7 @@ For example: diff sould take the distance between samples into account.
 FFT sould take the sample rate into account, and so on.
 When you encounter an operation that is not implemented for ContinuousData,
 the correct thing to do is to wrap the numpy or scipy operation.</p>
+<p><strong>design issues</strong></p>
 <p>1. this object is immutable, appart from changing the string describing
 the domain and values.</p>
 <ol class="arabic simple" start="2">
@@ -624,16 +712,34 @@ the domain and values.</p>
 <li>In order to restore symetry, we could also work with a Values object.</li>
 </ol>
 <p>the problem is that sig.values call is very very common in the functions of the package, and it would be pity to lenghen it to sig.values.samples</p>
-<p>1. maybe I want to implement a domain_samples object. it would have
-a subclass of even samples</p>
-<p>2. maybe it&#8217;s smart to implement a similar object with few channels.
-It may be useful in some implementation and performance issues,
-since the channels would be a 2D np.ndarray, and channel-wise
-operations like fft would be applied along axis, and be
-efficient.</p>
-<ol class="arabic simple" start="3">
-<li>maybe add a self.base attribute, like in np.ndarrays</li>
-</ol>
+<p class="rubric">Attributes</p>
+<p class="rubric">Methods</p>
+<dl class="method">
+<dt id="signal_processing.ContinuousData.__getitem__">
+<tt class="descname">__getitem__</tt><big>(</big><em>key</em><big>)</big><a class="headerlink" href="#signal_processing.ContinuousData.__getitem__" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>domain_range</strong> : Segment</p>
+<blockquote>
+<div><p>the range, from the domain, of which we want the slice.
+for example: which time range?</p>
+</div></blockquote>
+<p><strong>TODO: since the domain samples should be sorted, maybe there</strong></p>
+<p class="last"><strong>is a more efficient implementation</strong></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="signal_processing.ContinuousData.__weakref__">
+<tt class="descname">__weakref__</tt><a class="headerlink" href="#signal_processing.ContinuousData.__weakref__" title="Permalink to this definition">¶</a></dt>
+<dd><p>list of weak references to the object (if defined)</p>
+</dd></dl>
+
 <dl class="method">
 <dt id="signal_processing.ContinuousData.gain">
 <tt class="descname">gain</tt><big>(</big><em>factor</em><big>)</big><a class="headerlink" href="#signal_processing.ContinuousData.gain" title="Permalink to this definition">¶</a></dt>
@@ -655,9 +761,24 @@ TODO: maybe should be a norm parameter, to decide which norm to use</p>
 
 <dl class="method">
 <dt id="signal_processing.ContinuousData.plot">
-<tt class="descname">plot</tt><big>(</big><em>fig=None</em><big>)</big><a class="headerlink" href="#signal_processing.ContinuousData.plot" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">plot</tt><big>(</big><em>fig=None</em>, <em>domain_range=None</em><big>)</big><a class="headerlink" href="#signal_processing.ContinuousData.plot" title="Permalink to this definition">¶</a></dt>
 <dd><p>basic plot</p>
-<p>the fig only, for plotting other signals on top</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>fig</strong> : figure</p>
+<p><strong>domain_range</strong> : Segment</p>
+<blockquote>
+<div><p>if you want to plot only a certain range from the signal</p>
+</div></blockquote>
+<p><strong>returns</strong></p>
+<p><strong>&#8212;&#8212;&#8212;-</strong></p>
+<p class="last"><strong>the fig only, for plotting other signals on top</strong></p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
@@ -689,47 +810,47 @@ the only difference is defining a resolution here</p>
 <tt class="descclassname">signal_processing.threshold.</tt><tt class="descname">crosses</tt><big>(</big><em>sig</em>, <em>threshold</em>, <em>is_above=True</em><big>)</big><a class="reference internal" href="_modules/signal_processing/threshold.html#crosses"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#signal_processing.threshold.crosses" title="Permalink to this definition">¶</a></dt>
 <dd><p>returns segments instance, where a given signal values are above
 a certain threshold.</p>
-<dl class="docutils">
-<dt>sig <span class="classifier-delimiter">:</span> <span class="classifier">ContinuousData</span></dt>
-<dd>a signal</dd>
-<dt>threshold <span class="classifier-delimiter">:</span> <span class="classifier">float with units like the values of sig</span></dt>
-<dd>TODO: for non-constant threshold, we may allow passing
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>sig</strong> : ContinuousData</p>
+<blockquote>
+<div><p>a signal</p>
+</div></blockquote>
+<p><strong>threshold</strong> : float with units like the values of sig</p>
+<blockquote>
+<div><p>TODO: for non-constant threshold, we may allow passing
 a vector of values, or a thrshold which is a signal
-TODO: allow passing a range of allowed thresholds</dd>
-<dt>is_above <span class="classifier-delimiter">:</span> <span class="classifier">bool</span></dt>
-<dd>whether the segments of interest are above the threshold</dd>
-</dl>
-<p>segments : Segments</p>
-<p>Note: this function assumes that the domain of the signal has
-a mathematical order defined upon it. this applies to most
-cases. exceptions are when the domain cells are modulu of
-something, or frequencies.
-if the domain is modulu derived / cyclic, it&#8217;s still possible to
-implement. the &#8220;first&#8221; sample is &#8220;connected&#8221; to the last.
-we find the indexes of threshold crosses the same way,
-we have a segments instance. now we just have to decide whether
-it&#8217;s the segments of interest, or the others are. we check a
-single value in one of the segments to determine that</p>
+TODO: allow passing a range of allowed thresholds</p>
+</div></blockquote>
+<p><strong>is_above</strong> : bool</p>
+<blockquote>
+<div><p>whether the segments of interest are above the threshold</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>segments</strong> : Segments</p>
+<p>Note: this function assumes that the domain of the signal has</p>
+<p>a mathematical order defined upon it. this applies to most</p>
+<p>cases. exceptions are when the domain cells are modulu of</p>
+<p>something, or frequencies.</p>
+<p>if the domain is modulu derived / cyclic, it&#8217;s still possible to</p>
+<p>implement. the &#8220;first&#8221; sample is &#8220;connected&#8221; to the last.</p>
+<p>we find the indexes of threshold crosses the same way,</p>
+<p>we have a segments instance. now we just have to decide whether</p>
+<p>it&#8217;s the segments of interest, or the others are. we check a</p>
+<p class="last">single value in one of the segments to determine that</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
 <dt id="signal_processing.threshold.estimate_noise_level">
 <tt class="descclassname">signal_processing.threshold.</tt><tt class="descname">estimate_noise_level</tt><big>(</big><em>sig</em>, <em>mode</em>, <em>factor</em><big>)</big><a class="reference internal" href="_modules/signal_processing/threshold.html#estimate_noise_level"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#signal_processing.threshold.estimate_noise_level" title="Permalink to this definition">¶</a></dt>
 <dd><p>a auto threshold of values of signal</p>
-<dl class="docutils">
-<dt>mode <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
-<dd>&#8216;mean&#8217;
-&#8216;median&#8217;
-&#8216;zero&#8217;</dd>
-</dl>
-<p>thresh</p>
-<p>TODO: Idea for a &#8220;flexible&#8221; auto threshold.
-idea 1: sliding window.
-idea 2: the flexible mean by convolution with 1 / n * np.ones(n)
-then (vec - mean) ** 2
-then another convolution for mean
-then sqrt</p>
-<p>maybe this function should be in continuous.math module?</p>
 </dd></dl>
 
 <dl class="function">
@@ -743,8 +864,6 @@ threshold, adjoin, filter_short_segments</p>
 <dt id="signal_processing.threshold.threshold_aggregate_filter_short">
 <tt class="descclassname">signal_processing.threshold.</tt><tt class="descname">threshold_aggregate_filter_short</tt><big>(</big><em>sig</em>, <em>threshold</em>, <em>max_dist</em>, <em>duration_ratio</em>, <em>absolute_max_dist</em>, <em>max_pulse_duration</em><big>)</big><a class="reference internal" href="_modules/signal_processing/threshold.html#threshold_aggregate_filter_short"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#signal_processing.threshold.threshold_aggregate_filter_short" title="Permalink to this definition">¶</a></dt>
 <dd><p>TODO: add documentation, test</p>
-<p>this function and the function threshold_adjoin_filter_short_segments
-are similar. should probably unite them as one</p>
 </dd></dl>
 
 </div>
@@ -757,10 +876,6 @@ ContinuousDataEven instances.</p>
 <tt class="descclassname">signal_processing.histograms.</tt><tt class="descname">data_to_continuous_histogram</tt><big>(</big><em>a</em>, <em>bins=10</em>, <em>range_=None</em>, <em>weights=None</em>, <em>density=None</em><big>)</big><a class="reference internal" href="_modules/signal_processing/histograms.html#data_to_continuous_histogram"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#signal_processing.histograms.data_to_continuous_histogram" title="Permalink to this definition">¶</a></dt>
 <dd><p>returns a histogram of some data.
 it&#8217;s a wrap aroud pint_extension.histogram</p>
-<dl class="docutils">
-<dt>hist_continuous <span class="classifier-delimiter">:</span> <span class="classifier">ContinuousData</span></dt>
-<dd>the histogram as a ContinuousData</dd>
-</dl>
 </dd></dl>
 
 <dl class="function">
@@ -774,8 +889,6 @@ it&#8217;s a wrap aroud pint_extension.histogram</p>
 <tt class="descclassname">signal_processing.histograms.</tt><tt class="descname">signal_values_hist</tt><big>(</big><em>contin</em>, <em>bins=100</em>, <em>range_=None</em>, <em>weights=None</em>, <em>density=None</em><big>)</big><a class="reference internal" href="_modules/signal_processing/histograms.html#signal_values_hist"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#signal_processing.histograms.signal_values_hist" title="Permalink to this definition">¶</a></dt>
 <dd><p>returns the histogram of the values of a ContinuousData
 a wrap around data_to_continuous_histogram</p>
-<p>hist : ContinuousData</p>
-<p>TODO: maybe this should be a method of ContinuousData</p>
 </dd></dl>
 
 </div>
