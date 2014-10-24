@@ -1,7 +1,7 @@
 Background
 ----------------
-This module introduces a natural interface for signal processing,
-as well as various signal processing functions.
+This module introduces a natural interface for signal processing, and it makes signal processing code simpler and shorter.
+It also introduces various signal processing functions.
 It's based on numpy, scipy, and uses pint for units support.
 
 Motivation
@@ -10,6 +10,13 @@ Scipy has great mathematical tools, but it lacks a * natural interface * for sig
 
     * A signal as a continuous data (the interface), not vector of samples (internal implementation).
     * A signal should support physical unit. it's a measurement!
+    * there are many common operations like:
+        
+        -  plotting
+        - fft
+        - checking whether 2 signals has the same sample points.
+
+        that are done much shortly and easily with a signal object.
 
 
 Installation
@@ -25,17 +32,23 @@ pip install -e git+https://github.com/noamg/signal_processing.git#egg=signal_pro
 
 Tutorial
 -----------
-link....
+should create a tutorial, in the form of ipython notebooks
 
 Contact
 ------------------------
-If you encounter problems, you can contanct me:
-gavishnoam@gmail.com
+You are welcome to contact me gavishnoam@gmail.com, in anything related to this package:
+    
+    * help
+    * unclear documentation
+    * general ideas or suggestions to improve the design
+    * problems
 
 documentation
 ---------------------
 is compiled using sphinx, and numpydoc extension
+(to remove) the old documentation:
 https://github.com/noamg/signal_processing/doc/built/html/index.html
+the new documentation will be in readthedocs.
 
 Data types - the interface for signal processing
 ----------------------------------------------------
@@ -82,18 +95,18 @@ each element in another array fullfils some condition. it's a mask.
 
 Main issues before first release
 ---------------------------------
-1. refactoring issues:
+#. refactoring issues:
 
    1. create ContinuousData.new_values method, and then remove all the definitions of __add__ etc from ContinuousDataEven to ContinuousData. thus ease the reading
    2. shorten the name of some functions in the sub-modules (adjoin, filter. threshold etc.) since they are in a module, they can have a less indicative name
    3. change cotinuous/plots.py to continuous/visualisation.py and fix imports
-   4. in tests and examples, use continuos/generators.py instead if creating a signal manualy
+   4. in tests and examples, use ContinuousDataEven.generate instead if creating a signal manualy
    5. use verbs instead of nouns as names of modules. generate, modulate, demodulate
 
     * use a refactoring tool. vim rope?
     * python-mode !
        
-2. testing:
+#. testing:
    
    1. so far using nose. maybe should use pytest?
    2. use test classes.
@@ -102,8 +115,7 @@ Main issues before first release
          start with removing the user warings of "not tested" and put TODO instead
    5. add test to the examples
 
-3. choose the right license.
-4. choose a way to manage the issues and TODO's.
+#. choose a way to manage the issues and TODO's.
    grepable text that indicates issue in the code:
 
    * TODO
@@ -118,7 +130,13 @@ Main issues before first release
    * deprecated
    * NotImpmentedError
 
-#. compile documentation using Sphinx package
+#. documentation:
+   
+   * make the documentation available at readthedocs
+   * make some documentation that is more that API
+   * scan all the documentation, and make sure it's written in numpy conventions.
+   * replace all the TODO with .. todo directive.
+
 #. make sure to remove the use of old interface (like module generators)
 
 #. arrange the imports according to a certain order even within the package, for example:
