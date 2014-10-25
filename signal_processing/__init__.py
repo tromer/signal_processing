@@ -16,6 +16,8 @@ from .continuous.continuous_data_even_obj import ContinuousDataEven
 import histograms
 import threshold
 
+import utils
+
 # __all__ is not included here, since I do not expect from signal_processing import *, a statement that will create great confusion
 
 

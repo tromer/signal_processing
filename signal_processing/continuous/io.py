@@ -17,7 +17,8 @@ from scipy.io import wavfile
 
 from continuous_data_even_obj import ContinuousDataEven
 
-from signal_processing import U_
+from signal_processing import U_, utils
+
 
 def read_wav(filename, domain_unit=U_.sec, first_sample=0,
              value_unit=U_.milliamp, expected_sample_rate_and_tolerance=None,
@@ -90,16 +91,13 @@ def read_wav_many(directory, domain_unit=U_.sec, first_sample=0,
     ------------
     directory : str
     """
-    sig_list = []
-    print "directory: , ", directory
-    print "path:, ", os.path.join(directory, "*.wav")
-    files = glob.glob(os.path.join(directory, "*.wav"))
-    print files
-    for f in files:
-        curr_sig = read_wav(f, domain_unit, first_sample, value_unit,
-                                 expected_sample_rate_and_tolerance, channels)
-        sig_list.append(curr_sig)
+    # preparation to refactor reading many files from wav only
+    suffix = "wav"
+    reader = read_wav
+    params = [domain_unit, first_sample, value_unit,
+              expected_sample_rate_and_tolerance, channels]
 
+    sig_list = utils.read_dir(directory, suffix, reader, params)
     return sig_list
 
 def write_wav(contin, filename):
