@@ -125,6 +125,8 @@ class SegmentsOfContinuous(Segments):
         -----------
         SegmentsOfContinuous
 
+        .. todo:: should add parameters that are needed in cont.io.read_wav
+
         """
         if os.path.isfile(path):
             raise ValueError("need a path for a directory")
