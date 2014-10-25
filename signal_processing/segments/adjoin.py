@@ -24,7 +24,8 @@ def max_dist(segments, max_distance):
     IMPROVE: not a max distance - but a range of distances.
         thus it's possible to not allow some unwanted distances
     """
-    assert segments.starts.dimensionality == max_distance.dimensionality
+    if max_distance != 0:
+        assert segments.starts.dimensionality == max_distance.dimensionality
 
     is_each_gap_big_enough = segments.end_to_start > max_distance
     is_each_real_start = np.concatenate([[True,], is_each_gap_big_enough])
