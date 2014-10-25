@@ -59,3 +59,5 @@ def visual_test_plot():
     sig = ContinuousData(y, x)
     sig.describe("times", "dist from source")
     sig.plot()
+
+    sig.plot(domain_range = Segment([2, 5], U_.sec))
