@@ -36,7 +36,8 @@ should create a tutorial, in the form of ipython notebooks
 
 Contact
 ------------------------
-You are welcome to contact me gavishnoam@gmail.com, in anything related to this package:
+You are welcome to put issues on https://github.com/noamg/signal_processing/issues
+and contact me gavishnoam@gmail.com, in anything related to this package:
     
     * help
     * unclear documentation
