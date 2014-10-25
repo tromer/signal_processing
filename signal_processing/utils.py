@@ -1,3 +1,4 @@
+import warnings
 import os
 import glob
 
@@ -67,4 +68,22 @@ def write_dir(l, path, suffix, writer):
         curr_object = l[i]
         name = str(i)
         writer(curr_object, os.path.join(path, '.'.join([name, suffix])))
+
+
+def is_close_many(l_1, l_2):
+    """
+
+    returns
+    -----------
+    bool
+    """
+    if len(l_1) != len(l_2):
+        warnings.warn("comparing lists of different length")
+        return False
+
+    for i in xrange(len(l_1)):
+        if not l_1[i].is_close(l_2[i]):
+            return False
+
+    return True
 
