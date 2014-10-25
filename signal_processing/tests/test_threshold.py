@@ -12,7 +12,7 @@ def test_crosses():
     threshold_0 = 2 * U_.mamp
     starts_expected = np.array([0, 6])
     ends_expected = np.array([3, 8])
-    segments_expected = Segments(starts_expected, ends_expected)
+    segments_expected = Segments(starts_expected, ends_expected, U_.sec)
     segments = threshold.crosses(sig, threshold_0)
     assert segments.is_close(segments_expected)
 

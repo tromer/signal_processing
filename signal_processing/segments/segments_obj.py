@@ -65,7 +65,7 @@ class Segments(object):
 
     TODO: add interface of starts, ends, unit=None
     """
-    def __init__(self, starts, ends):
+    def __init__(self, starts, ends, unit=None):
         """
         parameters:
         ---------------------
@@ -81,6 +81,20 @@ class Segments(object):
             warnings.warn("the segments are not strictly one after another")
         """
         assert len(starts) == len(ends)
+
+        if hasattr(starts, 'units') and hasattr(ends, 'units'):
+            if starts.dimensionality != ends.dimensionality:
+                raise ValueError(
+                    'starts and ends with diffrent dimensionalities')
+
+        elif unit != None:
+            if hasattr(starts, 'units') or hasattr(ends, 'units'):
+                raise ValueError('only starts / ends has units')
+            starts = np.array(starts) * unit
+            ends = np.array(ends) * unit
+
+        else:
+            raise ValueError("units not given")
 
         self._starts = starts
         self._ends = ends

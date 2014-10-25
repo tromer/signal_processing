@@ -11,8 +11,8 @@ from signal_processing import U_
 def test_switch_segments_and_gaps():
     starts = np.array([0, 2, 4, 10])
     ends = np.array([1, 3, 5, 10.5])
-    segments_0 = Segments(starts, ends)
-    expected_gaps = Segments(np.array([1, 3, 5]), np.array([2, 4, 10]))
+    segments_0 = Segments(starts, ends, U_.dimensionless)
+    expected_gaps = Segments([1, 3, 5], [2, 4, 10], U_.dimensionless)
     gaps = manipulate.switch_segments_and_gaps(segments_0)
     assert gaps.is_close(expected_gaps)
     """

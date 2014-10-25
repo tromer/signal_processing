@@ -27,6 +27,10 @@ def test_segments():
     # __getitem__
     assert np.allclose(starts[is_each_in], p[is_each_in].starts)
     assert np.allclose(starts[s], p[s].starts)
+
+    # other ways to create segments
+    p_2 = Segments([0, 2, 4, 10], [1, 3, 5, 10.5], unit=U_.sec)
+    assert p.is_close(p_2)
     """
     print p
     print p.starts
@@ -105,7 +109,7 @@ def test_to_segments_list():
 
 def test_from_single_segment():
     s = Segment([2, 3], U_.meter)
-    expected_segments = Segments(np.array([2,]) * U_.meter, np.array([3,]))
+    expected_segments = Segments([2,], [3,], U_.meter)
     segments = Segments.from_single_segment(s)
     assert segments.is_close(expected_segments)
 
