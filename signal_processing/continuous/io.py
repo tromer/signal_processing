@@ -66,6 +66,8 @@ def read_wav(filename, domain_unit=U_.sec, first_sample=0,
 
     if channels == None:
         sig = ContinuousDataEven(raw_sig, 1.0 / sample_rate, first_sample)
+        # TODO: sig.values_description =
+        # os.path.basename(filename).split(".")[0]
         return sig
 
     else:
@@ -140,10 +142,9 @@ def write_wav_many(contin_list, directory):
     """
     write a list of signals to a directory
     """
-    for i in xrange(len(contin_list)):
-        curr_sig = contin_list[i]
-        name = str(i)
-        write_wav(curr_sig, os.path.join(directory, '.'.join([name, "wav"])))
+    suffix = "wav"
+    writer = write_wav
+    utils.write_dir(contin_list, directory, suffix, writer)
 
 def fromfile(f):
     """
