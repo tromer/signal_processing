@@ -113,6 +113,13 @@ class Segments(object):
 
 
 
+    def __str__(self):
+        line_1 = "starts: " + str(self.starts)
+        line_2 = "ends: " + str(self.ends)
+
+        self_str = "\n".join([line_1, line_2])
+        return self_str
+
     def __len__(self):
         # maybe should be the length in time?
         return len(self.starts)

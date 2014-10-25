@@ -44,6 +44,15 @@ def test_segments():
 
     assert p.is_close(p)
 
+def test___str__():
+    s = np.array([0, 2]) * U_.m
+    e = np.array([1, 3]) * U_.m
+    p = Segments(s, e)
+    expected_line_1 = 'starts: ' + str(s)
+    expected_line_2 = 'ends: ' + str(e)
+    expected_str = "\n".join([expected_line_1, expected_line_2])
+    assert str(p) == expected_str
+
 def test_is_each_in_range():
     starts = np.array([0, 2, 4, 10]) * U_.sec
     ends = np.array([1, 3, 5, 10.5]) * U_.sec
