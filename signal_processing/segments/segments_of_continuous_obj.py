@@ -18,6 +18,10 @@ class SegmentsOfContinuous(Segments):
     the decision so far - I try to think about what the object DOES rather then HAS. So in a way it's just a debate of internal
     implementation. I chose the first (Flat is better then nested)
 
+    on the same issue: in a way, this object is a coupling of Segments and ContinuosData,
+    it's not clear that the "order 0" interface should be the one of the segments.
+    I am not sure....
+
     TODO
     ----------
     adjust all the threshold functions to support SegmentsOfContinuous object (return it instead of regular Segments)
