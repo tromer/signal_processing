@@ -1,4 +1,8 @@
+import os
+from os import path
+
 from segments_obj import Segments
+import signal_processing.continuous as cont
 
 class SegmentsOfContinuous(Segments):
     """
@@ -21,6 +25,8 @@ class SegmentsOfContinuous(Segments):
     on the same issue: in a way, this object is a coupling of Segments and ContinuosData,
     it's not clear that the "order 0" interface should be the one of the segments.
     I am not sure....
+
+    maybe it should inherit from both of them?????
 
     TODO
     ----------
@@ -62,6 +68,9 @@ class SegmentsOfContinuous(Segments):
     def ends(self):
         return self.segments.ends
 
+    def is_close(self, other):
+        return self.segments.is_close(other.segments) and self.source.is_close(other.source)
+
     def shift(self, delta):
         raise NotImplementedError
         new_segments = self.segments.shift(delta)
@@ -78,6 +87,58 @@ class SegmentsOfContinuous(Segments):
 
         elif type(key) == int:
             return self.source[self.segments[key]]
+
+    def to_file(self, path):
+        """
+        writes the instance to file. the file is a folder that contains a wav
+        and a csv
+
+        parameters
+        -------------
+        path : str
+            folder
+
+        returns
+        -----------
+        None
+        """
+        if os.path.isfile(path):
+            raise ValueError("need a path for a directory")
+        if not os.path.isdir(path):
+            os.mkdir(path)
+
+        path_segs = os.path.join(path, 'segments.csv')
+        path_source = os.path.join(path, 'source.wav')
+
+        self.segments.to_csv(path_segs)
+        cont.io.write_wav(self.source, path_source)
+
+    @classmethod
+    def from_file(cls, path):
+        """
+        parameters
+        ------------
+        path : str
+            folder!
+
+        returns
+        -----------
+        SegmentsOfContinuous
+
+        """
+        if os.path.isfile(path):
+            raise ValueError("need a path for a directory")
+
+        # refactor: it's coppied from to_file
+        path_segs = os.path.join(path, 'segments.csv')
+        path_source = os.path.join(path, 'source.wav')
+
+        segments = Segments.from_csv(path_segs)
+        source = cont.io.read_wav(path_source)
+
+        out = cls(segments, source)
+        return out
+
     def each_max_value(self):
         raise NotImplementedError
 
