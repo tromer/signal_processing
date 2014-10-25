@@ -7,7 +7,7 @@ import numpy as np
 import scipy as sp
 
 
-from signal_processing import U_
+from signal_processing import U_, utils
 
 from signal_processing.continuous.continuous_data_even_obj import ContinuousDataEven
 
@@ -39,9 +39,7 @@ def test_read_wav_many():
     sig_list = io.read_wav_many(dir_temp)
     expected_sig_list = [sig, sig]
 
-    assert len(sig_list) == len(expected_sig_list)
-    for i in xrange(len(sig_list)):
-        assert sig_list[i].is_close(expected_sig_list[i])
+    assert utils.is_close_many(sig_list, expected_sig_list)
 
     shutil.rmtree(dir_temp)
 
@@ -81,8 +79,6 @@ def test_write_wav_many():
 
     print glob.glob(dir_temp + "*.wav")
 
-    assert len(sig_list) == len(sig_list_read)
-    for i in xrange(len(sig_list)):
-        assert sig_list[i].is_close(sig_list_read[i])
+    assert utils.is_close_many(sig_list, sig_list_read)
 
     shutil.rmtree(dir_temp)
