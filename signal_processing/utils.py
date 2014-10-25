@@ -2,7 +2,7 @@ import os
 import glob
 
 
-def read_dir(path, suffix, reader, params):
+def read_dir(path, suffix, reader, params=[]):
     """
     reads all the files of given suffix, from the dir
 
