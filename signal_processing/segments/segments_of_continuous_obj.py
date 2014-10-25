@@ -3,6 +3,7 @@ from os import path
 
 from segments_obj import Segments
 import signal_processing.continuous as cont
+from signal_processing import utils
 
 class SegmentsOfContinuous(Segments):
     """
@@ -181,3 +182,18 @@ class SegmentsOfContinuous(Segments):
         maybe should return a number with uncertainty? or segment?
         """
         return NotImplementedError
+
+def segs_from_dir(path):
+    l = utils.read_dir(
+        path,
+        'segs',
+        lambda fname: SegmentsOfContinuous.from_file(fname))
+
+    return l
+
+def segs_to_dir(l, path):
+    utils.write_dir(
+    l,
+    path,
+    'segs',
+    lambda segs, fname: segs.to_file(fname))

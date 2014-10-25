@@ -3,9 +3,10 @@ from os import path
 import shutil
 import tempfile
 import numpy as np
-from signal_processing import U_
+from signal_processing import U_, utils
 from signal_processing.extensions import pint_extension
 from signal_processing.segments.segments_obj import Segments
+from signal_processing.segments import segments_of_continuous_obj
 from signal_processing.segments.segments_of_continuous_obj import SegmentsOfContinuous
 import signal_processing.continuous as cont
 from signal_processing import ContinuousDataEven
@@ -56,5 +57,32 @@ def test_to_file():
     shutil.rmtree(dir_temp)
 
 
+def test_segs_from_dir():
+    sig = ContinuousDataEven(np.arange(10) * U_.mamp, U_.sec)
+    segs = Segments([0, 5], [3, 6], U_.sec)
+    x = SegmentsOfContinuous(segs, sig)
 
+    dir_temp = tempfile.mkdtemp()
+    x.to_file(os.path.join(dir_temp, "1.segs"))
+    x.to_file(os.path.join(dir_temp, "2.segs"))
 
+    segs_list = segments_of_continuous_obj.segs_from_dir(dir_temp)
+    expected_segs_list = [x, x]
+
+    assert utils.is_close_many(segs_list, expected_segs_list)
+
+    shutil.rmtree(dir_temp)
+
+def test_segs_to_dir():
+    sig = ContinuousDataEven(np.arange(10) * U_.mamp, U_.sec)
+    segs = Segments([0, 5], [3, 6], U_.sec)
+    x = SegmentsOfContinuous(segs, sig)
+    segs_list = [x, x]
+
+    dir_temp = tempfile.mkdtemp()
+    segments_of_continuous_obj.segs_to_dir(segs_list, dir_temp)
+    segs_list_read = segments_of_continuous_obj.segs_from_dir(dir_temp)
+
+    assert utils.is_close_many(segs_list, segs_list_read)
+
+    shutil.rmtree(dir_temp)
