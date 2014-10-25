@@ -4,10 +4,11 @@ Created on Wed Aug 27 19:14:13 2014
 
 @author: noam
 """
-
+from signal_processing import U_
 from signal_processing.extensions import pint_extension
 from signal_processing.extensions.plt_extension import mark_vertical_lines
 import numpy as np
+import pandas as pd
 from signal_processing.segment import Segment
 
 class Segments(object):
@@ -277,6 +278,48 @@ class Segments(object):
         read doc of fromfile
         """
         raise NotImplementedError
+
+    def to_csv(self, path):
+        """
+        writes the segments instance to csv file
+
+        parameters
+        -------------
+        path : str
+            path to file
+
+        returns
+        ----------
+        None
+        """
+        starts_ends, unit = pint_extension.strip_units(
+            [self.starts, self.ends])
+        headers = ['starts_' + str(unit.units), 'ends_' + str(unit.units)]
+        table = pd.DataFrame(
+            np.vstack(starts_ends).transpose(), columns=headers)
+        table.to_csv(path)
+
+    @classmethod
+    def from_csv(cls, path):
+        """
+        reads from csv
+
+        parameter
+        -----------
+        path : str
+            path of file
+
+        returns
+        ----------
+        Segments
+        """
+        table = pd.DataFrame.from_csv(path)
+        headers = table.columns
+        data = table.as_matrix()
+
+        starts = data[:, 0] * U_(headers[0].split("_")[-1])
+        ends = data[:, 1] * U_(headers[1].split("_")[-1])
+        return cls(starts, ends)
 
     def mark_edges(self, fig):
         """

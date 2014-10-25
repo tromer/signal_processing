@@ -1,4 +1,6 @@
+import tempfile
 import numpy as np
+import pandas as pd
 
 from signal_processing.segment import Segment
 from signal_processing.segments.segments_obj import Segments
@@ -115,10 +117,29 @@ def test_to_segments_list():
         assert l[i].is_close(expected_l[i])
 
 
-
 def test_from_single_segment():
     s = Segment([2, 3], U_.meter)
-    expected_segments = Segments([2,], [3,], U_.meter)
+    expected_segments = Segments([2, ], [3, ], U_.meter)
     segments = Segments.from_single_segment(s)
     assert segments.is_close(expected_segments)
+
+
+def test_from_csv():
+    starts_numbers = [0, 2, 4]
+    ends_numbers = [1, 3, 5]
+    table = np.vstack([starts_numbers, ends_numbers]).transpose()
+    a = Segments(starts_numbers, ends_numbers, U_.meter)
+    _, path = tempfile.mkstemp()
+    pd.DataFrame(table, columns=['starts_meter', 'ends_meter']).to_csv(path)
+    a_read = Segments.from_csv(path)
+    assert a.is_close(a_read)
+
+
+def test_to_csv():
+    a = Segments([0, 2, 4], [1, 3, 5], U_.meter)
+    _, path = tempfile.mkstemp()
+    a.to_csv(path)
+    a_read = Segments.from_csv(path)
+
+    assert a.is_close(a_read)
 
