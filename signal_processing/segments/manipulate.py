@@ -41,6 +41,7 @@ def concatenate_single_segments(segs_list):
     ----------
     in order to make it work, use a recursive adjoin, there is the right function for it in the adjoin file. only by max distance of zero, again and again.
     Note, that the constructor of Segments is going to have a gaurdian that the locations are strictly increasing. to bypass it (because in the process of the function it would be necessary) or make a flag that allows to skip the gaurdian, or make a "temporary" subclass
+    also note, that the adjoin.max_dist assumes that the first start and last end are True, which may cause a problem here, with the last end
 
     other option, which may work - start with sorting by start, and also by end of the segment. maybe it will say something smart, and thus avoid the loop
     """
