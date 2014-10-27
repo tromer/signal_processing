@@ -140,6 +140,14 @@ def correlate_find_new_location(sig_stable, sig_sliding, mode='valid', is_return
         return top_domain_sample, max_value
 
 
+def convonlve(sig, mask, mode):
+    """
+    .. todo::
+        decide how to nake the parameters. it's decided by how I percieve the convolution
+        maybe mask should be named impulse_response?
+    """
+    raise NotImplementedError
+
 def clip(sig, values_range):
     """
     parameters
