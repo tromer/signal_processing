@@ -120,6 +120,7 @@ Main issues before first release
    grepable text that indicates issue in the code:
 
    * TODO
+   * .. todo
    * XXX
    * design issus
    * not tested
