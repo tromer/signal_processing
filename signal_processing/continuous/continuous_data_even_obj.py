@@ -400,6 +400,25 @@ class ContinuousDataEven(ContinuousData):
             a ContinuousDataEven object that represents the spectrum
         the frequencies are considerred from -0.5 nyq frequency to 0.5 nyq frequency
 
+        .. todo::
+            maybe fft should take the domain_start parameter into accout.
+            because the signal is actually conv(signal_from_zero, delta(t - domain_start))
+            and it would affect the phases
+
+        .. todo::
+            current design is the freqs are centerred around zero.
+            it makes sense only when the signal is real
+            maybe it makes sense only for viewing?
+
+        .. todo::
+            maybe there should be a parameter that allows you to decide what
+            the first freq should be. it will make sense even more when we use
+            ifft, and then would want to tell it: I know that you construct
+            a periodical signal, and I want it to be in this time range (the
+            original time range of the signal). it's even possible that the
+            spectrum object should remember the domain_start of the signal
+            in the time domain (for reconstruction later)
+
         """
         n_fft = numpy_extension.determine_n_fft(self.n_samples, mode, n_fft)
         freq_step, first_freq, spectrum_sample_step_factor = \
