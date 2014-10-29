@@ -24,10 +24,14 @@ def band_pass(sig, freq_range, mask_len):
 
     notes
     ----------
-    implemented using np.convolve with a mask. maybe with fft is better
 
-    XXX TODO: shuold change interface. maks len is something without units. shoult receive something else
-    XXX this function is not stable with downsampling for this reason
+    .. todo::
+        design issue: shuold change interface.
+        mask_len is a vector interface, not signal interface.
+        the correct design would be with mask_duration: with units of the domain.
+        maybe internally I want to pad it to 2 ** n for efficiency, maybe a
+        parameter should be given to determine this.
+        XXX at the moment this function is not stable with downsampling for this reason
     """
     warnings.warn('not tested')
     # TODO: test well
