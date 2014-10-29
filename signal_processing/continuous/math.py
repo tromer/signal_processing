@@ -169,6 +169,9 @@ def convolve(sig, mask, mode):
         it could be a little anoying, but it's a meaningful interface,
         because we want our mask to interface as a time object, not a list
         of values.
+        for example, if we downsample with a factor of 2, we expect the
+        result to be a less accurate, but similar. this would not be the case
+        if we don't take the sample_step into account
         One thing should be taken into account: probably most of the masks
         would be created not manually, but using some other scipy functions
         for this purpose.
