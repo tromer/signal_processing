@@ -32,9 +32,8 @@ def diff(contin, n=1):
     all points except the last one are calculated using np.diff,
     the last one is defined to be like the one before it.
 
-    TODO: Design issues:
-    --------------
-    it's not clean / beautiful definition for the last sample, but it hardly matters.
+    .. todo::
+        design issues: it's not clean / beautiful definition for the last sample, but it hardly matters.
     I decided that it returns a ContinuousData of the same length, so it
     desn't hurt signals of length 2 ** m, which are easier to fft
     maybe it's better to return a signal that have samples in the middle between each two samples of the original signal
@@ -55,7 +54,8 @@ def diff(contin, n=1):
 
 def correlate(sig_stable, sig_sliding, mode='valid'):
     """
-    a correlation between 2 signals. we try to relocate the sliding sig, to fit the location of the stable sig
+    a correlation between 2 signals.
+    we try to relocate the sliding sig, to fit the location of the stable sig
 
     parameters
     --------------------
@@ -65,7 +65,16 @@ def correlate(sig_stable, sig_sliding, mode='valid'):
 
     returns
     -------------
-    the correlation as signal. the peak of the correlation should inticate the bast location for the first sample of sig_sliding
+    the correlation as signal. the peak of the correlation should inticate
+    the best location for the first sample of sig_sliding
+
+    Note
+    ----------
+    #. the starting point of the sig_sliding doesn't matter to anything,
+    it's percieved as a "floating" signal, looking for a place to match.
+
+    #. the output unit is sig_stable.unit * sig_sliding.unit * sample_step
+    (because of the definition)
 
 
     """
@@ -140,11 +149,32 @@ def correlate_find_new_location(sig_stable, sig_sliding, mode='valid', is_return
         return top_domain_sample, max_value
 
 
-def convonlve(sig, mask, mode):
+def convolve(sig, mask, mode):
     """
+
+    Note
+    ----------
+    the output unit is sig_stable.unit * sig_sliding.unit * sample_step
+    (because of the definition)
+
     .. todo::
-        decide how to nake the parameters. it's decided by how I percieve the convolution
+        decide how to name the parameters.
+        it's decided by how I percieve the convolution
         maybe mask should be named impulse_response?
+
+    .. todo::
+        if we want to use convolve for smoothing, it means that the
+        mask / impulse_response shuold hase unit's of 1 / sample_step
+        to cancel the fact that we multiply in sample step.
+        it could be a little anoying, but it's a meaningful interface,
+        because we want our mask to interface as a time object, not a list
+        of values.
+        One thing should be taken into account: probably most of the masks
+        would be created not manually, but using some other scipy functions
+        for this purpose.
+
+    .. todo::
+        maybe it's a good idea to use scipy_extension.smart_convolve
     """
     raise NotImplementedError
 
