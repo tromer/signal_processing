@@ -134,6 +134,17 @@ class Segments(object):
         return self._ends
 
     @property
+    def gaps(self):
+        """
+        returns the gaps
+
+        returns
+        ----------
+        Segments
+        """
+        raise NotImplementedError
+
+    @property
     def centers(self):
         raise NotImplementedError
         return 0.5 * (self.starts + self.ends)
