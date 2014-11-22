@@ -158,7 +158,8 @@ def mark_horizontal_lines(y_lines, fig, label=None):
     plt.legend(loc='best')
     return h_lines
 
-def plot_under(contin_list, fig=None, is_abs=False, fmt="-"):
+
+def plot_under(*args):
     """
     plot a few signals one above the other
 
@@ -172,18 +173,21 @@ def plot_under(contin_list, fig=None, is_abs=False, fmt="-"):
 
     TODO: maybe add parameter of subplot or something
     """
-    raise NotImplementedError
     warnings.warn("not tested well for units, nots tested")
-    if fig != None:
+    fig = None
+
+    if fig is not None:
         raise NotImplementedError
 
-    f = plt.figure()
-    lines = []
-    N = len(contin_list)
+    fig = plt.figure()
+    N = len(args)
     ax = plt.subplot(N, 1, 1)
+    args[0].plot(fig)
 
-    for i in xrange(N):
-        junk, line = plot(contin_list[i], f, [N, 1, i + 1], share_x=ax)
-        lines.append(line)
+    for i in xrange(2, N + 1):
+        focus_on_figure_and_subplot(fig, [N, 1, i], share_x=ax)
+        args[i - 1].plot(fig)
+        # lines.append(line)
 
-    return f, lines
+    return fig
+    #return f, lines
