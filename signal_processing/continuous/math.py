@@ -175,6 +175,7 @@ def convolve(sig, mask, mode):
         One thing should be taken into account: probably most of the masks
         would be created not manually, but using some other scipy functions
         for this purpose.
+        the "problem" with delta functions, downsampling, the resolve
 
     .. todo::
         maybe it's a good idea to use scipy_extension.smart_convolve
