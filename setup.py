@@ -18,5 +18,6 @@ setup(name='signal_processing',
           'scipy',
           'matplotlib',
           'pint',
+          'pandas',
       ],
       zip_safe=False)
