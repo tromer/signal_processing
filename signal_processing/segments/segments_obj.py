@@ -182,6 +182,9 @@ class Segments(object):
             return Segment([self.starts[key], self.ends[key]])
         elif type(key) in [type(slice(0,1)), np.ndarray]:
             return Segments(self.starts[key], self.ends[key])
+        elif type(key) == Segment:
+            # NOT TESTED
+            return self.filter_by_range('starts', key)
 
     def is_close(self, other, rtol=1e-05, atol=1e-08):
         """
@@ -332,7 +335,7 @@ class Segments(object):
         ends = data[:, 1] * U_(headers[1].split("_")[-1])
         return cls(starts, ends)
 
-    def mark_edges(self, fig):
+    def mark_edges(self, fig, domain_range=None):
         """
         mark the edges of the segments on a fig
         get a figure and plot on it vertical lines according to
@@ -346,8 +349,16 @@ class Segments(object):
         TODO: allow subplot as well,
         should use plt_extension.focus_on_figure_and_subplot
         """
-        start_lines = mark_vertical_lines(self.starts, fig, color='g', label="starts")
-        ends_lines = mark_vertical_lines(self.ends, fig, color='r', label="ends")
+
+        # refactor: this chunk of code appears almost the same in
+        # ContinuousData. copied copy
+        if domain_range is None:
+            segs_for_plot = self
+        else:
+            segs_for_plot = self[domain_range]
+
+        start_lines = mark_vertical_lines(segs_for_plot.starts, fig, color='g', label="starts")
+        ends_lines = mark_vertical_lines(segs_for_plot.ends, fig, color='r', label="ends")
         return start_lines, ends_lines
 
 def fromfile(f):
