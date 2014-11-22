@@ -35,7 +35,9 @@ and the responsability for focusing would be of the caller
     # creat the figure here
     #return plot(contin, fig=None, is_abs=is_abs, fmt=fmt)
 #%%
-def focus_on_figure_and_subplot(fig, subplot, share_x):
+
+
+def focus_on_figure_and_subplot(fig, subplot, share_x=None, share_y=None):
     """
     focuses on required figure and subplot
 
@@ -43,17 +45,19 @@ def focus_on_figure_and_subplot(fig, subplot, share_x):
     ----------
     fig : plt.figure object
     """
-    if fig == None:
+    if fig is None:
         fig = plt.figure()
     else:
         plt.figure(fig.number)
 
-    if subplot != None:
-        plt.subplot(*subplot, sharex=share_x)
+    if subplot is not None:
+        plt.subplot(*subplot, sharex=share_x, sharey=share_y)
 
     return fig
 
-def plot_with_labels(x, y, x_label, curv_label, fig=None, subplot=None, share_x=None):
+
+def plot_with_labels(x, y, x_label, curv_label,
+                     fig=None, subplot=None, share_x=None):
     """
     Note
     -----------
@@ -185,7 +189,7 @@ def plot_under(*args):
     args[0].plot(fig)
 
     for i in xrange(2, N + 1):
-        focus_on_figure_and_subplot(fig, [N, 1, i], share_x=ax)
+        focus_on_figure_and_subplot(fig, [N, 1, i], share_x=ax, share_y=ax)
         args[i - 1].plot(fig)
         # lines.append(line)
 
