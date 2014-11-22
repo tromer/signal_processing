@@ -6,6 +6,7 @@ import numpy as np
 from segments_obj import Segments
 import signal_processing.continuous as cont
 from signal_processing import utils
+from signal_processing.extensions import pint_extension
 
 
 class SegmentsOfContinuous(Segments):
@@ -68,6 +69,23 @@ class SegmentsOfContinuous(Segments):
         return a Segments instance without continuous data as source
         """
         return self._segments
+
+    @property
+    def gaps(self):
+        starts_gaps = self.ends[:-1]
+        ends_gaps = self.starts[1:]
+        if self.starts[0] != self.source.domain_start:
+            starts_gaps = pint_extension.concatenate([self.source.domain_start * np.ones(1), starts_gaps])
+            ends_gaps = pint_extension.concatenate([self.starts[0] * np.ones(1), ends_gaps])
+
+        if self.ends[-1] != self.source.domain_end:
+            starts_gaps = pint_extension.concatenate([starts_gaps, self.ends[-1] * np.ones(1)])
+            ends_gaps = pint_extension.concatenate([ends_gaps, self.source.domain_end * np.ones(1)])
+
+        segs = Segments(starts_gaps, ends_gaps)
+        return SegmentsOfContinuous(segs, self.source)
+
+
 
     @property
     def starts(self):

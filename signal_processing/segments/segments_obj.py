@@ -99,8 +99,7 @@ class Segments(object):
 
         self._starts = starts
         self._ends = ends
-        # global_start, global_end?
-        # pointer to internal data?
+
 
     @classmethod
     def from_single_segment(cls, segment):
@@ -142,7 +141,10 @@ class Segments(object):
         ----------
         Segments
         """
-        raise NotImplementedError
+        # NOT TESTED
+        starts_gaps = self.ends[:-1]
+        ends_gaps = self.starts[1:]
+        return Segments(starts_gaps, ends_gaps)
 
     @property
     def centers(self):

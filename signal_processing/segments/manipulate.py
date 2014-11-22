@@ -1,3 +1,5 @@
+import warnings
+
 import numpy as np
 
 from signal_processing.segment import Segment
@@ -77,6 +79,7 @@ def switch_segments_and_gaps(segments, absolute_start=None, absolute_end=None):
         the gaps
 
     """
+    warnings.warn("deprecated, use Segments.gaps instead")
     # maybe absolute start and end should be taken from the segments object?
     starts_gaps = segments.ends[:-1]
     ends_gaps = segments.starts[1:]
