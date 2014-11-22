@@ -163,7 +163,7 @@ def mark_horizontal_lines(y_lines, fig, label=None):
     return h_lines
 
 
-def plot_under(*args):
+def plot_under(l, domain_range=None):
     """
     plot a few signals one above the other
 
@@ -184,13 +184,13 @@ def plot_under(*args):
         raise NotImplementedError
 
     fig = plt.figure()
-    N = len(args)
+    N = len(l)
     ax = plt.subplot(N, 1, 1)
-    args[0].plot(fig)
+    l[0].plot(fig, domain_range)
 
     for i in xrange(2, N + 1):
         focus_on_figure_and_subplot(fig, [N, 1, i], share_x=ax, share_y=ax)
-        args[i - 1].plot(fig)
+        l[i - 1].plot(fig, domain_range)
         # lines.append(line)
 
     return fig
