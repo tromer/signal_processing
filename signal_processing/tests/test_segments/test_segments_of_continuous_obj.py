@@ -12,6 +12,10 @@ import signal_processing.continuous as cont
 from signal_processing import ContinuousDataEven
 
 
+# todo: should add a test to make sure that segments of continuous object
+# has the entire interface of segments.
+
+
 def test_segments_of_continuous():
     sig = ContinuousDataEven(np.arange(10) * U_.mamp, U_.sec)
     segs = Segments([0, 5], [3, 6], U_.sec)

@@ -1,9 +1,12 @@
 import os
 from os import path
 
+import numpy as np
+
 from segments_obj import Segments
 import signal_processing.continuous as cont
 from signal_processing import utils
+
 
 class SegmentsOfContinuous(Segments):
     """
@@ -29,9 +32,14 @@ class SegmentsOfContinuous(Segments):
 
     maybe it should inherit from both of them?????
 
-    TODO
-    ----------
-    adjust all the threshold functions to support SegmentsOfContinuous object (return it instead of regular Segments)
+    .. todo::
+        adjust all the threshold functions to support SegmentsOfContinuous object (return it instead of regular Segments)
+
+    .. todo::
+        some functions accept a segments object and returns a segments object
+        derived from it. I want it to be possible for the fucntios to get a
+        SegmentsOfContinuous instance, and return SegmentsOfContinuous, even
+        not aware that it is actually a SegmentsOfContinuous
 
 
     """
@@ -80,6 +88,13 @@ class SegmentsOfContinuous(Segments):
 
     def __getitem__(self, key):
         """
+        parameters
+        ----------------
+        key : {int, slice, ndarray}
+            if the key is an int, the function returns the interior of the n'th
+            segment (a ContinuousData)
+            if the key is ndarray or slice, it returns a SegmentsOfContinuous
+            instance
         """
         raise NotImplementedError
 
