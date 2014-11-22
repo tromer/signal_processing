@@ -161,8 +161,8 @@ class SegmentsOfContinuous(Segments):
         # not tested
         return '\n'.join([str(self.source), str(self.segments)])
 
-    def plot(self, fig=None, domain_range=None):
-        fig = self.source.plot(fig, domain_range)
+    def plot(self, fig=None, domain_range=None, is_show_legend=True):
+        fig = self.source.plot(fig, domain_range, is_show_legend)
         self.segments.mark_edges(fig, domain_range)
 
     def each_max_value(self):

@@ -57,7 +57,7 @@ def focus_on_figure_and_subplot(fig, subplot, share_x=None, share_y=None):
 
 
 def plot_with_labels(x, y, x_label, curv_label,
-                     fig=None, subplot=None, share_x=None):
+                     fig=None, is_show_legend=True, subplot=None, share_x=None):
     """
     Note
     -----------
@@ -92,7 +92,8 @@ def plot_with_labels(x, y, x_label, curv_label,
     expand_y_lim(fig)
     expand_x_lim(fig)
     plt.xlabel(x_label)
-    plt.legend(loc='best')
+    if is_show_legend:
+        plt.legend(loc='best')
 
     return fig, line
     #raise NotImplementedError
@@ -163,7 +164,7 @@ def mark_horizontal_lines(y_lines, fig, label=None):
     return h_lines
 
 
-def plot_under(l, domain_range=None):
+def plot_under(l, domain_range=None, is_show_legend=True):
     """
     plot a few signals one above the other
 
@@ -186,11 +187,16 @@ def plot_under(l, domain_range=None):
     fig = plt.figure()
     N = len(l)
     ax = plt.subplot(N, 1, 1)
-    l[0].plot(fig, domain_range)
+    l[0].plot(fig, domain_range, is_show_legend)
+    if is_show_legend is False:
+        plt.legend().set_visible(False)
 
     for i in xrange(2, N + 1):
         focus_on_figure_and_subplot(fig, [N, 1, i], share_x=ax, share_y=ax)
-        l[i - 1].plot(fig, domain_range)
+        l[i - 1].plot(fig, domain_range, is_show_legend)
+
+        if is_show_legend is False:
+            plt.legend().set_visible(False)
         # lines.append(line)
 
     return fig

@@ -297,7 +297,7 @@ class ContinuousData(object):
 
         return data_labels_for_plot
 
-    def plot(self, fig=None, domain_range=None):
+    def plot(self, fig=None, domain_range=None, is_show_legend=True):
         """
         basic plot
 
@@ -321,7 +321,7 @@ class ContinuousData(object):
             sig_for_plot._prepare_data_labels_for_plot()
 
         return plt_extension.plot_with_labels(
-            x_bare, y_bare, x_label, curv_label, fig)[0]
+            x_bare, y_bare, x_label, curv_label, fig, is_show_legend)[0]
 
     def tofile(self, f):
         """
