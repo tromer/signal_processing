@@ -319,6 +319,23 @@ class ContinuousDataEven(ContinuousData):
         return ContinuousDataEven(self.values * factor, self.sample_step, self.domain_start)
 
     def down_sample(self, down_factor):
+        """
+
+        parameters
+        ------------
+        down_factor : int
+
+        returns
+        ---------
+        out : ContinuousDataEven
+
+        .. todo::
+            important issue: at the moment, it just takes some of the samples
+            this behaviour is OK with signals that change slowly.
+            it's bad otherwise, and horrible with delta functions.
+            the correct implementation is not taking 1 of every 2 points,
+            but taking the mean of them
+        """
         assert down_factor > 0
         if int(down_factor) != down_factor:
             raise NotImplementedError
