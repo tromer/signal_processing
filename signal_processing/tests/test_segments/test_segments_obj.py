@@ -124,6 +124,15 @@ def test_from_single_segment():
     assert segments.is_close(expected_segments)
 
 
+def test_shift():
+    starts = np.array([0, 2, 4, 10]) * U_.sec
+    ends = np.array([1, 3, 5, 10.5]) * U_.sec
+    s = Segments(starts, ends)
+    delta = 3 * U_.sec
+    expected_shifted = Segments(starts + delta, ends + delta)
+    shifted = s.shift(delta)
+    assert shifted.is_close(expected_shifted)
+
 def test_from_csv():
     starts_numbers = [0, 2, 4]
     ends_numbers = [1, 3, 5]

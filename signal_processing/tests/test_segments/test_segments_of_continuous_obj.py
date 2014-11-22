@@ -41,6 +41,16 @@ def test___getitem__():
 
 # def test_gaps NOT TESTED
 
+def test_shift():
+    sig = ContinuousDataEven(np.arange(10) * U_.mamp, U_.sec)
+    segs = Segments([0, 5], [3, 6], U_.sec)
+    x = SegmentsOfContinuous(segs, sig)
+
+    delta = 3 * U_.sec
+    expected_shifted = SegmentsOfContinuous(segs.shift(delta), sig.shift(delta))
+    shifted = x.shift(delta)
+    assert shifted.is_close(expected_shifted)
+
 
 def test_from_file():
     sig = ContinuousDataEven(np.arange(10) * U_.mamp, U_.sec)

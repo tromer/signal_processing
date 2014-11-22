@@ -176,7 +176,6 @@ class Segments(object):
             the segments shifted
 
         """
-        raise NotImplementedError
         return Segments(self.starts + delta, self.ends + delta)
 
     def __getitem__(self, key):

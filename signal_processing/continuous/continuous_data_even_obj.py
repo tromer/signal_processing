@@ -248,7 +248,6 @@ class ContinuousDataEven(ContinuousData):
         """
         shifts the domain
         """
-        raise NotImplementedError
         new_domain_start = self.domain_start + delta
         return self.move_domain_start(new_domain_start)
 

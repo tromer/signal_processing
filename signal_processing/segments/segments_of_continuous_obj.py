@@ -99,7 +99,6 @@ class SegmentsOfContinuous(Segments):
         return self.segments.is_close(other.segments) and self.source.is_close(other.source)
 
     def shift(self, delta):
-        raise NotImplementedError
         new_segments = self.segments.shift(delta)
         new_source = self.source.shift(delta)
         return SegmentsOfContinuous(new_segments, new_source)

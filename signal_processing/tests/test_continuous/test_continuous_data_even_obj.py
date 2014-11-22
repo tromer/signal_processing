@@ -64,6 +64,13 @@ def test_down_sample():
     assert down.is_close(expected_down)
 
 
+def test_shift():
+    sig = ContinuousDataEven(np.arange(32) * U_.amp, 1.0 * U_.sec)
+    shift = 3 * U_.sec
+    expected_shifted = ContinuousDataEven(np.arange(32) * U_.amp, 1.0 * U_.sec, shift)
+    shifted = sig.shift(shift)
+    shifted.is_close(expected_shifted)
+
 def test_gain():
     # copied from test_ContinuousDataEven
     values = np.arange(10) * U_.amp
