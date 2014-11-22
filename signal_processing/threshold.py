@@ -19,6 +19,8 @@ import warnings
 import numpy as np
 
 from signal_processing.segments.segments_obj import Segments
+from signal_processing.segments.segments_of_continuous_obj import \
+    SegmentsOfContinuous
 from signal_processing.segments import adjoin
 from signal_processing.segments import manipulate
 
@@ -26,13 +28,10 @@ from signal_processing.segments import manipulate
 from .extensions import pint_extension
 from .extensions import numpy_extension
 
-#%%
-
-
-
 
 IS_DEBUG = False
-#%%
+
+
 def crosses(sig, threshold, is_above=True):
     """
     returns segments instance, where a given signal values are above
@@ -54,7 +53,9 @@ def crosses(sig, threshold, is_above=True):
     segments : Segments
 
 
-    Note: this function assumes that the domain of the signal has
+    Note
+    --------
+    this function assumes that the domain of the signal has
     a mathematical order defined upon it. this applies to most
     cases. exceptions are when the domain cells are modulu of
     something, or frequencies.
@@ -69,14 +70,16 @@ def crosses(sig, threshold, is_above=True):
     if not is_above:
         above = np.logical_not(above)
     # the beginning and end count as non pulse
-    crossings = np.logical_xor(np.concatenate([above, [False,]]), np.concatenate([[False], above]))
+    crossings = np.logical_xor(
+        np.concatenate([above, [False, ]]), np.concatenate([[False], above]))
     crossings_indexes = np.where(crossings)[0]
     crossings_times = crossings_indexes * sig.sample_step + sig.domain_start
     starts = crossings_times[::2]
     ends = crossings_times[1::2]
-    return Segments(starts, ends)
-#%%
-#%%
+    segs = Segments(starts, ends)
+    sig_and_segs = SegmentsOfContinuous(segs, sig)
+    return sig_and_segs
+
 def threshold_adjoin_filter_short_segments(
     sig, threshold, max_distance, min_duration):
     """
@@ -91,7 +94,6 @@ def threshold_adjoin_filter_short_segments(
     return p
 
 
-#%%
 def threshold_aggregate_filter_short(
     sig, threshold, max_dist, duration_ratio,
     absolute_max_dist, max_pulse_duration):
@@ -119,10 +121,6 @@ def threshold_aggregate_filter_short(
         backgrounds, max_pulse_duration)
     # TODO: fine tuning - get entire background pulse
     return backgrounds
-
-
-
-#%%
 
 
 def estimate_noise_level(sig, mode, factor):
@@ -167,8 +165,6 @@ def estimate_noise_level(sig, mode, factor):
     return thresh
 
 
-
-#%%
 def cluster1d(vec, resolution, threshold):
     """
     find main values in histigram. should be probably implemented
