@@ -47,6 +47,15 @@ def test_correlate_find_new_location():
     assert pint_extension.allclose(new_location, expected_new_location)
     assert pint_extension.allclose(max_val, expected_max_val)
 
+def test_correlate_find_shift():
+    v = np.concatenate([np.arange(10), np.arange(10)[::-1]])
+    sig_stable = ContinuousDataEven(v * U_.mamp, U_.sec, 10 * U_.sec)
+    sig_sliding = ContinuousDataEven(v * U_.mamp, U_.sec)
+    expected_shift = 10 * U_.sec
+    shift = math.correlate_find_shift(sig_stable, sig_sliding, mode="full")
+    assert pint_extension.allclose(shift, expected_shift)
+
+
 def test_clip():
     v = np.arange(10) * U_.mamp
     sig = ContinuousDataEven(v, U_.sec)
