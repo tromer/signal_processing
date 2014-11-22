@@ -161,9 +161,9 @@ class SegmentsOfContinuous(Segments):
         # not tested
         return '\n'.join([str(self.source), str(self.segments)])
 
-    def plot(self, fig=None):
-        fig = self.source.plot(fig)
-        self.segments.mark_edges(fig)
+    def plot(self, fig=None, domain_range=None):
+        fig = self.source.plot(fig, domain_range)
+        self.segments.mark_edges(fig, domain_range)
 
     def each_max_value(self):
         raise NotImplementedError
