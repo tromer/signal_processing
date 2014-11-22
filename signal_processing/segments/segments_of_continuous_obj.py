@@ -114,7 +114,6 @@ class SegmentsOfContinuous(Segments):
             if the key is ndarray or slice, it returns a SegmentsOfContinuous
             instance
         """
-        raise NotImplementedError
 
         if type(key) in [type(slice(0,1)), np.ndarray]:
             return SegmentsOfContinuous(self.segments[key], self.source)

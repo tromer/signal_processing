@@ -31,6 +31,17 @@ def test_segments_of_continuous():
     assert not x.is_close(y)
 
 
+def test___getitem__():
+    sig = ContinuousDataEven(np.arange(10) * U_.mamp, U_.sec)
+    segs = Segments([0, 5], [3, 6], U_.sec)
+    x = SegmentsOfContinuous(segs, sig)
+    assert x[0].is_close(sig[segs[0]])
+
+    assert x[1:].is_close(SegmentsOfContinuous(segs[1:], sig))
+
+# def test_gaps NOT TESTED
+
+
 def test_from_file():
     sig = ContinuousDataEven(np.arange(10) * U_.mamp, U_.sec)
     segs = Segments([0, 5], [3, 6], U_.sec)
