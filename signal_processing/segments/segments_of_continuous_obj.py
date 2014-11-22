@@ -199,6 +199,9 @@ class SegmentsOfContinuous(Segments):
         return NotImplementedError
 
 def segs_from_dir(path):
+    """
+    reads a dir of .segs files, to a list of SegmentsOfContinuous instances
+    """
     l = utils.read_dir(
         path,
         'segs',
@@ -207,6 +210,9 @@ def segs_from_dir(path):
     return l
 
 def segs_to_dir(l, path):
+    """
+    writes a list of SegmentsOfContinuous instances to a directory
+    """
     utils.write_dir(
     l,
     path,
