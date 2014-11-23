@@ -164,7 +164,9 @@ def mark_horizontal_lines(y_lines, fig, label=None):
     return h_lines
 
 
-def plot_under(l, domain_range=None, is_show_legend=True):
+def plot_under(l,
+               domain_range=None, is_show_legend=True, is_grid=True,
+               y_lines=None):
     """
     plot a few signals one above the other
 
@@ -188,6 +190,10 @@ def plot_under(l, domain_range=None, is_show_legend=True):
     N = len(l)
     ax = plt.subplot(N, 1, 1)
     l[0].plot(fig, domain_range, is_show_legend)
+    if is_grid:
+        plt.grid()
+    if y_lines is not None:
+        mark_horizontal_lines(y_lines, fig)
     if is_show_legend is False:
         plt.legend().set_visible(False)
 
@@ -195,6 +201,10 @@ def plot_under(l, domain_range=None, is_show_legend=True):
         focus_on_figure_and_subplot(fig, [N, 1, i], share_x=ax, share_y=ax)
         l[i - 1].plot(fig, domain_range, is_show_legend)
 
+        if is_grid:
+            plt.grid()
+        if y_lines is not None:
+            mark_horizontal_lines(y_lines, fig)
         if is_show_legend is False:
             plt.legend().set_visible(False)
         # lines.append(line)
