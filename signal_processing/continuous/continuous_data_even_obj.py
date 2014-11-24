@@ -98,6 +98,13 @@ class ContinuousDataEven(ContinuousData):
         it's also optional to create a flag is_periodic
         maybe it should be possible to pass every function that is defined on
         the segment [0, 2 * pi] as a  waveform for periodic function
+
+        .. todo::
+            add possible kwarg angular_freq (another way to insert freq)
+
+        .. todo::
+            add possible kwarg domain_end (the user should be able to use it
+            instead of n_samples)
         """
 
         default_mean_value = {'white_noise' : 0, 'sine' : 0, 'square' : amplitude}
