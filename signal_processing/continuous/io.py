@@ -19,7 +19,7 @@ from continuous_data_even_obj import ContinuousDataEven
 
 from signal_processing import U_, utils
 
-
+# .. todo:: maybe add readers from csv (two columns)
 def read_wav(filename, domain_unit=U_.sec, first_sample=0,
              value_unit=U_.milliamp, expected_sample_rate_and_tolerance=None,
              channels=None):

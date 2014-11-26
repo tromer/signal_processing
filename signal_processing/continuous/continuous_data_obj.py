@@ -122,19 +122,22 @@ class ContinuousData(object):
     signal_processing.Segments:  object that describe segments of interest within a `ContinuousData`
     signal_processing.SegmentsOfContinuous
 
-    TODO
-    ----------
 
-    1. maybe I want to implement a domain_samples object. it would have
-    a subclass of even samples
+    .. todo::
+        1. maybe I want to implement a domain_samples object. it would have
+        a subclass of even samples
 
-    2. maybe it's smart to implement a similar object with few channels.
-    It may be useful in some implementation and performance issues,
-    since the channels would be a 2D np.ndarray, and channel-wise
-    operations like fft would be applied along axis, and be
-    efficient.
+        2. maybe it's smart to implement a similar object with few channels.
+        It may be useful in some implementation and performance issues,
+        since the channels would be a 2D np.ndarray, and channel-wise
+        operations like fft would be applied along axis, and be
+        efficient.
 
-    3. maybe add a self.base attribute, like in np.ndarrays
+        design issue
+        3. maybe add a self.base attribute, like in np.ndarrays
+
+    .. todo::
+        create a constructor from a np.ndarray of shape (N, 2)
 
     """
     def __init__(self, values, domain_samples, values_des=None, domain_des=None):
