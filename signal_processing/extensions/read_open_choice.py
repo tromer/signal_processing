@@ -5,6 +5,12 @@ Created on Tue Nov 18 16:46:20 2014
 @author: noam
 """
 
+"""
+.. todo::
+    maybe this function should be in continuous.io
+    since it's not an extension of anything
+
+"""
 from matplotlib import mlab
 
 
