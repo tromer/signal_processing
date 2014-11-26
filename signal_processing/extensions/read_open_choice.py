@@ -5,29 +5,30 @@ Created on Tue Nov 18 16:46:20 2014
 @author: noam
 """
 
-import pandas as pd
-import numpy as np
-from matplotlib import mlab
 from matplotlib import mlab
 
 
-import signal_processing
-from signal_processing import continuous as cont
+from signal_processing import ContinuousDataEven
 from signal_processing import U_
 #%%
-names_1 = ["headers_1", "params_1", "some_units_1", "time_1", "channel_1", "break"] + ["headers_2", "params_2", "some_units_2", "time_2", "channel_2"]
+def read_open_choice_csv(path, description_ch_1=None, description_ch_2=None):
+    names_1 = ["headers_1", "params_1", "some_units_1", "time_1", "channel_1", "break"] + ["headers_2", "params_2", "some_units_2", "time_2", "channel_2"]
+ 
+    table = mlab.csv2rec(path, names=names_1)
+    
+    dt = float(table["params_1"][1]) * U_(table["some_units_1"][1])
+    unit_channel_1 = U_(table["params_1"][7].lower())
+    unit_channel_2 = U_(table["params_2"][7].lower())
+    #%%
+    ch_1 = ContinuousDataEven(table["channel_1"] * unit_channel_1, dt, values_description=description_ch_1)
+    ch_2 = ContinuousDataEven(table["channel_2"] * unit_channel_2, dt, values_description=description_ch_2)
+    
+    
+    return ch_1, ch_2
 #%%
-add = "/home/noam/noam_personal/studies/physics/lab_b/magnetism/histeresis/1.csv"
 
-#%%
-
-t = mlab.csv2rec(add, names=names_1)
-
-dt = float(t["params_1"][1]) * U_(t["some_units_1"][1])
-unit_channel_1 = U_(t["params_1"][7].lower())
-unit_channel_2 = U_(t["params_2"][7].lower())
-#%%
-ch_1 = cont.ContinuousDataEven(t["channel_1"] * unit_channel_1, dt)
-ch_2 = cont.ContinuousDataEven(t["channel_2"] * unit_channel_2, dt)
-#%%
-ch_1.plot()
+def visual_test_read_open_choice_csv():
+    add = "/home/noam/noam_personal/studies/physics/lab_b/magnetism/histeresis/1.csv"
+    ch_1, ch_2 = read_open_choice_csv(add, "H", "B")
+    print ch_1
+    ch_1.plot()
