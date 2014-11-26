@@ -23,7 +23,7 @@ add = "/home/noam/noam_personal/studies/physics/lab_b/magnetism/histeresis/1.csv
 
 t = mlab.csv2rec(add, names=names_1)
 
-dt = t["params_1"][1] * U_(t["some_units_1"][1])
+dt = float(t["params_1"][1]) * U_(t["some_units_1"][1])
 unit_channel_1 = U_(t["params_1"][7].lower())
 unit_channel_2 = U_(t["params_2"][7].lower())
 #%%
